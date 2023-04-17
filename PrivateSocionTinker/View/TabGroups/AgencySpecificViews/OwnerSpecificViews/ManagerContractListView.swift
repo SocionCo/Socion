@@ -38,7 +38,7 @@ struct ManagerContractListView: View {
                 
                 List {
                     Section {
-                        ForEach(contracts.sorted(by: sorterForDates), id: \.self) { contract in
+                        ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
                                 ContractDetailView(contract: contract)
                             }
@@ -48,6 +48,10 @@ struct ManagerContractListView: View {
                                     .font(.title)
                                     .fontWeight(.bold)
                                     .foregroundColor(Color(red: 183/255, green: 235/255, blue: 181/255))
+                                Text(agencyViewModel.getOwnerOfContract(contract: contract)?.getFullName() ?? "")
+                                    .font(.title3)
+                                    .fontWeight(.bold)
+                                    .foregroundColor(.black)
                                 HStack {
                                     Text(contract.status.rawValue)
                                         .padding(.all, 7.0)
@@ -77,6 +81,7 @@ struct ManagerContractListView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         authentication.updateValidation(success: false)
+                        userViewModel.logOut()
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                     }
@@ -84,22 +89,18 @@ struct ManagerContractListView: View {
                 ToolbarItem {
                     Menu("Manage") {
                         Button("New Contract") {
-                            contracts =
-                            userViewModel.agencyViewModel.getListOfAllAgencyContracts()
-                            print("Total contracts \(userViewModel.agencyViewModel.agency.influencers[0].contracts)")
-                            print("Name of influencer: \(userViewModel.agencyViewModel.agency.influencers[0].firstName)")
                             addSheet = true
                             formSubmittable = true
                         }
                         Menu("Delete Contract") {
-                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
+                            ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
                                 Button(contract.company) {
-                                    userViewModel.deleteContract(contract: contract)
+                                    agencyViewModel.deleteContractForAgency(contract: contract)
                                 }
                             }
                         }
                         Menu("Edit") {
-                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
+                            ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
                                 Button(contract.company) {
                                     tempStatus = contract.status
                                     tempName = contract.name
@@ -253,7 +254,7 @@ struct ManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink)
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink)
             print("Contract status is:: \(contract.status.rawValue)")
             resetValues()
         }

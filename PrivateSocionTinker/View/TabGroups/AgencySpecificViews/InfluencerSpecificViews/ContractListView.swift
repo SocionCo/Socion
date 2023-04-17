@@ -75,6 +75,7 @@ struct ContractListView: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
                         authentication.updateValidation(success: false)
+                        userViewModel.logOut()
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                     }

@@ -12,19 +12,6 @@ class AgencyViewModel : ObservableObject {
     @Published var agency = Agency()
     var initialPop : Bool = true
     
-    func getListOfAllAgencyContracts() -> [Contract] {
-        print("Retrieving all contracts")
-        print("Agency has \(agency.influencers.count) influencers")
-        print("Influencer has \(agency.influencers[0].contracts.count) contracts")
-        var returnArray : [Contract] = []
-        for influencer in agency.influencers {
-            print("Appending to returnArray an array \(influencer.contracts.count) contracts")
-            returnArray.append(contentsOf: influencer.contracts)
-        }
-        return returnArray
-    }
-    
-    
     func createAgencyForUser(userID : String, agencyName : String) -> String {
         return FireBaseDataServices.shared.startAgency(ownerId: userID, agencyName: agencyName)
     }
@@ -33,6 +20,7 @@ class AgencyViewModel : ObservableObject {
     //MARK: Agency Log-In Sequence
     
     func initiateAgencyListeners(userViewModel : UserViewModel) {
+        self.initialPop = true
         self.attachAgencyInfoListeners(agencyID: userViewModel.user.agency!)
         self.attachInfluencerInfoListenersToAgency(agencyID: userViewModel.user.agency!)
         
@@ -50,6 +38,7 @@ class AgencyViewModel : ObservableObject {
                 return
             }
             
+            self.agency.id = agencyID
             self.updateOnlyAgencyInfo(data: data)
         }
         
@@ -147,6 +136,7 @@ class AgencyViewModel : ObservableObject {
     
     private func updateOnlyAgencyInfo (data : [String : Any]) {
         
+        
         if let name : String = data["name"] as? String {
             agency.name = name
         }
@@ -170,6 +160,35 @@ class AgencyViewModel : ObservableObject {
     
     //MARK: Getters and Setters (Changers) for Agency
     
+    func getOwnerOfContract (contract : Contract) -> User? {
+        for influencer in agency.influencers {
+            for userContract in influencer.contracts {
+                if contract == userContract {
+                    return influencer
+                }
+            }
+        }
+        return nil
+    }
+    
+    func deleteContractForAgency (contract: Contract) {
+        let user = self.getOwnerOfContract(contract: contract)
+        if let user = user {
+            FireBaseDataServices.shared.deleteContract(userID: user.id, contract: contract)
+        }
+    }
+    
+    
+    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?) {
+        let user = self.getOwnerOfContract(contract: contract)
+        if let user = user {
+            print("Updating contract status to \(status.rawValue)")
+            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate)
+        } else {
+            print("Auth Issue")
+        }
+    }
+    
     func changeAgencyName (name : String) {
         
         print("Using ID: \(agency.id)")
@@ -182,5 +201,16 @@ class AgencyViewModel : ObservableObject {
     
     func getAgencyName() -> String {
         return self.agency.name
+    }
+    
+    func getContracts() -> [Contract] {
+        var returnArray : [Contract] = []
+        
+        for influencer in agency.influencers {
+            for contract in influencer.contracts {
+                returnArray.append(contract)
+            }
+        }
+        return returnArray
     }
 }

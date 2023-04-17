@@ -36,4 +36,8 @@ struct User : Hashable {
         self.isInfluencer = isInfluencer
         self.IsTalentManager = IsTalentManager
     }
+    
+    func getFullName() -> String {
+        return "\(firstName) \(lastName)"
+    }
 }

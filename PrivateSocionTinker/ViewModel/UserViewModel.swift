@@ -34,6 +34,10 @@ class UserViewModel: ObservableObject {
             switch result {
             case .success:
                 user.id = FireBaseAuthServices.shared.getLoggedInID() ?? ""
+                print("Registering New User:")
+                print("isOwner: \(user.isAgencyOwner)")
+                print("Name: \(user.firstName)")
+                print("agency: \(user.agency ?? "")")
                 FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer)
                 addListeners(id: user.id) { completion in
                     if completion {
@@ -99,6 +103,11 @@ class UserViewModel: ObservableObject {
             user.password = ""
             user.email = ""
         }
+    }
+    
+    func logOut() {
+        self.user = User()
+        self.agencyViewModel = AgencyViewModel()
     }
     
     
@@ -252,7 +261,7 @@ class UserViewModel: ObservableObject {
     
     func deleteContract (contract : Contract) -> Void {
         if let id = getID() {
-            FireBaseDataServices.shared.deleteContract(id: id, contract: contract)
+            FireBaseDataServices.shared.deleteContract(userID: id, contract: contract)
         }
     }
     

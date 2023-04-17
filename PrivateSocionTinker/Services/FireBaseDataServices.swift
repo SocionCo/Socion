@@ -159,10 +159,8 @@ class FireBaseDataServices {
     /// - Parameters:
     ///   - id: FireStore id of deleted contract
     ///   - contract: Contract contents to be deleted
-    func deleteContract (id : String, contract : Contract) {
-        print("8Calling document: \(id)")
-        print("9Calling document: \(contract.id)")
-        db.collection("users").document(id).collection("contracts").document(contract.id).delete()
+    func deleteContract (userID : String, contract : Contract) {
+        db.collection("users").document(userID).collection("contracts").document(contract.id).delete()
     }
     
     /// Assigns user as an owner of the provided Agency

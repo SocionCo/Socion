@@ -10,7 +10,6 @@ import SwiftUI
 struct ManageInfluencersView: View {
     @State private var searchText = ""
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
-    let influencers = ["Influencer 1", "Influencer 2", "Influencer 3", "Influencer 4"]
     let backgroundColor = Color(red: 183/255, green: 235/255, blue: 181/255)
     let textColor = Color(red: 242/255, green: 242/255, blue: 247/255)
     let buttonColor = Color.green
@@ -25,11 +24,11 @@ struct ManageInfluencersView: View {
                         .padding(.top, 10)
                         .padding(.horizontal, 20)
                     
-                    List(influencers.filter {
-                        searchText.isEmpty ? true : $0.localizedStandardContains(searchText)
+                    List(userViewModel.agencyViewModel.agency.influencers.filter {
+                        searchText.isEmpty ? true : $0.getFullName().localizedStandardContains(searchText)
                     }, id: \.self) { influencer in
                         NavigationLink(destination: InfluencerDetailView()) {
-                            InfluencerRowView(influencer: influencer)
+                            InfluencerRowView(influencer: influencer.getFullName())
                         }
                     }
                     .scrollContentBackground(.hidden)
@@ -81,6 +80,7 @@ struct ManageInfluencersView: View {
                                     .disabled(true)
                                 Image(systemName: "doc.on.clipboard.fill").onTapGesture {
                                     pasteBoard.string = userViewModel.user.agency
+                                    print(userViewModel.agencyViewModel.agency.id)
                                     withAnimation {
                                         linkCopied = true
                                     }

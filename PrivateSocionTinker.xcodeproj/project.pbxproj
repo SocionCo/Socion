@@ -194,6 +194,7 @@
 		DB67389529E488C500C561D9 /* OwnerSpecificViews */ = {
 			isa = PBXGroup;
 			children = (
+				DB67389729E4892200C561D9 /* ManagerContractListView.swift */,
 				DB67388C29E0F90B00C561D9 /* ManageInfluencersView.swift */,
 			);
 			path = OwnerSpecificViews;
@@ -203,7 +204,6 @@
 			isa = PBXGroup;
 			children = (
 				DB6A8F9D29D7E45C0065DAED /* ContractListView.swift */,
-				DB67389729E4892200C561D9 /* ManagerContractListView.swift */,
 			);
 			path = InfluencerSpecificViews;
 			sourceTree = "<group>";
