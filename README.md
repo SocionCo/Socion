@@ -1,28 +1,20 @@
-TODO's:
+# Socion
 
+Socion is a SwiftUI app providing contract management to influencer agencies.
 
-Tell Ted:
+## Installation
 
--Handle registration through app, only handle payment outside of the app
+Socion is not yet publicly available on the appstore. To run the app on your machine, download [Xcode](https://developer.apple.com/xcode/).
 
+Git clone the repository in terminal.
 
+```bash
+git clone https://github.com/SocionCo/Socion.git
+```
 
-FireBase DataBase outline:
+Then open the .xcodeproj file in xCode and launch the simulator.
 
-
-users -> id -> isAgency : Bool
-		-if it is an agency it will have
-			clients : Array of UserID Strings
-		-if it is not an agency it will have
-			agent : UserID String
-
-
-ToDo
-	-Setup Registration Page for Agencies to enter: some information that you can store and retrieve later
-	
-
-	-Figure out why the fuck changes in contract status aren't being written to the database
-
-
+## Technologies
+Socion uses currently uses SwiftUI on the front end, and Swift and FireBase on the backend.
 
 
