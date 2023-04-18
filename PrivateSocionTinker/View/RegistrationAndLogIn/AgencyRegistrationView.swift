@@ -43,6 +43,14 @@ struct AgencyRegistrationView: View {
                             .cornerRadius(8)
                         }
                     }
+                }.toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button {
+                            selected = false
+                        } label: {
+                            Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(.white)
+                        }
+                    }
                 }
             }
     

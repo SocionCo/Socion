@@ -22,7 +22,10 @@ class AgencyViewModel : ObservableObject {
     func initiateAgencyListeners(userViewModel : UserViewModel) {
         self.initialPop = true
         self.attachAgencyInfoListeners(agencyID: userViewModel.user.agency!)
-        self.attachInfluencerInfoListenersToAgency(agencyID: userViewModel.user.agency!)
+        self.attachInfluencerInfoListenersToAgency(agencyID: userViewModel.user.agency!) { influencers in
+            print("INFLUENCERS SHOULD BE IN MODEL BY NOW")
+            self.attachContractListeners(influencers: influencers)
+        }
         
     }
     
@@ -44,7 +47,7 @@ class AgencyViewModel : ObservableObject {
         
     }
     
-    private func attachInfluencerInfoListenersToAgency(agencyID : String) {
+    private func attachInfluencerInfoListenersToAgency(agencyID : String, completion :  @escaping ([String]) -> Void) {
         FireBaseDataServices.shared.db.collection("agencies").document(agencyID).getDocument { document, error in
             
             guard let document = document else {
@@ -61,17 +64,25 @@ class AgencyViewModel : ObservableObject {
                 print("Error line 69 AgencyViewModel")
                 return
             }
-            self.attachContractListeners(influencers: influencers)
+            
             for influencerID in influencers {
                 print("Adding listener to influencer")
-                self.attachSnapshotListenerToInvdividual(userID: influencerID)
+                self.attachSnapshotListenerToInvdividual(userID: influencerID) {
+                    if self.agency.influencers.count == influencers.count {
+                        print("Finished adding influecers to model")
+                        completion(influencers)
+                    }
+                }
             }
+            
+            
+            
             
         }
     
     }
     
-    private func attachSnapshotListenerToInvdividual (userID: String) {
+    private func attachSnapshotListenerToInvdividual (userID: String, completion : @escaping () -> Void) {
         FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
             var userToRemove : User
             var indexToRemove : Int?
@@ -92,18 +103,26 @@ class AgencyViewModel : ObservableObject {
             FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
                 print("Appending New User")
                 self.agency.influencers.append(newUser)
+                completion()
             }
         }
     }
     
     private func attachContractListeners (influencers : [String]) {
+        print("ATTACHING CONTRACT LISTENERS FOR FIRST TIME")
         for influencer in influencers {
+            print("attaching to: \(influencer)")
             FireBaseDataServices.shared.db.collection("users").document(influencer).collection("contracts").addSnapshotListener { snapshot, error in
                 if self.initialPop {
                     self.initialPop = false
                     return
                 }
                 print("Contract listener popped")
+                print("Edit made to: \(influencer) ")
+                print("Listing all influencers: ")
+                for influencer in self.agency.influencers {
+                    print(influencer)
+                }
                 var userToRemove : User
                 var indexToRemove : Int?
                 var userExistsLocally : Bool = false

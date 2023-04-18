@@ -22,6 +22,8 @@ struct LogInView: View {
     }
     @State var offWhite : Color = Color(red: 247/255, green: 247/255, blue: 247/255)
     
+
+    
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color("GradientStart"), Color("GradientEnd")]), startPoint: .top, endPoint: .bottom)

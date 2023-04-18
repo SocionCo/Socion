@@ -12,7 +12,7 @@ import FirebaseAuth
 
 import SwiftUI
 
-struct RegisterView: View {
+struct ViewTest: View {
     @Binding var selected : Bool
     @EnvironmentObject private var userViewModel : UserViewModel
     @State var showPassword : Bool = false
@@ -61,26 +61,9 @@ struct RegisterView: View {
                             .padding(10)
                             .background(Color.accentColor)
                             .cornerRadius(8)
-                            .alert(isPresented: $showingAlert) {
-                                Alert(title: Text("Socion Registration Successful"),
-                                      message: Text("Thank you \(userViewModel.user.firstName)!\n Your account has successfully been registered!"),
-                                      dismissButton: .default(Text("OK")))
-                            }
-                            .alert(item: $userViewModel.error) {
-                                error in
-                                Alert(title: Text("Error"), message: Text(error.localizedDescription))
-                            }
+                            
                         }
                     })
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button {
-                                selected = false
-                            } label: {
-                                Image(systemName: "rectangle.portrait.and.arrow.right")
-                            }
-                        }
-                    }
                     .navigationBarTitle("Register")
                 }
             }

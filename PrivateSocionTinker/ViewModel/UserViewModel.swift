@@ -21,6 +21,13 @@ class UserViewModel: ObservableObject {
         user.email.isEmpty || user.password.isEmpty
     }
     
+    func resetLogInFields() {
+        user.password = ""
+        user.firstName = ""
+        user.lastName = ""
+        user.email = ""
+    }
+    
     //MARK: Intents
     
     /// Register is called by the View once the user has clicked the register button. Register will access the FireBaseAuthServices shared instance, and attempt to log in. On failure or success, it will return that status as a callback.

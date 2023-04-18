@@ -66,7 +66,7 @@ struct ManagerContractListView: View {
                                         }
                                     if let dueDate = contract.dueDate {
                                         if refresh || !refresh {
-                                            var dueString = Contract.timeUntilDate(date: dueDate)
+                                            let dueString = Contract.timeUntilDate(date: dueDate)
                                             Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
                                                 .font(.title2)
                                                 .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
@@ -75,6 +75,9 @@ struct ManagerContractListView: View {
                                 }
                             }
                         }
+                        }
+                        .onDelete { argument in
+                            
                         }
                         .padding(.vertical)
                         
