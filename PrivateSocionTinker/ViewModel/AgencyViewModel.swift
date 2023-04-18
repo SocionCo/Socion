@@ -171,6 +171,10 @@ class AgencyViewModel : ObservableObject {
         return nil
     }
     
+    func addContractToInfluencer (contract : Contract, influencerID : String) {
+        FireBaseDataServices.shared.addContract(id: influencerID, contract: contract)
+    }
+    
     func deleteContractForAgency (contract: Contract) {
         let user = self.getOwnerOfContract(contract: contract)
         if let user = user {
@@ -212,5 +216,9 @@ class AgencyViewModel : ObservableObject {
             }
         }
         return returnArray
+    }
+    
+    func getInfluencers() -> [User] {
+        return agency.influencers
     }
 }

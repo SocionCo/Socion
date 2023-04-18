@@ -14,11 +14,14 @@ struct ManagerContractListView: View {
     @State var tempPostLink : String = ""
     @State var tempDueDate : Date = Date()
     @State var tempPaymentStatus : Contract.Progress = .notStarted
+    @State var tempInfluencer = User()
     @State var contracts : [Contract] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
     @State var includeDate : Bool = false
+    @State var refresh: Bool = false
+
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
@@ -27,7 +30,7 @@ struct ManagerContractListView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Text(userViewModel.getName())
+                Text(agencyViewModel.getAgencyName())
                     .frame(width: 700, height: 80)
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -62,10 +65,12 @@ struct ManagerContractListView: View {
                                                 .fill(statusColor(contract: contract))
                                         }
                                     if let dueDate = contract.dueDate {
-                                        let dueString = Contract.timeUntilDate(date: dueDate)
-                                        Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
-                                            .font(.title2)
-                                            .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
+                                        if refresh || !refresh {
+                                            var dueString = Contract.timeUntilDate(date: dueDate)
+                                            Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
+                                                .font(.title2)
+                                                .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
+                                        }
                                     }
                                 }
                             }
@@ -88,9 +93,14 @@ struct ManagerContractListView: View {
                 }
                 ToolbarItem {
                     Menu("Manage") {
-                        Button("New Contract") {
-                            addSheet = true
-                            formSubmittable = true
+                        Menu("New Contract") {
+                            ForEach(agencyViewModel.getInfluencers(), id: \.self) { influencer in
+                                Button(influencer.getFullName()) {
+                                    tempInfluencer = influencer
+                                    addSheet = true
+                                    formSubmittable = true
+                                }
+                            }
                         }
                         Menu("Delete Contract") {
                             ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
@@ -120,6 +130,8 @@ struct ManagerContractListView: View {
                     }
                 }
             }.foregroundColor(.white)
+        }.refreshable {
+            refresh.toggle()
         }.sheet(isPresented: $editSheet, onDismiss: setValues) {
             VStack {
                 Form {
@@ -170,7 +182,7 @@ struct ManagerContractListView: View {
             .sheet(isPresented: $addSheet, onDismiss: addNew) {
             VStack {
             Form {
-                Section(header: Text("Contract Information")) {
+                Section(header: Text("Contract Information for \(tempInfluencer.getFullName())")) {
                     TextField("Company Name", text: $tempCompanyName)
                     TextField("Contract Name", text: $tempName)
                     Picker("Status", selection: $tempStatus) {
@@ -270,6 +282,7 @@ struct ManagerContractListView: View {
         tempPaymentStatus = .inProgress
         currentlyEditing = nil
         formSubmittable = false
+        tempInfluencer = User()
 
     }
     
@@ -298,7 +311,8 @@ struct ManagerContractListView: View {
         
         let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate)
         
-        userViewModel.addContract(contract: contractToAdd)
+        
+        agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)
         resetValues()
     }
         

@@ -18,8 +18,8 @@ struct OwnerTabView: View {
                     Text("View All Contracts")
                 }
                 AgencyView().tabItem {
-                    Image(systemName: "gear")
-                    Text("View Agency Information")
+                    Image(systemName: "person.3.sequence")
+                    Text("Agency Dashboard")
                 }
             }
         }

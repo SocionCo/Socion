@@ -24,19 +24,18 @@ struct LogInView: View {
     
     var body: some View {
         ZStack {
-            LinearGradient(gradient: Gradient(colors: [Color(red: 28/255, green: 168/255, blue: 141/255), Color(red: 5/255, green: 117/255, blue: 230/255)]), startPoint: .top, endPoint: .bottom)
+            LinearGradient(gradient: Gradient(colors: [Color("GradientStart"), Color("GradientEnd")]), startPoint: .top, endPoint: .bottom)
                 .edgesIgnoringSafeArea(.all)
             
             VStack {
                 ZStack {
-                    Circle()
-                        .fill(Color.white)
-                        .frame(width: 150, height: 150)
                     
                     Image("SocionCircle")
                         .resizable()
-                        .scaledToFit()
-                        .frame(width: 120, height: 120)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 150, height: 150)
+                        .padding(.bottom, 20)
+                        .shadow(color: .black, radius: 10, x: 0.0, y: 0.0)
                 }
                 .padding(.bottom, 30)
                 
@@ -47,17 +46,19 @@ struct LogInView: View {
                     .padding(.bottom, 20)
                 
                 VStack {
-                    TextField("Username", text: $userViewModel.user.email)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10.0)
-                        .padding(.bottom, 20)
-                    
-                    SecureField("Password", text: $userViewModel.user.password)
-                        .padding()
-                        .background(Color.white)
-                        .cornerRadius(10.0)
-                        .padding(.bottom, 20)
+                    VStack {
+                        TextField("Username", text: $userViewModel.user.email)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10.0)
+                            .padding(.bottom, 20)
+                        
+                        SecureField("Password", text: $userViewModel.user.password)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(10.0)
+                            .padding(.bottom, 20)
+                    }.background()
                     
                     Button(action: {
                         userViewModel.logIn { success in
@@ -66,16 +67,15 @@ struct LogInView: View {
                     }) {
                         Text("Login")
                             .font(.headline)
-                            .foregroundColor(.black)
+                            .foregroundColor(
+                                isSignInButtonDisabled ?
+                                    .gray : .black)
                             .padding()
                             .frame(width: 220, height: 60)
-                            .background(Color("ButtonColor"))
                             .cornerRadius(15.0)
-                    }.foregroundColor(
-                        isSignInButtonDisabled ?
-                            .gray : .black)
+                    }
                     .disabled(isSignInButtonDisabled)
-                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(red: 5/255, green: 117/255, blue: 230/255), lineWidth: 5))
+                    .overlay(RoundedRectangle(cornerRadius: 20).stroke(Color(red: 5/255, green: 117/255, blue: 230/255), lineWidth: 2))
                 }
                 .padding()
                 .background(Color.white)
