@@ -19,16 +19,21 @@ class AgencyViewModel : ObservableObject {
     
     //MARK: Agency Log-In Sequence
     
+    /// Outermost function of the Log-In Sequence. This set's initialPop to true *this might be deprecated*, which stops the ContractListener from firing twice on the intial lod.
+    /// - Parameter userViewModel: the userViewModel object
     func initiateAgencyListeners(userViewModel : UserViewModel) {
         self.initialPop = true
         self.attachAgencyInfoListeners(agencyID: userViewModel.user.agency!)
         self.attachInfluencerInfoListenersToAgency(agencyID: userViewModel.user.agency!) { influencers in
+            //Once all influencers are added, attachContractListeners to those influencers
             print("INFLUENCERS SHOULD BE IN MODEL BY NOW")
             self.attachContractListeners(influencers: influencers)
         }
         
     }
     
+    /// This attaches listeners to the agency info for everything besides Influencer's and Contarcts
+    /// - Parameter agencyID: agencyID/DocumentID String
     private func attachAgencyInfoListeners (agencyID : String) {
         FireBaseDataServices.shared.db.collection("agencies").document(agencyID).addSnapshotListener { documentSnapshot, error in
             guard let documentSnapshot = documentSnapshot else {
@@ -47,6 +52,10 @@ class AgencyViewModel : ObservableObject {
         
     }
     
+    /// This function attaches Listeners to just the influencer information, including contracts on each Influencer User object, but doesn't attach any listeners to those contracts. These listeners are only called when a field in the user is updated.
+    /// - Parameters:
+    ///   - agencyID: agencyID String
+    ///   - completion: completion that returns once all users have been initialized, to make sure that Contract listeners don't fire until all users have been added
     private func attachInfluencerInfoListenersToAgency(agencyID : String, completion :  @escaping ([String]) -> Void) {
         FireBaseDataServices.shared.db.collection("agencies").document(agencyID).getDocument { document, error in
             
@@ -82,6 +91,10 @@ class AgencyViewModel : ObservableObject {
     
     }
     
+    /// Part of the attachInfluencerInfoListenersToAgency function, just adds the listeners to each individual and updatesUserInfo whenever something changes in the form of creating a new UserObject with the current database settings.
+    /// - Parameters:
+    ///   - userID: <#userID description#>
+    ///   - completion: <#completion description#>
     private func attachSnapshotListenerToInvdividual (userID: String, completion : @escaping () -> Void) {
         FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
             var userToRemove : User
@@ -108,6 +121,8 @@ class AgencyViewModel : ObservableObject {
         }
     }
     
+    /// This should only run once all influencer objects have been added locally to agency.influencers. This attaches a contract listener to each contract owned by influencers in the agency. When it fires, it will find the influencer who's contract changed, and simply instantiate a new object of that influencer, and delete the old object of that listener in the agency.influencers array
+    /// - Parameter influencers: An array of InfluencerID from the database, not a local one.
     private func attachContractListeners (influencers : [String]) {
         print("ATTACHING CONTRACT LISTENERS FOR FIRST TIME")
         for influencer in influencers {
