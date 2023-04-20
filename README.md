@@ -15,6 +15,6 @@ git clone https://github.com/SocionCo/Socion.git
 Then open the .xcodeproj file in xCode and launch the simulator.
 
 ## Technologies
-Socion uses currently uses SwiftUI on the front end, and Swift and FireBase on the backend.
+Socion currently uses SwiftUI on the front end, and Swift and FireBase on the backend.
 
 
