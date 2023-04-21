@@ -19,7 +19,10 @@ struct DefaultTabSelector: View {
                 NoAgencyView().tabItem {
                     Image(systemName: "person.3.sequence")
                     Text("Agency Dashboard")
-                }
+                }.opacity(1.0)
+            }.onAppear() {
+                let appearance = UITabBarAppearance()
+                UITabBar.appearance().scrollEdgeAppearance = appearance
             }
         }
     }

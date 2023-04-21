@@ -125,6 +125,17 @@ class FireBaseDataServices {
         ])
     }
     
+    
+    func removeInfluencerFromAgency (agencyID : String, influencerID : String) {
+        db.collection("agencies").document(agencyID).updateData([
+            "influencers" : FieldValue.arrayRemove([influencerID])
+        ])
+        db.collection("users").document(influencerID).updateData([
+            "isInfluencer" : false,
+            "agency" : ""
+        ])
+    }
+    
     /// Adds influencerID to the influencer Array of a particular AgencyID
     /// - Parameters:
     ///   - agencyID: agencyID String

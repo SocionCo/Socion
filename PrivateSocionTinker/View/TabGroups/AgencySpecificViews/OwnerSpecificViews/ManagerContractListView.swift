@@ -21,7 +21,8 @@ struct ManagerContractListView: View {
     @State var formSubmittable : Bool = false
     @State var includeDate : Bool = false
     @State var refresh: Bool = false
-
+    @State var greenColor = Color(red: 183/255, green: 215/255, blue: 181/255)
+    
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
@@ -35,7 +36,7 @@ struct ManagerContractListView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
-                    .background(Color(red: 183/255, green: 235/255, blue: 181/255))
+                    .background(greenColor)
                 
                 SearchBar(searchText: $searchText)
                 
@@ -46,24 +47,22 @@ struct ManagerContractListView: View {
                                 ContractDetailView(contract: contract)
                             }
                         label: {
-                            VStack (alignment: .leading, spacing: 8) {
-                                Text(contract.company)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color(red: 183/255, green: 235/255, blue: 181/255))
-                                Text(agencyViewModel.getOwnerOfContract(contract: contract)?.getFullName() ?? "")
-                                    .font(.title3)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(.black)
-                                HStack {
-                                    Text(contract.status.rawValue)
-                                        .padding(.all, 7.0)
+                            HStack {
+                                VStack (alignment: .leading, spacing: 10) {
+                                    Text(contract.company)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(greenColor)
+                                    
+                                    Text("Influencer: \(agencyViewModel.getOwnerOfContract(contract: contract)?.getFullName() ?? "")")
                                         .font(.title2)
-                                        .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .fill(statusColor(contract: contract))
-                                        }
+                                        .fontWeight(.bold)
+                                        .foregroundColor(.black)
+                                    
+                                    Text(contract.status.rawValue)
+                                        .font(.title2)
+                                        .foregroundColor(statusColor(contract: contract))
+                                    
                                     if let dueDate = contract.dueDate {
                                         if refresh || !refresh {
                                             let dueString = Contract.timeUntilDate(date: dueDate)
@@ -73,6 +72,8 @@ struct ManagerContractListView: View {
                                         }
                                     }
                                 }
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundColor(.black)
                             }
                         }
                         }
@@ -88,8 +89,10 @@ struct ManagerContractListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        authentication.updateValidation(success: false)
-                        userViewModel.logOut()
+                        withAnimation {
+                            authentication.updateValidation(success: false)
+                            userViewModel.logOut()
+                        }
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                     }
@@ -163,72 +166,74 @@ struct ManagerContractListView: View {
                         }
                     }
                 }
-                    HStack(spacing: 20) {
-                        Spacer()
-                        Button {
-                            formSubmittable = true
-                            editSheet = false
-                        } label : {
-                            Text("Done")
-                        } .disabled(submitFormDisabeled)
-                        Spacer()
-                        Button {
-                            resetValues()
-                            editSheet = false
-                        } label: {
-                            Text("Cancel")
-                        }
-                        Spacer()
-                    }
-                }
-            }.interactiveDismissDisabled(true)
-            .sheet(isPresented: $addSheet, onDismiss: addNew) {
-            VStack {
-            Form {
-                Section(header: Text("Contract Information for \(tempInfluencer.getFullName())")) {
-                    TextField("Company Name", text: $tempCompanyName)
-                    TextField("Contract Name", text: $tempName)
-                    Picker("Status", selection: $tempStatus) {
-                        ForEach(Contract.Progress.allCases, id: \.self) {value in
-                            Text(value.rawValue)
-                        }
-                    }
-                    TextField("Post Link (optional)", text: $tempPostLink)
-                    Toggle(isOn: $includeDate) {
-                        Text("Contract has due date")
-                    }
-                    if (includeDate) {
-                        DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
-                            Text("Select a date")
-                        }
-                    }
-                    TextField("Rate (optional)", value: $tempRate, format: .number)
-                    Picker("Payment Status", selection: $tempPaymentStatus) {
-                        ForEach(Contract.Progress.allCases, id: \.self) {value in
-                            Text(value.rawValue)
-                        }
-                    }
-                }
-            }
                 HStack(spacing: 20) {
                     Spacer()
                     Button {
-                        addSheet = false
-                        resetValues()
-                    } label : {
-                        Text("Cancel")
-                    }
-                    Spacer()
-                    Button {
                         formSubmittable = true
-                        addSheet = false
+                        editSheet = false
                     } label : {
                         Text("Done")
                     } .disabled(submitFormDisabeled)
                     Spacer()
+                    Button {
+                        resetValues()
+                        editSheet = false
+                    } label: {
+                        Text("Cancel")
+                    }
+                    Spacer()
                 }
-            }.interactiveDismissDisabled(true)
-        }
+            }
+        }.interactiveDismissDisabled(true)
+            .sheet(isPresented: $addSheet, onDismiss: addNew) {
+                HStack{
+                    VStack {
+                        Form {
+                            Section(header: Text("Contract Information for \(tempInfluencer.getFullName())")) {
+                                TextField("Company Name", text: $tempCompanyName)
+                                TextField("Contract Name", text: $tempName)
+                                Picker("Status", selection: $tempStatus) {
+                                    ForEach(Contract.Progress.allCases, id: \.self) {value in
+                                        Text(value.rawValue)
+                                    }
+                                }
+                                TextField("Post Link (optional)", text: $tempPostLink)
+                                Toggle(isOn: $includeDate) {
+                                    Text("Contract has due date")
+                                }
+                                if (includeDate) {
+                                    DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
+                                        Text("Select a date")
+                                    }
+                                }
+                                TextField("Rate (optional)", value: $tempRate, format: .number)
+                                Picker("Payment Status", selection: $tempPaymentStatus) {
+                                    ForEach(Contract.Progress.allCases, id: \.self) {value in
+                                        Text(value.rawValue)
+                                    }
+                                }
+                            }
+                        }
+                        HStack(spacing: 20) {
+                            Spacer()
+                            Button {
+                                addSheet = false
+                                resetValues()
+                            } label : {
+                                Text("Cancel")
+                            }
+                            Spacer()
+                            Button {
+                                formSubmittable = true
+                                addSheet = false
+                            } label : {
+                                Text("Done")
+                            } .disabled(submitFormDisabeled)
+                            Spacer()
+                        }
+                    }.interactiveDismissDisabled(true)
+                }
+            }
     }
     
     func sorterForDates(this: Contract, that: Contract) -> Bool {
@@ -286,7 +291,7 @@ struct ManagerContractListView: View {
         currentlyEditing = nil
         formSubmittable = false
         tempInfluencer = User()
-
+        
     }
     
     func addNew () {
@@ -318,7 +323,7 @@ struct ManagerContractListView: View {
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)
         resetValues()
     }
-        
+    
     func statusColor(contract: Contract) -> Color {
         switch contract.status {
         case.notStarted:
@@ -326,7 +331,7 @@ struct ManagerContractListView: View {
         case .inProgress:
             return Color(red: 255/255, green: 255/255, blue: 204/255)
         case .done:
-            return Color(red: 183/255, green: 235/255, blue: 181/255)
+            return greenColor
         }
     }
     
@@ -366,5 +371,5 @@ struct ManagerContractListView: View {
             .padding(.bottom, 5)
         }
     }
-
+    
 }

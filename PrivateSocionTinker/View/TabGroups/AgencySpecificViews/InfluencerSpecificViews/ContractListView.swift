@@ -74,8 +74,10 @@ struct ContractListView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button {
-                        authentication.updateValidation(success: false)
-                        userViewModel.logOut()
+                        withAnimation {
+                            authentication.updateValidation(success: false)
+                            userViewModel.logOut()
+                        }
                     } label: {
                         Image(systemName: "rectangle.portrait.and.arrow.right")
                     }

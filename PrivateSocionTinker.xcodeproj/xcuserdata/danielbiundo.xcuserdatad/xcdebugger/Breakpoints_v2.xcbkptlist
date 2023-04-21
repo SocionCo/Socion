@@ -14,8 +14,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "149"
-            endingLineNumber = "149"
+            startingLineNumber = "160"
+            endingLineNumber = "160"
             landmarkName = "getContracts(userID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -24,7 +24,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "7D698F3C-DAC6-49ED-A6D9-DF8703AA9105"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
@@ -88,7 +88,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "7DBBC0B0-9CE1-4988-8C8C-80B989B558E1"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
@@ -110,8 +110,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "134"
-            endingLineNumber = "134"
+            startingLineNumber = "145"
+            endingLineNumber = "145"
             landmarkName = "addInfluencerToAgency(agencyID:influencerID:)"
             landmarkType = "7">
          </BreakpointContent>

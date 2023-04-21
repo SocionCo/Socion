@@ -194,6 +194,11 @@ class AgencyViewModel : ObservableObject {
     
     //MARK: Getters and Setters (Changers) for Agency
     
+    func removeInfluencerFromAgency (influencerID : String) {
+        FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyName(), influencerID: influencerID)
+    
+    }
+    
     func getOwnerOfContract (contract : Contract) -> User? {
         for influencer in agency.influencers {
             for userContract in influencer.contracts {

@@ -46,7 +46,9 @@ struct AgencyRegistrationView: View {
                 }.toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
-                            selected = false
+                            withAnimation {
+                                selected = false
+                            }
                         } label: {
                             Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(.white)
                         }

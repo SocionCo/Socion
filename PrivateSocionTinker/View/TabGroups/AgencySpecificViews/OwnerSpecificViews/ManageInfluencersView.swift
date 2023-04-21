@@ -17,6 +17,8 @@ struct ManageInfluencersView: View {
     @State private var inviteSheet : Bool = false
     @State private var linkCopied : Bool = false
     @EnvironmentObject var userViewModel : UserViewModel
+    @State private var tempUser : User = User()
+    @State private var isPresentingConfirm : Bool = false
         
         var body: some View {
                 VStack {
@@ -52,19 +54,31 @@ struct ManageInfluencersView: View {
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Menu("Manage") {
+                            Menu("Delete Influnecer") {
+                                ForEach(userViewModel.agencyViewModel.getInfluencers(), id: \.self) {
+                                    influencer in
+                                    Button {
+                                        isPresentingConfirm = true
+                                        tempUser = influencer
+                                    } label: {
+                                        Text(influencer.getFullName())
+                                    }.confirmationDialog("Are you sure?", isPresented: $isPresentingConfirm, titleVisibility: .visible) {
+                                        Button("Remove influencer from agency") {
+                                            userViewModel.agencyViewModel.removeInfluencerFromAgency(influencerID: tempUser.id)
+                                        }
+                                    }
+                                }
+                            }
                             Button {
                                 inviteSheet = true
                             } label: {
                                 Text("Invite Influencer")
                             }
-                            Button {
-                                
-                            } label: {
-                                Text("Delete Influencer")
-                            }
+                            
+                            
+                           
                         }.foregroundColor(.white)
                     }
-                    
                 }.sheet(isPresented: $inviteSheet){
                     ZStack {
                         VStack {

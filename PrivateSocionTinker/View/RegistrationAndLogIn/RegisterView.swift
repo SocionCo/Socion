@@ -49,6 +49,7 @@ struct RegisterView: View {
                         .padding()
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
@@ -61,6 +62,7 @@ struct RegisterView: View {
                         .padding()
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
@@ -74,6 +76,7 @@ struct RegisterView: View {
                         .padding()
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
@@ -86,6 +89,7 @@ struct RegisterView: View {
                         .padding()
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                 }
                 
                 VStack(alignment: .leading, spacing: 10) {
@@ -105,6 +109,7 @@ struct RegisterView: View {
                         .padding()
                         .background(Color.black.opacity(0.4))
                         .cornerRadius(10)
+                        .fontWeight(.bold)
                 }
                 
                 Spacer()
@@ -128,9 +133,10 @@ struct RegisterView: View {
                             .frame(width: 220, height: 50)
                             .background(!isSignInButtonDisabled ? gradientStart : Color(red: 168/255, green: 196/255, blue: 186/255))
                             .cornerRadius(25.0)
+                            .fontWeight(.bold)
                     }
                     .disabled(isSignInButtonDisabled)
-                    .padding(.bottom, 40)
+                    .padding()
                     
                 
                 
@@ -162,7 +168,9 @@ struct RegisterView: View {
         }.toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
-                    selected = false
+                    withAnimation {
+                        selected = false
+                    }
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(offWhite)
                 }

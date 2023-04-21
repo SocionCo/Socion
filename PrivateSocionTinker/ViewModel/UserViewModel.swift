@@ -108,7 +108,6 @@ class UserViewModel: ObservableObject {
                 print("Logging in unsuccess")
             }
             user.password = ""
-            user.email = ""
         }
     }
     

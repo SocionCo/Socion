@@ -18,3 +18,8 @@ Then open the .xcodeproj file in xCode and launch the simulator.
 Socion uses currently uses SwiftUI on the front end, and Swift and FireBase on the backend.
 
 
+
+Next Steps:
+	-Rate View
+	-Tasks(Max of 5, with notes for each task) / Contract Detail View
+	-When creating an agency and leaving, if you click sign in it takes you back to the 
