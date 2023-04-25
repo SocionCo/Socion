@@ -14,8 +14,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "160"
-            endingLineNumber = "160"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
             landmarkName = "getContracts(userID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,9 +30,9 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "startUser(id:firstName:lastName:email:isAgencyOwner:agency:isTalentManager:isInfluencer:)"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "startUser(id:firstName:lastName:email:isAgencyOwner:agency:isTalentManager:isInfluencer:tikTokUserName:instagramUserName:youtubeUserName:notes:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -46,8 +46,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
+            startingLineNumber = "55"
+            endingLineNumber = "55"
             landmarkName = "assignInfluencerToAgency(userID:agencyID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -62,8 +62,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "67"
-            endingLineNumber = "67"
+            startingLineNumber = "74"
+            endingLineNumber = "74"
             landmarkName = "startAgency(ownerId:agencyName:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "83"
-            endingLineNumber = "83"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "documentExists(agencyID:completion:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "117"
-            endingLineNumber = "117"
+            startingLineNumber = "124"
+            endingLineNumber = "124"
             landmarkName = "addContract(id:contract:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +110,8 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "145"
-            endingLineNumber = "145"
+            startingLineNumber = "155"
+            endingLineNumber = "155"
             landmarkName = "addInfluencerToAgency(agencyID:influencerID:)"
             landmarkType = "7">
          </BreakpointContent>

@@ -12,6 +12,12 @@ struct RegisterView: View {
     @State var buttonDisabled = false
     @State var confirmPassword = ""
     @State var offWhite : Color = Color(red: 247/255, green: 247/255, blue: 247/255)
+    @State private var showTikTok = false
+    @State private var showInstagram = false
+    @State private var showYouTube = false
+    @State var tikTokUserName = ""
+    @State var youtubeUserName = ""
+    @State var instagramUserName = ""
     
     
     var isSignInButtonDisabled: Bool {
@@ -39,83 +45,140 @@ struct RegisterView: View {
                     .frame(width: 100, height: 100)
                     .padding(.bottom, 40)
                 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("First Name")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                    
-                    TextField("Enter First Name", text: $userViewModel.user.firstName)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
-                }
                 
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Last Name")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                    
-                    TextField("Enter Last Name", text: $userViewModel.user.lastName)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
-                }
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Email")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                    
-                    TextField("Enter Email Address", text: $userViewModel.user.email)
-                        .keyboardType(.emailAddress)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
-                }
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Password")
-                        .font(.subheadline)
-                        .foregroundColor(.white)
-                    
-                    SecureField("Enter Password", text: $userViewModel.user.password)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
-                }
-                
-                VStack(alignment: .leading, spacing: 10) {
-                    HStack {
-                        Text("Confirm Password")
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("First Name")
                             .font(.subheadline)
                             .foregroundColor(.white)
-                        if !passwordsMatch {
-                            Text("Passwords don't match")
-                                .foregroundColor(.red)
-                                .font(.footnote)
-                        }
+                        
+                        TextField("Enter First Name", text: $userViewModel.user.firstName)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
                     }
                     
-                    SecureField("Confirm Password", text: $confirmPassword)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.black.opacity(0.4))
-                        .cornerRadius(10)
-                        .fontWeight(.bold)
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Last Name")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        TextField("Enter Last Name", text: $userViewModel.user.lastName)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Email")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        TextField("Enter Email Address", text: $userViewModel.user.email)
+                            .keyboardType(.emailAddress)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("TikTok")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        TextField("Enter TikTok Username (optional)", text: $tikTokUserName)
+                            .keyboardType(.emailAddress)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Youtube")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        TextField("Enter YouTube Username (optional)", text: $youtubeUserName)
+                            .keyboardType(.emailAddress)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Instagram")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        TextField("Enter Instagram Username (optional)", text: $instagramUserName)
+                            .keyboardType(.emailAddress)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    
+                    
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        Text("Password")
+                            .font(.subheadline)
+                            .foregroundColor(.white)
+                        
+                        SecureField("Enter Password", text: $userViewModel.user.password)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Confirm Password")
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                            if !passwordsMatch {
+                                Text("Passwords don't match")
+                                    .foregroundColor(.red)
+                                    .font(.footnote)
+                            }
+                        }
+                        
+                        SecureField("Confirm Password", text: $confirmPassword)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.black.opacity(0.4))
+                            .cornerRadius(10)
+                            .fontWeight(.bold)
+                    }
                 }
                 
                 Spacer()
                 
                     Button(action: {
                         buttonDisabled = true
+                        if (tikTokUserName != "") {
+                            userViewModel.user.tikTokUserName = tikTokUserName
+                        }
+                        if (youtubeUserName != "") {
+                            userViewModel.user.youtubeUserName = youtubeUserName
+                        }
+                        if (instagramUserName != "") {
+                            userViewModel.user.instagramUserName = instagramUserName
+                        }
                         userViewModel.register  { success in
                             authentication.updateValidation(success: success)
                             if success {

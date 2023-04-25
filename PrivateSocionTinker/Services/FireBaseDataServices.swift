@@ -22,8 +22,11 @@ class FireBaseDataServices {
     ///   - firstName: First Name
     ///   - lastName: Last Name
     ///   - email: Email
-    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool) {
+    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String) {
         let userAgencyID : String = agency == nil ? String() : agency!
+        let unwrappedTikTok : String = tikTokUserName == nil ? "" : tikTokUserName!
+        let unwrappedYoutube : String = youtubeUserName == nil ? "" : youtubeUserName!
+        let unwrappedInstagram : String = instagramUserName == nil ? "" : instagramUserName!
         print("1Calling document: \(id)")
         db.collection("users").document(id).setData([
             "email" : email,
@@ -32,7 +35,11 @@ class FireBaseDataServices {
             "isAgencyOwner" : isAgencyOwner,
             "agency" : userAgencyID,
             "isTalentManager" : isTalentManager,
-            "isInfluencer" : isInfluencer
+            "isInfluencer" : isInfluencer,
+            "tikTokUserName" : unwrappedTikTok,
+            "instagramUserName" : unwrappedInstagram,
+            "youtubeUserName" : unwrappedYoutube,
+            "notes" : notes
         ])
     }
     
@@ -121,9 +128,12 @@ class FireBaseDataServices {
             "rate" : unwrappedRate,
             "paymentStatus" : contract.paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
-            "dueDate" : unwrappedDate
+            "dueDate" : unwrappedDate,
+            "tasks" : contract.tasks
         ])
     }
+    
+    
     
     
     func removeInfluencerFromAgency (agencyID : String, influencerID : String) {
@@ -186,6 +196,12 @@ class FireBaseDataServices {
         ])
     }
     
+    func setEmail (userID: String, email : String) {
+        db.collection("users").document(userID).updateData([
+            "email" : email
+        ])
+    }
+    
     func changeAgencyName(id : String, name : String) {
         print("11Calling document: \(id)")
         db.collection("agencies").document(id).updateData([
@@ -198,7 +214,7 @@ class FireBaseDataServices {
         let userRef = db.collection("users")
         print("12Calling document: \(id)")
         userRef.document(id).updateData([
-            "firstName": "New.",
+            "firstName": name,
             ])
     }
     
@@ -206,7 +222,28 @@ class FireBaseDataServices {
         let userRef = db.collection("users")
         print("13Calling document: \(id)")
         userRef.document(id).updateData([
-            "lastName": "New.",
+            "lastName": name,
+            ])
+    }
+    
+    func setTikTokUsername (id: String, username : String) {
+        let userRef = db.collection("users")
+        userRef.document(id).updateData([
+            "tikTokUserName": username,
+            ])
+    }
+    
+    func setYoutubeUsername (id: String, username : String) {
+        let userRef = db.collection("users")
+        userRef.document(id).updateData([
+            "youtubeUserName": username,
+            ])
+    }
+    
+    func setInstagramUsername (id: String, username : String) {
+        let userRef = db.collection("users")
+        userRef.document(id).updateData([
+            "instagramUserName": username,
             ])
     }
     
@@ -223,7 +260,7 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String]) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
@@ -242,7 +279,8 @@ class FireBaseDataServices {
             "rate" : unwrappedRate,
             "paymentStatus" : paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
-            "dueDate" : unwrappedDueDate
+            "dueDate" : unwrappedDueDate,
+            "tasks" : tasks
         ])
     }
     
@@ -290,6 +328,35 @@ class FireBaseDataServices {
             if let isTalentManager : Bool = data["isTalentManager"] as? Bool {
                 returnUser.IsTalentManager = isTalentManager
             }
+            
+            if let tikTokUserName : String = data["tikTokUserName"] as? String {
+                if (tikTokUserName == "" || tikTokUserName == " ") {
+                    returnUser.tikTokUserName = nil
+                } else {
+                    returnUser.tikTokUserName = tikTokUserName
+                }
+            }
+            
+            if let instagramUserName : String = data["instagramUserName"] as? String {
+                if (instagramUserName == "" || instagramUserName == " ") {
+                    returnUser.instagramUserName = nil
+                } else {
+                    returnUser.instagramUserName = instagramUserName
+                }
+            }
+            
+            if let youtubeUserName : String = data["youtubeUserName"] as? String {
+                if (youtubeUserName == "" || youtubeUserName == " ") {
+                    returnUser.youtubeUserName = nil
+                } else {
+                    returnUser.youtubeUserName = youtubeUserName
+                }
+            }
+            
+            if let notes : String = data["notes"] as? String {
+                returnUser.notes = notes
+            }
+            
             
             returnUser.id = userID
             

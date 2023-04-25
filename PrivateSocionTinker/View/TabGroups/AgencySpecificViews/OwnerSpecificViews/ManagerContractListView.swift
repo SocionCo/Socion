@@ -15,6 +15,7 @@ struct ManagerContractListView: View {
     @State var tempDueDate : Date = Date()
     @State var tempPaymentStatus : Contract.Progress = .notStarted
     @State var tempInfluencer = User()
+    @State var tempTasks : [String] = []
     @State var contracts : [Contract] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
@@ -121,6 +122,7 @@ struct ManagerContractListView: View {
                                     tempStatus = contract.status
                                     tempName = contract.name
                                     tempCompanyName = contract.company
+                                    tempTasks = contract.tasks
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
                                     if contract.rate != nil {
@@ -274,7 +276,7 @@ struct ManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink)
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks)
             print("Contract status is:: \(contract.status.rawValue)")
             resetValues()
         }
@@ -291,6 +293,7 @@ struct ManagerContractListView: View {
         currentlyEditing = nil
         formSubmittable = false
         tempInfluencer = User()
+        tempTasks = []
         
     }
     
@@ -317,7 +320,7 @@ struct ManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)
@@ -329,7 +332,7 @@ struct ManagerContractListView: View {
         case.notStarted:
             return Color(red: 232/255, green: 142/255, blue: 143/255)
         case .inProgress:
-            return Color(red: 255/255, green: 255/255, blue: 204/255)
+            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
         case .done:
             return greenColor
         }

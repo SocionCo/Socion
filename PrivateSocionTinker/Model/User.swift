@@ -20,11 +20,15 @@ struct User : Hashable {
     var agency : String?
     var isInfluencer : Bool = false
     var IsTalentManager : Bool = false
+    var tikTokUserName : String?
+    var instagramUserName : String?
+    var youtubeUserName : String?
+    var notes : String = ""
     
     
     init(){}
     
-    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool) {
+    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool, tikTokUserName : String, youtubeUserName : String, instagramUserName : String, notes : String) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -35,6 +39,11 @@ struct User : Hashable {
         self.agency = agency
         self.isInfluencer = isInfluencer
         self.IsTalentManager = IsTalentManager
+        self.tikTokUserName = tikTokUserName
+        self.instagramUserName = instagramUserName
+        self.notes = notes
+        self.youtubeUserName = youtubeUserName
+        
     }
     
     func getFullName() -> String {

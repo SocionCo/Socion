@@ -45,7 +45,7 @@ class UserViewModel: ObservableObject {
                 print("isOwner: \(user.isAgencyOwner)")
                 print("Name: \(user.firstName)")
                 print("agency: \(user.agency ?? "")")
-                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer)
+                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes)
                 addListeners(id: user.id) { completion in
                     if completion {
                         if self.user.isInfluencer || self.user.isInfluencer || self.user.isAgencyOwner {
@@ -236,6 +236,30 @@ class UserViewModel: ObservableObject {
             user.isAgencyOwner = isAgencyOwner
         }
         
+        if let tikTokUserName : String = data["tikTokUserName"] as? String {
+            if (tikTokUserName == "" || tikTokUserName == " ") {
+                user.tikTokUserName = nil
+            } else {
+                user.tikTokUserName = tikTokUserName
+            }
+        }
+        
+        if let youtubeUserName : String = data["youtubeUserName"] as? String {
+            if (youtubeUserName == "" || youtubeUserName == " ") {
+                user.youtubeUserName = nil
+            } else {
+                user.youtubeUserName = youtubeUserName
+            }
+        }
+        
+        if let instagramUserName : String = data["instagramUserName"] as? String {
+            if (instagramUserName == "" || instagramUserName == " ") {
+                user.instagramUserName = nil
+            } else {
+                user.instagramUserName = instagramUserName
+            }
+        }
+        
         print("Checking agency")
         if let agency : String = data["agency"] as? String {
             print("Agency we retried:\(agency)")
@@ -271,10 +295,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String]) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks)
         } else {
             print("Auth Issue")
         }
@@ -297,9 +321,41 @@ class UserViewModel: ObservableObject {
         
     }
     
+    func setEmail (email : String) -> Void {
+        if let id = self.getID() {
+            FireBaseDataServices.shared.setEmail(userID: id, email: email)
+        } else {
+            print("Failure")
+        }
+    }
+    
     func getName() -> String {
         return ("\(user.firstName) \(user.lastName)")
        
+    }
+    
+    func setTikTokUsername (username : String) {
+        if let id = self.getID() {
+            FireBaseDataServices.shared.setTikTokUsername(id : id, username: username)
+        } else {
+            print("Failure")
+        }
+    }
+    
+    func setYoutubeUserName (username : String) {
+        if let id = self.getID() {
+            FireBaseDataServices.shared.setYoutubeUsername(id : id, username: username)
+        } else {
+            print("Failure")
+        }
+    }
+    
+    func setInstagramUserName (username : String) {
+        if let id = self.getID() {
+            FireBaseDataServices.shared.setInstagramUsername(id : id, username: username)
+        } else {
+            print("Failure")
+        }
     }
     
 }

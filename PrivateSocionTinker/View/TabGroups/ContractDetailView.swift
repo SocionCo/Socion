@@ -5,7 +5,6 @@ struct ContractDetailView: View {
     let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     let secondaryColor = Color(.white)
     @State var newTask: String = ""
-    @State var tasks : [String] = []
     @State var isCompletedArray : [Bool] = []
     @State var completedTasks = 2
     @State var contract: Contract
@@ -72,7 +71,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text("$\(contract.rate ?? 0.0)")
+                                    Text("$\(contract.rate ?? 0.0, specifier: "%.2f")")
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -133,7 +132,7 @@ struct ContractDetailView: View {
                             .cornerRadius(10)
                         
                         Button(action: {
-                            tasks.append(newTask)
+                            contract.tasks.append(newTask)
                             isCompletedArray.append(false)
                             newTask = ""
                         }, label: {
@@ -143,9 +142,9 @@ struct ContractDetailView: View {
                         })
                     }
                     
-                    ForEach(tasks, id: \.self) { task in
+                    ForEach(contract.tasks, id: \.self) { task in
                         HStack {
-                            if (isCompletedArray[tasks.firstIndex(of: task)!]) {
+                            if (isCompletedArray[contract.tasks.firstIndex(of: task)!]) {
                                 Text(task)
                                     .font(.headline)
                                     .foregroundColor(primaryColor)
@@ -157,8 +156,8 @@ struct ContractDetailView: View {
                             }
                             Spacer()
                             Button(action: {
-                                isCompletedArray.remove(at: tasks.firstIndex(of: task)!)
-                                tasks.remove(at: tasks.firstIndex(of: task)!)
+                                isCompletedArray.remove(at: contract.tasks.firstIndex(of: task)!)
+                                contract.tasks.remove(at: contract.tasks.firstIndex(of: task)!)
                                 
                             }, label: {
                                 Image(systemName: "minus.circle.fill")
@@ -192,23 +191,23 @@ struct ContractDetailView: View {
                     VStack{
                         HStack(spacing: -20) {
                             Spacer()
-                            ForEach(tasks, id: \.self) { value in
-                                if (tasks.firstIndex(of: value) == tasks.count-1) {
+                            ForEach(contract.tasks, id: \.self) { value in
+                                if (contract.tasks.firstIndex(of: value) == contract.tasks.count-1) {
                                     
                                 } else {
-                                    if isCompletedArray[(tasks.firstIndex(of: value))!] {
+                                    if isCompletedArray[(contract.tasks.firstIndex(of: value))!] {
                                         fullCircleAndRectangle(completedTasks: completedTasks, text: value)
                                     } else {
                                         emptyCircleandRectangle(completedTasks: completedTasks, text: value)
                                     }
                                 }
                             }
-                            if tasks.count > 0 {
+                            if contract.tasks.count > 0 {
                                 
-                                if isCompletedArray[ (tasks.firstIndex(of: tasks[tasks.count-1])!) ] {
-                                    fullCircle(completedTasks: completedTasks, text: tasks[tasks.count-1])
+                                if isCompletedArray[ (contract.tasks.firstIndex(of: contract.tasks[contract.tasks.count-1])!) ] {
+                                    fullCircle(completedTasks: completedTasks, text: contract.tasks[contract.tasks.count-1])
                                 } else {
-                                    emptyCircle(completedTasks: completedTasks, text: tasks[tasks.count-1])
+                                    emptyCircle(completedTasks: completedTasks, text: contract.tasks[contract.tasks.count-1])
                                 }
                                 
                             }

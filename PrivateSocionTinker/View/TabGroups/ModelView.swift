@@ -12,12 +12,17 @@ struct ModelView: View {
     var body: some View {
         HStack {
             VStack {
-                Text("User: ")
-                Text("Name: \(userViewModel.getName())")
-                Text("Email: \(userViewModel.user.email)")
-                Text("isAgencyOwner: \(String(userViewModel.user.isAgencyOwner))")
-                Text("isTalentManager: \(String(userViewModel.user.IsTalentManager))")
-                Text("isAgencyOwner: \(String(userViewModel.user.isAgencyOwner))")
+                Group {
+                    Text("User: ")
+                    Text("Name: \(userViewModel.getName())")
+                    Text("Email: \(userViewModel.user.email)")
+                    Text("isAgencyOwner: \(String(userViewModel.user.isAgencyOwner))")
+                    Text("isTalentManager: \(String(userViewModel.user.IsTalentManager))")
+                    Text("isAgencyOwner: \(String(userViewModel.user.isAgencyOwner))")
+                    Text("tikTokUserName: \(userViewModel.user.tikTokUserName ?? " ")")
+                    Text("youtubeUserName: \(userViewModel.user.youtubeUserName ?? " ")")
+                    Text("instagramUserName: \(userViewModel.user.instagramUserName ?? " ")")
+                }
                 if userViewModel.user.agency != nil {
                     Text("Owned Agency: \(String(userViewModel.user.agency!))")
                 }

@@ -17,6 +17,7 @@ struct ContractListView: View {
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
     @State var includeDate : Bool = false
+    @State var tempTasks : [String] = []
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
@@ -50,11 +51,7 @@ struct ContractListView: View {
                                     Text(contract.status.rawValue)
                                         .padding(.all, 7.0)
                                         .font(.title2)
-                                        .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                        .background {
-                                            RoundedRectangle(cornerRadius: 20)
-                                                .fill(statusColor(contract: contract))
-                                        }
+                                        .foregroundColor(statusColor(contract: contract))
                                     if let dueDate = contract.dueDate {
                                         let dueString = Contract.timeUntilDate(date: dueDate)
                                         Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
@@ -103,6 +100,7 @@ struct ContractListView: View {
                                     tempCompanyName = contract.company
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
+                                    tempTasks = contract.tasks
                                     if contract.rate != nil {
                                         tempRate = contract.rate!
                                     }
@@ -250,7 +248,7 @@ struct ContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink)
+            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks)
             print("Contract status is:: \(contract.status.rawValue)")
             resetValues()
         }
@@ -266,6 +264,7 @@ struct ContractListView: View {
         tempPaymentStatus = .inProgress
         currentlyEditing = nil
         formSubmittable = false
+        tempTasks = []
 
     }
     
@@ -292,7 +291,7 @@ struct ContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks)
         
         userViewModel.addContract(contract: contractToAdd)
         resetValues()
@@ -303,7 +302,7 @@ struct ContractListView: View {
         case.notStarted:
             return Color(red: 232/255, green: 142/255, blue: 143/255)
         case .inProgress:
-            return Color(red: 255/255, green: 255/255, blue: 204/255)
+            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
         case .done:
             return Color(red: 183/255, green: 235/255, blue: 181/255)
         }

@@ -22,8 +22,9 @@ struct Contract: Hashable {
     var name : String = ""
     var postLink : String?
     var dueDate : Date?
+    var tasks : [String] = []
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String]) {
         self.id = id
         self.company = company
         self.status = status
@@ -32,6 +33,7 @@ struct Contract: Hashable {
         self.dueDate = dueDate
         self.paymentStatus = paymentStatus
         self.rate = rate
+        self.tasks = tasks
     }
     
     /// This function takes a String:Any map that has all of the appropriate fields, coming from the FireStore databse, and convert's it to a Contract object for use locally.
@@ -56,7 +58,14 @@ struct Contract: Hashable {
         if stringMap["postLink"] != nil {
             postLink = stringMap["postLink"] as! String?
         }
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate)
+        
+        var unwrappedTasks : [String] = []
+        if stringMap["tasks"] == nil {
+            unwrappedTasks = []
+        } else {
+            unwrappedTasks = stringMap["tasks"] as! [String]
+        }
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks)
         return contractToReturn
     }
     
