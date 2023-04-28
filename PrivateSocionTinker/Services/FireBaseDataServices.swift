@@ -209,6 +209,21 @@ class FireBaseDataServices {
         ])
     }
     
+    func addTasktoContract(userID : String, contract : Contract, task : String) {
+        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+            "tasks" : FieldValue.arrayUnion([task])
+        ])
+    }
+    
+    func removeTaskFromContract(userID: String, contract : Contract, task : String) {
+        var editedContract = contract.tasks
+        editedContract.removeAll(where: {$0 == task})
+        contract.tasks = editedContract
+        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+            "tasks" : editedContract
+        ])
+    }
+    
     
     func setFirstName (id : String, name : String) {
         let userRef = db.collection("users")
