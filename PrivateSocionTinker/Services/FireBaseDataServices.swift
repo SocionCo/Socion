@@ -129,7 +129,8 @@ class FireBaseDataServices {
             "paymentStatus" : contract.paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
             "dueDate" : unwrappedDate,
-            "tasks" : contract.tasks
+            "tasks" : contract.tasks,
+            "completedTasks" : contract.isCompletedArray
         ])
     }
     
@@ -210,19 +211,46 @@ class FireBaseDataServices {
     }
     
     func addTasktoContract(userID : String, contract : Contract, task : String) {
+        print("Adding task to \(userID)")
+        var editedContract : [Bool] = contract.isCompletedArray
+        print("Original: \(editedContract)")
+        print("Original: \(contract.tasks)")
+        editedContract.append(false)
+        print(editedContract)
         db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
-            "tasks" : FieldValue.arrayUnion([task])
+            "tasks" : FieldValue.arrayUnion([task]),
+            "completedTasks" : editedContract
         ])
     }
     
     func removeTaskFromContract(userID: String, contract : Contract, task : String) {
         var editedContract = contract.tasks
-        editedContract.removeAll(where: {$0 == task})
-        contract.tasks = editedContract
-        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
-            "tasks" : editedContract
-        ])
+        var editedCompletionArray = contract.isCompletedArray
+        print("EditedContractLength: \(editedContract.count)")
+        print("EditedCompletionLength: \(editedCompletionArray.count)")
+        if let indexOfRemovedTask = editedContract.firstIndex(where: {$0 == task}) {
+            editedContract.remove(at: indexOfRemovedTask)
+            editedCompletionArray.remove(at: indexOfRemovedTask)
+            db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+                "tasks" : editedContract,
+                "completedTasks" : editedCompletionArray
+                
+            ])
+        }
     }
+    
+    func toggleTask (userID: String, contract: Contract, task : String) {
+        var editedCompletionArray = contract.isCompletedArray
+        if let indexOfCheckedOfTask = contract.tasks.firstIndex(where: {$0 == task}) {
+            print("Changing array from: \(editedCompletionArray) to:")
+            editedCompletionArray[indexOfCheckedOfTask].toggle()
+            print(editedCompletionArray)
+            db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+                "completedTasks" : editedCompletionArray
+            ])
+        }
+    }
+    
     
     
     func setFirstName (id : String, name : String) {
@@ -275,7 +303,7 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String]) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool]) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
@@ -295,7 +323,8 @@ class FireBaseDataServices {
             "paymentStatus" : paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
             "dueDate" : unwrappedDueDate,
-            "tasks" : tasks
+            "tasks" : tasks,
+            "completedTasks" : isCompletedArray
         ])
     }
     

@@ -158,8 +158,8 @@
 				DB295B2F29E5FB5E00338639 /* ModelView.swift */,
 				DB67388329E0E5E700C561D9 /* DefaultTabSelector.swift */,
 				DB67389B29E48F9900C561D9 /* InfluencerTabSelector.swift */,
-				DB67389929E48F0D00C561D9 /* OwnerTabSelector.swift */,
 				DB67388A29E0F8F700C561D9 /* EditUserSettingsView.swift */,
+				DB67389929E48F0D00C561D9 /* OwnerTabSelector.swift */,
 				DB67389029E1155C00C561D9 /* NoAgencyViews */,
 				DB67388929E0F88400C561D9 /* AgencySpecificViews */,
 			);

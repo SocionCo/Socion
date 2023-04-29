@@ -18,6 +18,7 @@ struct ContractListView: View {
     @State var formSubmittable : Bool = false
     @State var includeDate : Bool = false
     @State var tempTasks : [String] = []
+    @State var tempCompleted : [Bool] = []
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
@@ -37,9 +38,9 @@ struct ContractListView: View {
                 
                 List {
                     Section {
-                        ForEach(userViewModel.user.contracts.sorted(by: sorterForDates), id: \.self) { contract in
+                        ForEach(userViewModel.user.contracts.sorted(by: sorterForDates)) { contract in
                             NavigationLink {
-                                ContractDetailView(contract: contract)
+                                ContractDetailView(contractID: contract.id)
                             }
                         label: {
                             VStack (alignment: .leading, spacing: 8) {
@@ -101,6 +102,7 @@ struct ContractListView: View {
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
                                     tempTasks = contract.tasks
+                                    tempCompleted = contract.isCompletedArray
                                     if contract.rate != nil {
                                         tempRate = contract.rate!
                                     }
@@ -248,7 +250,7 @@ struct ContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks)
+            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted)
             print("Contract status is:: \(contract.status.rawValue)")
             resetValues()
         }
@@ -265,6 +267,7 @@ struct ContractListView: View {
         currentlyEditing = nil
         formSubmittable = false
         tempTasks = []
+        tempCompleted = []
 
     }
     
@@ -291,7 +294,7 @@ struct ContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted)
         
         userViewModel.addContract(contract: contractToAdd)
         resetValues()

@@ -7,7 +7,7 @@
 import Foundation
 
 /// This Contract struct is the model behind all instances of contracts within the app
-struct Contract: Hashable {
+struct Contract: Hashable, Identifiable {
     enum Progress: String, CaseIterable {
         case notStarted = "Not Started"
         case inProgress = "In Progress"
@@ -23,8 +23,9 @@ struct Contract: Hashable {
     var postLink : String?
     var dueDate : Date?
     var tasks : [String] = []
+    var isCompletedArray : [Bool] = []
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String]) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool]) {
         self.id = id
         self.company = company
         self.status = status
@@ -34,6 +35,7 @@ struct Contract: Hashable {
         self.paymentStatus = paymentStatus
         self.rate = rate
         self.tasks = tasks
+        self.isCompletedArray = isCompletedArray
     }
     
     /// This function takes a String:Any map that has all of the appropriate fields, coming from the FireStore databse, and convert's it to a Contract object for use locally.
@@ -65,7 +67,16 @@ struct Contract: Hashable {
         } else {
             unwrappedTasks = stringMap["tasks"] as! [String]
         }
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks)
+        
+        var unwrappedCompletion : [Bool] = []
+        if stringMap["completedTasks"] == nil {
+            unwrappedCompletion = []
+        } else {
+            unwrappedCompletion = stringMap["completedTasks"] as! [Bool]
+        }
+        
+        
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion)
         return contractToReturn
     }
     

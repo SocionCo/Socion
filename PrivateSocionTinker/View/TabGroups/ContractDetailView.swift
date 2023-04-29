@@ -4,12 +4,18 @@ struct ContractDetailView: View {
     let backgroundColor = Color(.sRGB, red: 0.93, green: 0.96, blue: 0.93, opacity: 1.0)
     let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     let secondaryColor = Color(.white)
+    @EnvironmentObject var userViewModel : UserViewModel
     @State var newTask: String = ""
-    @State var isCompletedArray : [Bool] = []
-    @State var completedTasks = 2
-    @State var contract: Contract
+    @State var contractID: String
     @Environment(\.dismiss) private var dismiss
     
+    var currentIndex : Int {
+        userViewModel.user.contracts.firstIndex(where: {$0.id == contractID}) ?? 0
+    }
+    
+    var completedTasks : Int {
+        userViewModel.user.contracts[currentIndex].isCompletedArray.filter{$0}.count
+    }
     
     
     var body: some View {
@@ -30,7 +36,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(contract.name)
+                                    Text(userViewModel.user.contracts[currentIndex].name)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -40,7 +46,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(contract.company)
+                                    Text(userViewModel.user.contracts[currentIndex].company)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -61,7 +67,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(Contract.dateToStringForPresentation(date: contract.dueDate) ?? "None")
+                                    Text(Contract.dateToStringForPresentation(date: userViewModel.user.contracts[currentIndex].dueDate) ?? "None")
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -71,7 +77,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text("$\(contract.rate ?? 0.0, specifier: "%.2f")")
+                                    Text("$\(userViewModel.user.contracts[currentIndex].rate ?? 0.0, specifier: "%.2f")")
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -81,7 +87,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(contract.status.rawValue)
+                                    Text(userViewModel.user.contracts[currentIndex].status.rawValue)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -110,6 +116,10 @@ struct ContractDetailView: View {
                 }
             }
         }.navigationBarBackButtonHidden(true)
+            .refreshable {
+                print(userViewModel.user.contracts[0].tasks)
+                print(userViewModel.user.contracts[currentIndex].tasks)
+            }
         
     }
     
@@ -132,32 +142,25 @@ struct ContractDetailView: View {
                             .cornerRadius(10)
                         
                         Button(action: {
-                            contract.tasks.append(newTask)
-                            isCompletedArray.append(false)
+                            userViewModel.addTaskToContract(task: newTask, contract: userViewModel.user.contracts[currentIndex])
                             newTask = ""
                         }, label: {
                             Image(systemName: "plus.circle.fill")
                                 .foregroundColor(primaryColor)
                                 .font(.title)
-                        })
+                        }).disabled(userViewModel.user.contracts[currentIndex].tasks.count > 5)
                     }
                     
-                    ForEach(contract.tasks, id: \.self) { task in
+                    ForEach(userViewModel.user.contracts[currentIndex].tasks, id: \.self) { task in
                         HStack {
-                            if (isCompletedArray[contract.tasks.firstIndex(of: task)!]) {
-                                Text(task)
-                                    .font(.headline)
-                                    .foregroundColor(primaryColor)
-                                    .strikethrough(true)
-                            } else {
-                                Text(task)
-                                    .font(.headline)
-                                    .foregroundColor(primaryColor)
-                            }
+                            Text(task)
+                                .font(.headline)
+                                .foregroundColor(primaryColor)
+                                .strikethrough(userViewModel.isTaskCompleted(task: task, contract: userViewModel.user.contracts[currentIndex]))
+                            
                             Spacer()
                             Button(action: {
-                                isCompletedArray.remove(at: contract.tasks.firstIndex(of: task)!)
-                                contract.tasks.remove(at: contract.tasks.firstIndex(of: task)!)
+                                userViewModel.removeTaskfromContract(task: task, contract: userViewModel.user.contracts[currentIndex])
                                 
                             }, label: {
                                 Image(systemName: "minus.circle.fill")
@@ -182,34 +185,31 @@ struct ContractDetailView: View {
     
     var taskBar : some View {
         ZStack {
-                backgroundColor.ignoresSafeArea()
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Progress")
-                        .font(.largeTitle)
-                        .foregroundColor(primaryColor)
-                    
-                    VStack{
-                        HStack(spacing: -20) {
-                            Spacer()
-                            ForEach(contract.tasks, id: \.self) { value in
-                                if (contract.tasks.firstIndex(of: value) == contract.tasks.count-1) {
+            backgroundColor.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Progress")
+                    .font(.largeTitle)
+                    .foregroundColor(primaryColor)
+                
+                VStack{
+                    HStack(spacing: -20) {
+                        Spacer()
+                        ForEach(userViewModel.user.contracts[currentIndex].tasks.indices, id: \.self) { index in
+                            if index < userViewModel.user.contracts[currentIndex].tasks.count - 1 {
+                                if (userViewModel.user.contracts[currentIndex].isCompletedArray[index]) {
+                                    fullCircleAndRectangle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                     
                                 } else {
-                                    if isCompletedArray[(contract.tasks.firstIndex(of: value))!] {
-                                        fullCircleAndRectangle(completedTasks: completedTasks, text: value)
-                                    } else {
-                                        emptyCircleandRectangle(completedTasks: completedTasks, text: value)
-                                    }
+                                    emptyCircleandRectangle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                 }
-                            }
-                            if contract.tasks.count > 0 {
                                 
-                                if isCompletedArray[ (contract.tasks.firstIndex(of: contract.tasks[contract.tasks.count-1])!) ] {
-                                    fullCircle(completedTasks: completedTasks, text: contract.tasks[contract.tasks.count-1])
+                            } else {
+                                if userViewModel.user.contracts[currentIndex].isCompletedArray[index] {
+                                    fullCircle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                 } else {
-                                    emptyCircle(completedTasks: completedTasks, text: contract.tasks[contract.tasks.count-1])
+                                    emptyCircle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture
+                                    {toggleOnTap(index: index)}
                                 }
-                                
                             }
                             Spacer()
                         }
@@ -223,7 +223,12 @@ struct ContractDetailView: View {
                 }
                 .padding()
                 .background(backgroundColor)
+            }
         }
+    }
+    
+    func toggleOnTap(index : Int) -> Void {
+        userViewModel.toggleTask(task:userViewModel.user.contracts[currentIndex].tasks[index] , contract: userViewModel.user.contracts[currentIndex])
     }
     
     var fullCircleAndRectangle : some View {
@@ -233,7 +238,7 @@ struct ContractDetailView: View {
                 .frame(width: 20, height: 20)
                 .foregroundColor(primaryColor)
             Rectangle()
-                .fill(completedTasks >= 1 ? primaryColor : secondaryColor)
+                .fill(primaryColor)
                 .frame(width:20, height: 3)
         }
     }
@@ -267,12 +272,7 @@ struct ContractDetailView: View {
                 .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
                 .background(Color.white)
                 .frame(width: 20, height: 20)
-                .onTapGesture {
-                    if let index = isCompletedArray.firstIndex(of: false) {
-                        isCompletedArray[index].toggle()
-                    }
-                        
-                }
+                
                 
             
             Text(text)
@@ -295,12 +295,6 @@ struct ContractDetailView: View {
                 .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
                 .background(Color.white)
                 .frame(width: 20, height: 20)
-                .onTapGesture {
-                    if let index = isCompletedArray.firstIndex(of: false) {
-                        isCompletedArray[index].toggle()
-                    }
-                        
-                }
                 
                 
             
@@ -319,12 +313,7 @@ struct ContractDetailView: View {
             Circle()
                 .frame(width: 20, height: 20)
                 .foregroundColor(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
-                .onTapGesture {
-                    if let index = isCompletedArray.firstIndex(of: false) {
-                        isCompletedArray[index].toggle()
-                    }
-                        
-                }
+                
                 
                 
             

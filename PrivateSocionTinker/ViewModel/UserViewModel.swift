@@ -146,6 +146,7 @@ class UserViewModel: ObservableObject {
         
         let contractRef = userRef.collection("contracts")
         contractRef.addSnapshotListener { querySnapshot, error in
+            print("ContractListener Fired")
             guard let documents = querySnapshot?.documents else {
                 print("Error with fetch")
                 return
@@ -155,6 +156,10 @@ class UserViewModel: ObservableObject {
                 let id = document.documentID
                 let data = document.data()
                 returnArray.append(Contract.toContractFromStringMap(id: id, stringMap: data))
+            }
+            for contract in returnArray {
+                print("Name: \(contract.tasks)")
+                print("isCompletedArray: \(contract.isCompletedArray)")
             }
             self.user.contracts = returnArray
                 
@@ -295,10 +300,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String]) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String], isCompleted : [Bool]) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted)
         } else {
             print("Auth Issue")
         }
@@ -357,5 +362,40 @@ class UserViewModel: ObservableObject {
             print("Failure")
         }
     }
+    
+    //MARK: Task interactions
+    
+    func addTaskToContract (task : String, contract : Contract) {
+        if let id = getID() {
+            FireBaseDataServices.shared.addTasktoContract(userID: id, contract: contract, task: task)
+        }
+        
+    }
+    
+    func removeTaskfromContract (task : String,  contract : Contract) {
+        if let id = getID() {
+            FireBaseDataServices.shared.removeTaskFromContract(userID: id, contract: contract, task: task)
+        }
+    }
+    
+    func toggleTask (task: String, contract : Contract) {
+        if let id = getID() {
+            FireBaseDataServices.shared.toggleTask(userID: id, contract: contract, task: task)
+            
+        }
+    }
+    
+    
+    func isTaskCompleted(task: String, contract: Contract) -> Bool {
+        var index = contract.tasks.firstIndex(where: {$0 == task})
+        if index != nil {
+            return contract.isCompletedArray[index!]
+        }
+        return false
+    }
+    
+    
+    
+    
     
 }
