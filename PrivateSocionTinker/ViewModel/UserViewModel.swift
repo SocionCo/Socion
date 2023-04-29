@@ -387,7 +387,7 @@ class UserViewModel: ObservableObject {
     
     
     func isTaskCompleted(task: String, contract: Contract) -> Bool {
-        var index = contract.tasks.firstIndex(where: {$0 == task})
+        let index = contract.tasks.firstIndex(where: {$0 == task})
         if index != nil {
             return contract.isCompletedArray[index!]
         }

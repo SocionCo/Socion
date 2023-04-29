@@ -187,7 +187,30 @@ class AgencyViewModel : ObservableObject {
     
     
     
+    //MARK: Task interactions
     
+    func addTaskToContract (id : String, task : String, contract : Contract) {
+        FireBaseDataServices.shared.addTasktoContract(userID: id, contract: contract, task: task)
+        
+        
+    }
+    
+    func removeTaskfromContract (id : String, task : String,  contract : Contract) {
+            FireBaseDataServices.shared.removeTaskFromContract(userID: id, contract: contract, task: task)
+    }
+    
+    func toggleTask (id : String, task: String, contract : Contract) {
+            FireBaseDataServices.shared.toggleTask(userID: id, contract: contract, task: task)
+    }
+    
+    
+    func isTaskCompleted(task: String, contract: Contract) -> Bool {
+        let index = contract.tasks.firstIndex(where: {$0 == task})
+        if index != nil {
+            return contract.isCompletedArray[index!]
+        }
+        return false
+    }
     
     
     
@@ -198,6 +221,7 @@ class AgencyViewModel : ObservableObject {
         FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyName(), influencerID: influencerID)
     
     }
+    
     
     func getOwnerOfContract (contract : Contract) -> User? {
         for influencer in agency.influencers {

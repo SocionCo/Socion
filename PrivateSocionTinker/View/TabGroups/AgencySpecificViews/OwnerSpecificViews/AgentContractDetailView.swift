@@ -1,20 +1,25 @@
 import SwiftUI
 
-struct ContractDetailView: View {
+struct AgentContractDetailView: View {
     let backgroundColor = Color(.sRGB, red: 0.93, green: 0.96, blue: 0.93, opacity: 1.0)
     let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     let secondaryColor = Color(.white)
     @EnvironmentObject var userViewModel : UserViewModel
+    @State var userID : String
     @State var newTask: String = ""
     @State var contractID: String
     @Environment(\.dismiss) private var dismiss
     
+    var userIndex : Int {
+        return userViewModel.agencyViewModel.agency.influencers.firstIndex(where: {$0.id == userID}) ?? 0
+    }
+    
     var currentIndex : Int {
-        userViewModel.user.contracts.firstIndex(where: {$0.id == contractID}) ?? 0
+        userViewModel.agencyViewModel.agency.influencers[userIndex].contracts.firstIndex(where: {$0.id == contractID}) ?? 0
     }
     
     var completedTasks : Int {
-        userViewModel.user.contracts[currentIndex].isCompletedArray.filter{$0}.count
+        userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].isCompletedArray.filter{$0}.count
     }
     
     
@@ -36,7 +41,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(userViewModel.user.contracts[currentIndex].name)
+                                    Text(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].name)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -46,7 +51,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(userViewModel.user.contracts[currentIndex].company)
+                                    Text(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].company)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -67,7 +72,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(Contract.dateToStringForPresentation(date: userViewModel.user.contracts[currentIndex].dueDate) ?? "None")
+                                    Text(Contract.dateToStringForPresentation(date: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].dueDate) ?? "None")
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -77,7 +82,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text("$\(userViewModel.user.contracts[currentIndex].rate ?? 0.0, specifier: "%.2f")")
+                                    Text("$\(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].rate ?? 0.0, specifier: "%.2f")")
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -87,7 +92,7 @@ struct ContractDetailView: View {
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
-                                    Text(userViewModel.user.contracts[currentIndex].status.rawValue)
+                                    Text(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].status.rawValue)
                                         .font(.subheadline)
                                         .foregroundColor(primaryColor)
                                 }
@@ -117,8 +122,8 @@ struct ContractDetailView: View {
             }
         }.navigationBarBackButtonHidden(true)
             .refreshable {
-                print(userViewModel.user.contracts[0].tasks)
-                print(userViewModel.user.contracts[currentIndex].tasks)
+                print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[0].tasks)
+                print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks)
             }
         
     }
@@ -142,25 +147,25 @@ struct ContractDetailView: View {
                             .cornerRadius(10)
                         
                         Button(action: {
-                            userViewModel.addTaskToContract(task: newTask, contract: userViewModel.user.contracts[currentIndex])
+                            userViewModel.agencyViewModel.addTaskToContract(id: userID, task: newTask, contract: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex])
                             newTask = ""
                         }, label: {
                             Image(systemName: "plus.circle.fill")
                                 .foregroundColor(primaryColor)
                                 .font(.title)
-                        }).disabled(userViewModel.user.contracts[currentIndex].tasks.count > 5)
+                        }).disabled(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks.count > 3)
                     }
                     
-                    ForEach(userViewModel.user.contracts[currentIndex].tasks, id: \.self) { task in
+                    ForEach(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks, id: \.self) { task in
                         HStack {
                             Text(task)
                                 .font(.headline)
                                 .foregroundColor(primaryColor)
-                                .strikethrough(userViewModel.isTaskCompleted(task: task, contract: userViewModel.user.contracts[currentIndex]))
+                                .strikethrough(userViewModel.agencyViewModel.isTaskCompleted(task: task, contract: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex]))
                             
                             Spacer()
                             Button(action: {
-                                userViewModel.removeTaskfromContract(task: task, contract: userViewModel.user.contracts[currentIndex])
+                                userViewModel.agencyViewModel.removeTaskfromContract(id: userID, task: task, contract: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex])
                                 
                             }, label: {
                                 Image(systemName: "minus.circle.fill")
@@ -194,25 +199,25 @@ struct ContractDetailView: View {
                 VStack{
                     HStack(spacing: -20) {
                         Spacer()
-                        ForEach(userViewModel.user.contracts[currentIndex].tasks.indices, id: \.self) { index in
-                            if index < userViewModel.user.contracts[currentIndex].tasks.count - 1 {
-                                if (userViewModel.user.contracts[currentIndex].isCompletedArray[index]) {
-                                    fullCircleAndRectangle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
+                        ForEach(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks.indices, id: \.self) { index in
+                            if index < userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks.count - 1 {
+                                if (userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].isCompletedArray[index]) {
+                                    fullCircleAndRectangle(completedTasks: completedTasks, text: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                     
                                 } else {
-                                    emptyCircleandRectangle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
+                                    emptyCircleandRectangle(completedTasks: completedTasks, text: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                 }
                                 
                             } else {
-                                if userViewModel.user.contracts[currentIndex].isCompletedArray[index] {
-                                    fullCircle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
+                                if userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].isCompletedArray[index] {
+                                    fullCircle(completedTasks: completedTasks, text: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks[index]).onTapGesture {toggleOnTap(index: index)}
                                 } else {
-                                    emptyCircle(completedTasks: completedTasks, text: userViewModel.user.contracts[currentIndex].tasks[index]).onTapGesture
+                                    emptyCircle(completedTasks: completedTasks, text: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks[index]).onTapGesture
                                     {toggleOnTap(index: index)}
                                 }
                             }
-                            Spacer()
                         }
+                        Spacer()
                     }
                     .padding()
                     .background(secondaryColor)
@@ -228,7 +233,7 @@ struct ContractDetailView: View {
     }
     
     func toggleOnTap(index : Int) -> Void {
-        userViewModel.toggleTask(task:userViewModel.user.contracts[currentIndex].tasks[index] , contract: userViewModel.user.contracts[currentIndex])
+        userViewModel.agencyViewModel.toggleTask(id: userID, task:userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks[index] , contract: userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex])
     }
     
     var fullCircleAndRectangle : some View {

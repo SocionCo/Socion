@@ -46,7 +46,11 @@ struct ManagerContractListView: View {
                     Section {
                         ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
-                                ContractDetailView(contractID: contract.id)
+                                if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
+                                    AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)
+                                } else {
+                                    ErrorView()
+                                }
                             }
                         label: {
                             HStack {
