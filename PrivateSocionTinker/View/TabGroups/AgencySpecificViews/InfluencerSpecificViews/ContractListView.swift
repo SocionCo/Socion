@@ -19,6 +19,7 @@ struct ContractListView: View {
     @State var includeDate : Bool = false
     @State var tempTasks : [String] = []
     @State var tempCompleted : [Bool] = []
+    @State var greenColor = Color(red: 183/255, green: 215/255, blue: 181/255)
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
@@ -32,7 +33,7 @@ struct ContractListView: View {
                     .font(.largeTitle)
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
-                    .background(Color(red: 183/255, green: 235/255, blue: 181/255))
+                    .background(greenColor)
                 
                 SearchBar(searchText: $searchText)
                 
@@ -43,23 +44,27 @@ struct ContractListView: View {
                                 ContractDetailView(contractID: contract.id)
                             }
                         label: {
-                            VStack (alignment: .leading, spacing: 8) {
-                                Text(contract.company)
-                                    .font(.title)
-                                    .fontWeight(.bold)
-                                    .foregroundColor(Color(red: 183/255, green: 235/255, blue: 181/255))
-                                HStack {
-                                    Text(contract.status.rawValue)
-                                        .padding(.all, 7.0)
-                                        .font(.title2)
-                                        .foregroundColor(statusColor(contract: contract))
-                                    if let dueDate = contract.dueDate {
-                                        let dueString = Contract.timeUntilDate(date: dueDate)
-                                        Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
+                            HStack {
+                                VStack (alignment: .leading, spacing: 8) {
+                                    Text(contract.company)
+                                        .font(.title)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(greenColor)
+                                    HStack {
+                                        Text(contract.status.rawValue)
+                                            .padding(.all, 7.0)
                                             .font(.title2)
-                                            .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
+                                            .foregroundColor(statusColor(contract: contract))
+                                        if let dueDate = contract.dueDate {
+                                            let dueString = Contract.timeUntilDate(date: dueDate)
+                                            Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
+                                                .font(.title2)
+                                                .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
+                                        }
                                     }
                                 }
+                                Spacer()
+                                Image(systemName: "chevron.right").foregroundColor(.black)
                             }
                         }
                         }
@@ -307,7 +312,7 @@ struct ContractListView: View {
         case .inProgress:
             return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
         case .done:
-            return Color(red: 183/255, green: 235/255, blue: 181/255)
+            return greenColor
         }
     }
     

@@ -35,7 +35,7 @@ struct SocionApp: App {
                 } else {
                     if authentication.isValidated {
                         if (agencyRegistration) {
-                            AgencyRegistrationView(selected: $selected)
+                            AgencyRegistrationView(selected: $selected, agencyRegistration: $agencyRegistration)
                         } else {
                             if viewmodel.user.isInfluencer {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
@@ -50,7 +50,7 @@ struct SocionApp: App {
                         }
                     } else {
                         if (registered) {
-                            LogInView(selected : $selected)
+                            LogInView(selected : $selected,agencyRegistration: $agencyRegistration)
                         } else {
                             RegisterView(selected: $selected, registered: $registered)
                         }

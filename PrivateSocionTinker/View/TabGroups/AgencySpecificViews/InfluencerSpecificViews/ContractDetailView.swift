@@ -7,10 +7,11 @@ struct ContractDetailView: View {
     @EnvironmentObject var userViewModel : UserViewModel
     @State var newTask: String = ""
     @State var contractID: String
+    @State private var presentImporter = false
     @Environment(\.dismiss) private var dismiss
     
     var currentIndex : Int {
-        userViewModel.user.contracts.firstIndex(where: {$0.id == contractID}) ?? 0
+        userViewModel.user.contracts.firstIndex(where: {$0.id == contractID})!
     }
     
     var completedTasks : Int {
@@ -21,9 +22,36 @@ struct ContractDetailView: View {
     var body: some View {
         ZStack {
             backgroundColor.ignoresSafeArea()
+            
             ScrollView {
                     VStack {
                         taskBar.background(backgroundColor)
+                        VStack(alignment: .leading, spacing: 20) {
+                            Text("Contract PDF")
+                                .font(.largeTitle)
+                                .foregroundColor(primaryColor)
+                            HStack {
+                                Text("Upload Contract File:")
+                                    .font(.headline)
+                                    .foregroundColor(primaryColor)
+                                Spacer()
+                                Button {
+                                    presentImporter = true
+                                } label: {
+                                    Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
+                                }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
+                                    switch result {
+                                    case .success(let url):
+                                        print(url)
+                                    case .failure(let error):
+                                        print(error)
+                                    }
+                                }
+                            }.padding()
+                            .background(secondaryColor)
+                            .cornerRadius(10)
+                            .shadow(color: primaryColor.opacity(0.2), radius: 10, x: 0, y: 5)
+                        }.padding()
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Contract Details")
                                 .font(.largeTitle)
@@ -91,6 +119,25 @@ struct ContractDetailView: View {
                                         .foregroundColor(primaryColor)
                                 }
                                 
+                                HStack {
+                                    Text("Upload Contract File:")
+                                        .font(.headline)
+                                        .foregroundColor(primaryColor)
+                                    Spacer()
+                                    Button {
+                                       presentImporter = true
+                                    } label: {
+                                        Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
+                                    }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
+                                        switch result {
+                                        case .success(let url):
+                                            print(url)
+                                        case .failure(let error):
+                                            print(error)
+                                        }
+                                    }
+                                }
+                                
                             }
                             .padding()
                             .background(secondaryColor)
@@ -118,6 +165,9 @@ struct ContractDetailView: View {
             .refreshable {
                 print(userViewModel.user.contracts[0].tasks)
                 print(userViewModel.user.contracts[currentIndex].tasks)
+            }
+            .onTapGesture {
+                dismissKeyboard()
             }
         
     }
@@ -323,6 +373,10 @@ struct ContractDetailView: View {
                 .padding(.horizontal, 5)
                 .frame(width: 100)
         }
+    }
+    
+    func dismissKeyboard () {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

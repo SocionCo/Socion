@@ -16,6 +16,7 @@ import SwiftUI
 struct LogInView: View {
     @EnvironmentObject private var userViewModel : UserViewModel
     @Binding var selected : Bool
+    @Binding var agencyRegistration : Bool
     @EnvironmentObject var authentication : Authentication
     var isSignInButtonDisabled: Bool {
         userViewModel.registerDisable
@@ -54,13 +55,17 @@ struct LogInView: View {
                             .background(Color.white)
                             .cornerRadius(10.0)
                             .padding(.bottom, 20)
+                            .foregroundColor(Color.gray)
+                            
                         
                         SecureField("Password", text: $userViewModel.user.password)
                             .padding()
                             .background(Color.white)
                             .cornerRadius(10.0)
                             .padding(.bottom, 20)
-                    }.background()
+                            .foregroundColor(Color.gray)
+                            
+                    }
                     
                     Button(action: {
                         userViewModel.logIn { success in
@@ -93,11 +98,19 @@ struct LogInView: View {
                 Button {
                     withAnimation {
                         selected = false
+                        agencyRegistration = false
                     }
                 } label: {
                     Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(offWhite)
                 }
             }
         }
+        .onTapGesture {
+            dismissKeyboard()
+        }
+    }
+    
+    func dismissKeyboard () {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
