@@ -8,10 +8,11 @@ struct AgentContractDetailView: View {
     @State var userID : String
     @State var newTask: String = ""
     @State var contractID: String
+    @State var presentImporter = false
     @Environment(\.dismiss) private var dismiss
     
     var userIndex : Int {
-        return userViewModel.agencyViewModel.agency.influencers.firstIndex(where: {$0.id == userID}) ?? 0
+        return userViewModel.agencyViewModel.agency.influencers.firstIndex(where: {$0.id == userID})!
     }
     
     var currentIndex : Int {
@@ -30,6 +31,34 @@ struct AgentContractDetailView: View {
                     
                     VStack {
                         taskBar.background(backgroundColor)
+                        VStack(alignment: .leading, spacing: 20) {
+                            Text("Contract PDF")
+                                .font(.largeTitle)
+                                .foregroundColor(primaryColor)
+                            HStack {
+                                Text("Upload Contract File:")
+                                    .font(.headline)
+                                    .foregroundColor(primaryColor)
+                                Spacer()
+                                Button {
+                                    presentImporter = true
+                                } label: {
+                                    Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
+                                }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
+                                    switch result {
+                                    case .success(let url):
+                                        print(url)
+                                    case .failure(let error):
+                                        print(error)
+                                    }
+                                }
+                            }.padding()
+                            .background(secondaryColor)
+                            .cornerRadius(10)
+                            .shadow(color: primaryColor.opacity(0.2), radius: 10, x: 0, y: 5)
+                        }.padding()
+                            
+                            
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Contract Details")
                                 .font(.largeTitle)
@@ -97,6 +126,7 @@ struct AgentContractDetailView: View {
                                         .foregroundColor(primaryColor)
                                 }
                                 
+                                
                             }
                             .padding()
                             .background(secondaryColor)
@@ -125,8 +155,12 @@ struct AgentContractDetailView: View {
                 print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[0].tasks)
                 print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks)
             }
+            .onTapGesture {
+                dismissKeyboard()
+            }
         
     }
+        
     
     
     var taskMenu : some View {
@@ -330,6 +364,10 @@ struct AgentContractDetailView: View {
                 .padding(.horizontal, 5)
                 .frame(width: 100)
         }
+    }
+    
+    func dismissKeyboard () {
+        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 }
 

@@ -151,15 +151,16 @@ class AgencyViewModel : ObservableObject {
                         indexToRemove = self.agency.influencers.firstIndex(of: userToRemove)
                     }
                 }
-                if userExistsLocally {
-                    if let indexToRemove = indexToRemove {
-                        print("Removing user")
-                        self.agency.influencers.remove(at:indexToRemove)
-                    }
-                }
+                
                 FireBaseDataServices.shared.getUserFromID(userID: influencer ) {newUser in
                     print("Appending New User")
                     self.agency.influencers.append(newUser)
+                    if userExistsLocally {
+                        if let indexToRemove = indexToRemove {
+                            print("Removing user")
+                            self.agency.influencers.remove(at:indexToRemove)
+                        }
+                    }
                 }
             }
         }

@@ -14,6 +14,7 @@ import SwiftUI
 
 struct AgencyRegistrationView: View {
     @Binding var selected : Bool
+    @Binding var agencyRegistration : Bool
     @EnvironmentObject private var userViewModel : UserViewModel
     @EnvironmentObject var authentication : Authentication
     @State var agencyName : String = ""
@@ -48,6 +49,7 @@ struct AgencyRegistrationView: View {
                         Button {
                             withAnimation {
                                 selected = false
+                                agencyRegistration = false
                             }
                         } label: {
                             Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(.white)
