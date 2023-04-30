@@ -29,7 +29,7 @@ struct AgentContractDetailView: View {
             ScrollView {
                     
                     VStack {
-                        taskBar.background(backgroundColor).frame(maxWidth: .infinity, maxHeight: .infinity)
+                        taskBar.background(backgroundColor)
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Contract Details")
                                 .font(.largeTitle)
@@ -195,6 +195,7 @@ struct AgentContractDetailView: View {
                 Text("Progress")
                     .font(.largeTitle)
                     .foregroundColor(primaryColor)
+                    .padding()
                 
                 VStack{
                     HStack(spacing: -20) {

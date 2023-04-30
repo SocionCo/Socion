@@ -40,43 +40,43 @@ struct ManageInfluencersView: View {
                 .navigationBarTitle("Influencers")
                 .foregroundColor(textColor)
                 .background(backgroundColor.edgesIgnoringSafeArea(.all))
-                .navigationBarBackButtonHidden(true)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button {
-                            presentationMode.wrappedValue.dismiss()
-                        } label: {
-                            HStack {
-                                Image(systemName: "chevron.backward")
-                                Text("Dashboard")
-                            }.foregroundColor(.white)
-                        }
-                    }
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Menu("Manage") {
-                            Menu("Delete Influencer") {
-                                ForEach(userViewModel.agencyViewModel.getInfluencers(), id: \.self) {
-                                    influencer in
-                                    Button {
-                                        isPresentingConfirm = true
-                                        tempUser = influencer
-                                        userViewModel.agencyViewModel.removeInfluencerFromAgency(influencerID: tempUser.id)
-                                    } label: {
-                                        Text(influencer.getFullName())
-                                    }
-                                }
-                            }
-                            Button {
-                                inviteSheet = true
-                            } label: {
-                                Text("Invite Influencer")
-                            }
-                            
-                            
-                           
-                        }.foregroundColor(.white)
-                    }
-                }.sheet(isPresented: $inviteSheet){
+//                .toolbar {
+//                    ToolbarItem(placement: .navigationBarLeading) {
+//                        Button {
+//                            presentationMode.wrappedValue.dismiss()
+//                        } label: {
+//                            HStack {
+//                                Image(systemName: "chevron.backward")
+//                                Text("Dashboard")
+//                            }.foregroundColor(.white)
+//                        }
+//                    }
+//                    ToolbarItem(placement: .navigationBarTrailing) {
+//                        Menu("Manage") {
+//                            Menu("Delete Influencer") {
+//                                ForEach(userViewModel.agencyViewModel.getInfluencers(), id: \.self) {
+//                                    influencer in
+//                                    Button {
+//                                        isPresentingConfirm = true
+//                                        tempUser = influencer
+//                                        userViewModel.agencyViewModel.removeInfluencerFromAgency(influencerID: tempUser.id)
+//                                    } label: {
+//                                        Text(influencer.getFullName())
+//                                    }
+//                                }
+//                            }
+//                            Button {
+//                                inviteSheet = true
+//                            } label: {
+//                                Text("Invite Influencer")
+//                            }
+//
+//
+//
+//                        }.foregroundColor(.white)
+//                    }
+//                }
+                .sheet(isPresented: $inviteSheet){
                     ZStack {
                         VStack {
                             Text("Copy Agency Join Code Below")

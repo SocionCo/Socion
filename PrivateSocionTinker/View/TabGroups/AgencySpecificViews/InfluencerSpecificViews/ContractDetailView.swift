@@ -22,9 +22,8 @@ struct ContractDetailView: View {
         ZStack {
             backgroundColor.ignoresSafeArea()
             ScrollView {
-                    
                     VStack {
-                        taskBar.background(backgroundColor).frame(maxWidth: .infinity, maxHeight: .infinity)
+                        taskBar.background(backgroundColor)
                         VStack(alignment: .leading, spacing: 20) {
                             Text("Contract Details")
                                 .font(.largeTitle)
@@ -190,6 +189,7 @@ struct ContractDetailView: View {
                 Text("Progress")
                     .font(.largeTitle)
                     .foregroundColor(primaryColor)
+                    
                 
                 VStack{
                     HStack(spacing: -20) {
@@ -221,9 +221,8 @@ struct ContractDetailView: View {
                     
                     Spacer()
                 }
-                .padding()
                 .background(backgroundColor)
-            }
+            }.padding()
         }
     }
     
