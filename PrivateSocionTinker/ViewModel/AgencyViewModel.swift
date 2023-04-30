@@ -218,7 +218,7 @@ class AgencyViewModel : ObservableObject {
     //MARK: Getters and Setters (Changers) for Agency
     
     func removeInfluencerFromAgency (influencerID : String) {
-        FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyName(), influencerID: influencerID)
+        FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
     
     }
     

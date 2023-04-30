@@ -66,7 +66,7 @@
 		DB76EDB129D7C45C002ABA34 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDB029D7C45C002ABA34 /* FirebaseStorageCombine-Community */; };
 		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
 		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
-		DBEFCE2A29F02EF30045EDD5 /* ViewTest2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */; };
+		DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -103,7 +103,7 @@
 		DB76ED7929D7C292002ABA34 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
 		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
-		DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTest2.swift; sourceTree = "<group>"; };
+		DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,6 +158,7 @@
 		DB67388129E0E58800C561D9 /* TabGroups */ = {
 			isa = PBXGroup;
 			children = (
+				DBCD493229FEF4C800BD3D95 /* SocialMediaStats */,
 				DB295B2F29E5FB5E00338639 /* ModelView.swift */,
 				DB67388329E0E5E700C561D9 /* DefaultTabSelector.swift */,
 				DB67389B29E48F9900C561D9 /* InfluencerTabSelector.swift */,
@@ -173,7 +174,6 @@
 			isa = PBXGroup;
 			children = (
 				DB0760C529DFC03B00E27EB8 /* ViewTest.swift */,
-				DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -183,8 +183,6 @@
 			children = (
 				DB67389629E488FB00C561D9 /* InfluencerSpecificViews */,
 				DB67389529E488C500C561D9 /* OwnerSpecificViews */,
-				DB67388529E0E67E00C561D9 /* AgencyView.swift */,
-				DB67388E29E0F92F00C561D9 /* AgencySettingsView.swift */,
 			);
 			path = AgencySpecificViews;
 			sourceTree = "<group>";
@@ -200,6 +198,8 @@
 		DB67389529E488C500C561D9 /* OwnerSpecificViews */ = {
 			isa = PBXGroup;
 			children = (
+				DB67388529E0E67E00C561D9 /* AgencyView.swift */,
+				DB67388E29E0F92F00C561D9 /* AgencySettingsView.swift */,
 				DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */,
 				DB67389729E4892200C561D9 /* ManagerContractListView.swift */,
 				DB67388C29E0F90B00C561D9 /* ManageInfluencersView.swift */,
@@ -302,6 +302,14 @@
 				DBCD493029FDA84E00BD3D95 /* ErrorView.swift */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		DBCD493229FEF4C800BD3D95 /* SocialMediaStats */ = {
+			isa = PBXGroup;
+			children = (
+				DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */,
+			);
+			path = SocialMediaStats;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -436,7 +444,7 @@
 				DB6A8F9C29D7E38E0065DAED /* Authentication.swift in Sources */,
 				DB295B3029E5FB5E00338639 /* ModelView.swift in Sources */,
 				DB6A8F9E29D7E45C0065DAED /* ContractListView.swift in Sources */,
-				DBEFCE2A29F02EF30045EDD5 /* ViewTest2.swift in Sources */,
+				DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

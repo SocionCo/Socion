@@ -9,18 +9,25 @@ import SwiftUI
 
 struct OwnerTabView: View {
     @EnvironmentObject var userViewModel : UserViewModel
+    @State private var selection = 2
     var body: some View {
         withAnimation {
-            TabView {
+            TabView(selection: $selection) {
+                ErrorView().tabItem {
+                    Image(systemName: "dollarsign.circle")
+                    Text("Payments")
+                }.tag(1)
                 ManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
                     .tabItem {
                     Image(systemName: "newspaper.fill")
                     Text("View All Contracts")
-                }
+                    }.tag(2)
                 AgencyView().tabItem {
                     Image(systemName: "person.3.sequence")
                     Text("Agency Dashboard")
-                }.opacity(1.0)
+                }
+                .opacity(1.0)
+                .tag(3)
             }.onAppear() {
                 let appearance = UITabBarAppearance()
                 UITabBar.appearance().scrollEdgeAppearance = appearance

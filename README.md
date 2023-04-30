@@ -21,13 +21,8 @@ Socion currently uses SwiftUI on the front end, and Swift and FireBase on the ba
 -Reset Password
 -Meta / TikTok API integration
 -ContractListView remake
+-Rate View
+-SnapshotListeners don't fire when a member is removed
 
 
-Next Steps:
-	-Rate View
-	-Tasks(Max of 5, with notes for each task) / Contract Detail View
-	-When creating an agency and leaving, if you click sign in it takes you back to the 
-
-
-Tasks are currently implemeted on the back end but updating the tasks in ContractDetailView isn't interacting with the FireStore database, need to add methods to dataservices and viewmodels, etc.
 
