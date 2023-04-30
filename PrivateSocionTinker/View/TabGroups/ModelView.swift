@@ -29,8 +29,14 @@ struct ModelView: View {
                 Text("Contracts: ")
                 ForEach(userViewModel.user.contracts, id: \.self) { contract in
                     Text("Contract: \(contract.name)")
+                        Text("Tasks: ")
+                        ForEach (contract.tasks, id: \.self) { task in
+                            Text("Task: \(task)")
+                            Text("Completed: \(String(contract.isCompletedArray[0]))")
+                        }
+                    }
                 }
-            }
+            
             if userViewModel.user.isInfluencer || userViewModel.user.IsTalentManager || userViewModel.user.isAgencyOwner {
                 VStack {
                     Text("Agency Info: ").onTapGesture {
@@ -43,7 +49,13 @@ struct ModelView: View {
                         Text("\(influencer.firstName)")
                         Text("Contracts: ")
                         ForEach(influencer.contracts, id: \.self) { contract in
-                            Text("\(contract.name)")
+                            Text("Name: \(contract.name)")
+                            Text("Tasks: ")
+                            ForEach (contract.tasks, id: \.self) { task in
+                                Text("Task: \(task)")
+                                Text("Completed: \(String(contract.isCompletedArray[contract.tasks.firstIndex(where: {$0 == task})!]))")
+                                
+                            }
                         }
                     }
                 }

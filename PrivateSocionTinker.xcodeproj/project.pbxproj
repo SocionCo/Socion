@@ -64,7 +64,9 @@
 		DB76EDAD29D7C45C002ABA34 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDAC29D7C45C002ABA34 /* FirebaseRemoteConfigSwift */; };
 		DB76EDAF29D7C45C002ABA34 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDAE29D7C45C002ABA34 /* FirebaseStorage */; };
 		DB76EDB129D7C45C002ABA34 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDB029D7C45C002ABA34 /* FirebaseStorageCombine-Community */; };
-		DBEFCE2A29F02EF30045EDD5 /* ViewTest2.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */; };
+		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
+		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
+		DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -99,7 +101,9 @@
 		DB76ED6F29D7C1CF002ABA34 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		DB76ED7229D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PrivateSocionTinker.xcdatamodel; sourceTree = "<group>"; };
 		DB76ED7929D7C292002ABA34 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTest2.swift; sourceTree = "<group>"; };
+		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
+		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,12 +158,12 @@
 		DB67388129E0E58800C561D9 /* TabGroups */ = {
 			isa = PBXGroup;
 			children = (
-				DB0760BF29DCCA3000E27EB8 /* ContractDetailView.swift */,
+				DBCD493229FEF4C800BD3D95 /* SocialMediaStats */,
 				DB295B2F29E5FB5E00338639 /* ModelView.swift */,
 				DB67388329E0E5E700C561D9 /* DefaultTabSelector.swift */,
 				DB67389B29E48F9900C561D9 /* InfluencerTabSelector.swift */,
-				DB67389929E48F0D00C561D9 /* OwnerTabSelector.swift */,
 				DB67388A29E0F8F700C561D9 /* EditUserSettingsView.swift */,
+				DB67389929E48F0D00C561D9 /* OwnerTabSelector.swift */,
 				DB67389029E1155C00C561D9 /* NoAgencyViews */,
 				DB67388929E0F88400C561D9 /* AgencySpecificViews */,
 			);
@@ -170,7 +174,6 @@
 			isa = PBXGroup;
 			children = (
 				DB0760C529DFC03B00E27EB8 /* ViewTest.swift */,
-				DBEFCE2929F02EF30045EDD5 /* ViewTest2.swift */,
 			);
 			path = Tests;
 			sourceTree = "<group>";
@@ -180,8 +183,6 @@
 			children = (
 				DB67389629E488FB00C561D9 /* InfluencerSpecificViews */,
 				DB67389529E488C500C561D9 /* OwnerSpecificViews */,
-				DB67388529E0E67E00C561D9 /* AgencyView.swift */,
-				DB67388E29E0F92F00C561D9 /* AgencySettingsView.swift */,
 			);
 			path = AgencySpecificViews;
 			sourceTree = "<group>";
@@ -197,6 +198,9 @@
 		DB67389529E488C500C561D9 /* OwnerSpecificViews */ = {
 			isa = PBXGroup;
 			children = (
+				DB67388529E0E67E00C561D9 /* AgencyView.swift */,
+				DB67388E29E0F92F00C561D9 /* AgencySettingsView.swift */,
+				DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */,
 				DB67389729E4892200C561D9 /* ManagerContractListView.swift */,
 				DB67388C29E0F90B00C561D9 /* ManageInfluencersView.swift */,
 			);
@@ -206,6 +210,7 @@
 		DB67389629E488FB00C561D9 /* InfluencerSpecificViews */ = {
 			isa = PBXGroup;
 			children = (
+				DB0760BF29DCCA3000E27EB8 /* ContractDetailView.swift */,
 				DB6A8F9D29D7E45C0065DAED /* ContractListView.swift */,
 			);
 			path = InfluencerSpecificViews;
@@ -294,8 +299,17 @@
 				DB76ED6A29D7C1CF002ABA34 /* Assets.xcassets */,
 				DB76ED7929D7C292002ABA34 /* GoogleService-Info.plist */,
 				DB76ED7129D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodeld */,
+				DBCD493029FDA84E00BD3D95 /* ErrorView.swift */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		DBCD493229FEF4C800BD3D95 /* SocialMediaStats */ = {
+			isa = PBXGroup;
+			children = (
+				DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */,
+			);
+			path = SocialMediaStats;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -405,7 +419,9 @@
 				DB67387B29E0C9A800C561D9 /* Agency.swift in Sources */,
 				DB76ED7029D7C1CF002ABA34 /* Persistence.swift in Sources */,
 				DB67389229E1159300C561D9 /* NoAgencyView.swift in Sources */,
+				DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */,
 				DB67387F29E0D80E00C561D9 /* AgencyRegistrationView.swift in Sources */,
+				DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */,
 				DB76ED6929D7C1CE002ABA34 /* RegisterView.swift in Sources */,
 				DB67388F29E0F92F00C561D9 /* AgencySettingsView.swift in Sources */,
 				DB67388429E0E5E700C561D9 /* DefaultTabSelector.swift in Sources */,
@@ -428,7 +444,7 @@
 				DB6A8F9C29D7E38E0065DAED /* Authentication.swift in Sources */,
 				DB295B3029E5FB5E00338639 /* ModelView.swift in Sources */,
 				DB6A8F9E29D7E45C0065DAED /* ContractListView.swift in Sources */,
-				DBEFCE2A29F02EF30045EDD5 /* ViewTest2.swift in Sources */,
+				DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

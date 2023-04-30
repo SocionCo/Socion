@@ -16,6 +16,7 @@ struct ManagerContractListView: View {
     @State var tempPaymentStatus : Contract.Progress = .notStarted
     @State var tempInfluencer = User()
     @State var tempTasks : [String] = []
+    @State var tempCompleted : [Bool] = []
     @State var contracts : [Contract] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
@@ -45,7 +46,11 @@ struct ManagerContractListView: View {
                     Section {
                         ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
-                                ContractDetailView(contract: contract)
+                                if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
+                                    AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)
+                                } else {
+                                    ErrorView()
+                                }
                             }
                         label: {
                             HStack {
@@ -123,6 +128,7 @@ struct ManagerContractListView: View {
                                     tempName = contract.name
                                     tempCompanyName = contract.company
                                     tempTasks = contract.tasks
+                                    tempCompleted = contract.isCompletedArray
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
                                     if contract.rate != nil {
@@ -276,7 +282,7 @@ struct ManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks)
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted)
             print("Contract status is:: \(contract.status.rawValue)")
             resetValues()
         }
@@ -289,6 +295,7 @@ struct ManagerContractListView: View {
         tempStatus = .inProgress
         tempDueDate = Date()
         tempPostLink = ""
+        tempCompleted = []
         tempPaymentStatus = .inProgress
         currentlyEditing = nil
         formSubmittable = false
@@ -320,7 +327,7 @@ struct ManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)

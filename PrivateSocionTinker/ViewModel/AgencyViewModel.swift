@@ -187,7 +187,30 @@ class AgencyViewModel : ObservableObject {
     
     
     
+    //MARK: Task interactions
     
+    func addTaskToContract (id : String, task : String, contract : Contract) {
+        FireBaseDataServices.shared.addTasktoContract(userID: id, contract: contract, task: task)
+        
+        
+    }
+    
+    func removeTaskfromContract (id : String, task : String,  contract : Contract) {
+            FireBaseDataServices.shared.removeTaskFromContract(userID: id, contract: contract, task: task)
+    }
+    
+    func toggleTask (id : String, task: String, contract : Contract) {
+            FireBaseDataServices.shared.toggleTask(userID: id, contract: contract, task: task)
+    }
+    
+    
+    func isTaskCompleted(task: String, contract: Contract) -> Bool {
+        let index = contract.tasks.firstIndex(where: {$0 == task})
+        if index != nil {
+            return contract.isCompletedArray[index!]
+        }
+        return false
+    }
     
     
     
@@ -195,9 +218,10 @@ class AgencyViewModel : ObservableObject {
     //MARK: Getters and Setters (Changers) for Agency
     
     func removeInfluencerFromAgency (influencerID : String) {
-        FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyName(), influencerID: influencerID)
+        FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
     
     }
+    
     
     func getOwnerOfContract (contract : Contract) -> User? {
         for influencer in agency.influencers {
@@ -222,11 +246,11 @@ class AgencyViewModel : ObservableObject {
     }
     
     
-    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks: [String]) {
+    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks: [String], isCompleted : [Bool]) {
         let user = self.getOwnerOfContract(contract: contract)
         if let user = user {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks)
+            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted)
         } else {
             print("Auth Issue")
         }
