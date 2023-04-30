@@ -29,7 +29,7 @@ struct ManageInfluencersView: View {
                     List(userViewModel.agencyViewModel.agency.influencers.filter {
                         searchText.isEmpty ? true : $0.getFullName().localizedStandardContains(searchText)
                     }, id: \.self) { influencer in
-                        NavigationLink(destination: InfluencerDetailView()) {
+                        NavigationLink(destination: SocialMediaStats()) {
                             InfluencerRowView(influencer: influencer.getFullName())
                         }
                     }
@@ -54,18 +54,15 @@ struct ManageInfluencersView: View {
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Menu("Manage") {
-                            Menu("Delete Influnecer") {
+                            Menu("Delete Influencer") {
                                 ForEach(userViewModel.agencyViewModel.getInfluencers(), id: \.self) {
                                     influencer in
                                     Button {
                                         isPresentingConfirm = true
                                         tempUser = influencer
+                                        userViewModel.agencyViewModel.removeInfluencerFromAgency(influencerID: tempUser.id)
                                     } label: {
                                         Text(influencer.getFullName())
-                                    }.confirmationDialog("Are you sure?", isPresented: $isPresentingConfirm, titleVisibility: .visible) {
-                                        Button("Remove influencer from agency") {
-                                            userViewModel.agencyViewModel.removeInfluencerFromAgency(influencerID: tempUser.id)
-                                        }
                                     }
                                 }
                             }
@@ -142,7 +139,7 @@ struct ManageInfluencersView: View {
                     .font(.title3)
                     .fontWeight(.semibold)
                 Spacer()
-                NavigationLink(destination: InfluencerDetailView()) {}
+                NavigationLink(destination: SocialMediaStats()) {}
             }
             .padding(.vertical, 10)
             .padding(.horizontal, 20)
