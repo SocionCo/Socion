@@ -47,20 +47,12 @@ struct ModelView: View {
                     Text("Influencers:")
                     ForEach(userViewModel.agencyViewModel.agency.influencers, id: \.self) { influencer in
                         Text("\(influencer.firstName)")
-                        Text("Campaigns: ")
-                        ForEach(influencer.contracts, id: \.self) { contract in
-                            Text("Name: \(contract.name)")
-                            Text("Tasks: ")
-                            ForEach (contract.tasks, id: \.self) { task in
-                                Text("Task: \(task)")
-                                Text("Completed: \(String(contract.isCompletedArray[contract.tasks.firstIndex(where: {$0 == task})!]))")
-                                
-                            }
-                        }
+                        Text("\(influencer.lastName)")
                     }
                     Text("TalentManagers:")
                     ForEach(userViewModel.agencyViewModel.agency.talentManagers, id: \.self) { talentManager in
                         Text("\(talentManager.firstName)")
+                        Text("\(talentManager.lastName)")
                         Text("Is manager: \(String(talentManager.IsTalentManager))")
                     }
                 }

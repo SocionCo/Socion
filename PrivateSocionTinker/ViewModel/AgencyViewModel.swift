@@ -29,10 +29,7 @@ class AgencyViewModel : ObservableObject {
             print("INFLUENCERS SHOULD BE IN MODEL BY NOW")
             self.attachContractListeners(influencers: influencers)
         }
-        self.attachTalentManagerListenersToAgency(agencyID: userViewModel.user.agency!) {
-            talentManagers in
-            self.attachContractListeners(influencers: talentManagers)
-        }
+        self.attachTalentManagerListenersToAgency(agencyID: userViewModel.user.agency!)
         
     }
     
@@ -98,7 +95,7 @@ class AgencyViewModel : ObservableObject {
     
     
     
-    private func attachTalentManagerListenersToAgency(agencyID : String, completion :  @escaping ([String]) -> Void) {
+    private func attachTalentManagerListenersToAgency(agencyID : String) {
         FireBaseDataServices.shared.db.collection("agencies").document(agencyID).getDocument { document, error in
             
             guard let document = document else {
@@ -117,11 +114,11 @@ class AgencyViewModel : ObservableObject {
             }
             
             for talentManagerID in talentManagers {
-                print("Adding listener to influencer")
+                print("Adding listener to talent")
                 self.attachSnapshotListenerToTalentManager(userID: talentManagerID) {
                     if self.agency.talentManagers.count == talentManagers.count {
-                        print("Finished adding influecers to model")
-                        completion(talentManagers)
+                        print("Finished adding talent to model")
+                        
                     }
                 }
             }
@@ -172,6 +169,7 @@ class AgencyViewModel : ObservableObject {
     
     private func attachSnapshotListenerToTalentManager (userID: String, completion : @escaping () -> Void) {
         FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
+            print("SNAPSHOTFORTALENT")
             var userToRemove : User
             var indexToRemove : Int?
             var userExistsLocally : Bool = false
@@ -297,12 +295,20 @@ class AgencyViewModel : ObservableObject {
     
     //MARK: Getters and Setters (Changers) for Agency
     
+    func approveTalentManager (userID : String) {
+        FireBaseDataServices.shared.approveManager(userID: userID)
+    }
+    
+    func declineTalentManager (userID : String) {
+        FireBaseDataServices.shared.declineManager(agencyID: agency.id, userID: userID)
+    }
+    
     func removeInfluencerFromAgency (influencerID : String) {
         FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
     
     }
     
-    private func getAllRequests () -> [User] {
+    func getAllRequests () -> [User] {
         var talentManagerArray : [User] = []
         
         for talentManager in agency.talentManagers {

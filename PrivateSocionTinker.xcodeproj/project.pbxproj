@@ -10,6 +10,7 @@
 		DB0760C029DCCA3000E27EB8 /* ContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0760BF29DCCA3000E27EB8 /* ContractDetailView.swift */; };
 		DB0760C229DCCA5600E27EB8 /* Contract.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0760C129DCCA5600E27EB8 /* Contract.swift */; };
 		DB0760C629DFC03B00E27EB8 /* ViewTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0760C529DFC03B00E27EB8 /* ViewTest.swift */; };
+		DB0B235C2A0219D0009EBBAA /* ManageTalentManagers.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB0B235B2A0219D0009EBBAA /* ManageTalentManagers.swift */; };
 		DB295B3029E5FB5E00338639 /* ModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB295B2F29E5FB5E00338639 /* ModelView.swift */; };
 		DB67387B29E0C9A800C561D9 /* Agency.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67387A29E0C9A800C561D9 /* Agency.swift */; };
 		DB67387D29E0D4E600C561D9 /* AgencyViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB67387C29E0D4E600C561D9 /* AgencyViewModel.swift */; };
@@ -73,6 +74,7 @@
 		DB0760BF29DCCA3000E27EB8 /* ContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContractDetailView.swift; sourceTree = "<group>"; };
 		DB0760C129DCCA5600E27EB8 /* Contract.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Contract.swift; sourceTree = "<group>"; };
 		DB0760C529DFC03B00E27EB8 /* ViewTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewTest.swift; sourceTree = "<group>"; };
+		DB0B235B2A0219D0009EBBAA /* ManageTalentManagers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManageTalentManagers.swift; sourceTree = "<group>"; };
 		DB295B2F29E5FB5E00338639 /* ModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ModelView.swift; sourceTree = "<group>"; };
 		DB67387A29E0C9A800C561D9 /* Agency.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agency.swift; sourceTree = "<group>"; };
 		DB67387C29E0D4E600C561D9 /* AgencyViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgencyViewModel.swift; sourceTree = "<group>"; };
@@ -201,6 +203,7 @@
 				DB67388529E0E67E00C561D9 /* AgencyView.swift */,
 				DB67388E29E0F92F00C561D9 /* AgencySettingsView.swift */,
 				DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */,
+				DB0B235B2A0219D0009EBBAA /* ManageTalentManagers.swift */,
 				DB67389729E4892200C561D9 /* ManagerContractListView.swift */,
 				DB67388C29E0F90B00C561D9 /* ManageInfluencersView.swift */,
 			);
@@ -434,6 +437,7 @@
 				DB67388629E0E67E00C561D9 /* AgencyView.swift in Sources */,
 				DB76ED7329D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodeld in Sources */,
 				DB67389C29E48F9900C561D9 /* InfluencerTabSelector.swift in Sources */,
+				DB0B235C2A0219D0009EBBAA /* ManageTalentManagers.swift in Sources */,
 				DB0760C229DCCA5600E27EB8 /* Contract.swift in Sources */,
 				DB6A8FA429D80DEB0065DAED /* PathSelect.swift in Sources */,
 				DB76ED6729D7C1CE002ABA34 /* PrivateSocionTinkerApp.swift in Sources */,

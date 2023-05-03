@@ -25,7 +25,9 @@ struct ManageInfluencersView: View {
                     SearchBar(text: $searchText)
                         .padding(.top, 10)
                         .padding(.horizontal, 20)
-                    
+                    NavigationLink (destination: ManageTalentManagers()) {
+                        Text("Manage Talent Managers")
+                    }
                     List(userViewModel.agencyViewModel.agency.influencers.filter {
                         searchText.isEmpty ? true : $0.getFullName().localizedStandardContains(searchText)
                     }, id: \.self) { influencer in

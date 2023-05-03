@@ -277,6 +277,21 @@ class FireBaseDataServices {
     }
     
     
+    func approveManager(userID : String) {
+        let userRef = db.collection("users")
+        userRef.document(userID).updateData([
+            "isTalentManager" : true
+        ])
+    }
+    
+    func declineManager(agencyID : String, userID : String) {
+        let userRef = db.collection("agencies")
+        userRef.document(agencyID).updateData([
+            "talentManagers" : FieldValue.arrayRemove([userID])
+        ])
+    }
+
+    
     
     
     func setFirstName (id : String, name : String) {
