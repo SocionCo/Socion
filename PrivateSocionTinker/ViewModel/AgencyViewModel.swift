@@ -295,15 +295,15 @@ class AgencyViewModel : ObservableObject {
             }
             
             if let newTalentManagerArray : [String] = data["talentManagers"] as? [String] {
-                
+                print("Entered String Array")
                 let oldTalentManagerIDArray = agency.talentManagers.map{$0.id}
                 
                 if newTalentManagerArray.count != agency.talentManagers.count {
                     if newTalentManagerArray.count < agency.talentManagers.count {
-                        
+                        print("Talent Manager removed")
                         //This means influencer has been removed
                         for oldtalentManagerID in oldTalentManagerIDArray {
-                            if (!newInfluencerArray.contains(oldtalentManagerID)) {
+                            if (!newTalentManagerArray.contains(oldtalentManagerID)) {
                                 let userToRemove : Int = agency.talentManagers.firstIndex(where: {$0.id == oldtalentManagerID})!
                                 agency.talentManagers.remove(at: userToRemove)
                             }
@@ -312,10 +312,12 @@ class AgencyViewModel : ObservableObject {
                     }
                     else if talentManagersAddedToModel && newTalentManagerArray.count > agency.talentManagers.count {
                         //This means an influencer has been added
-                        
+                        print("newTalentManager")
                         for newTalentManagerID in newTalentManagerArray {
-                            if (!newTalentManagerArray.contains(newTalentManagerID)) {
+                            if (!oldTalentManagerIDArray.contains(newTalentManagerID)) {
+                                print("Adding user")
                                 FireBaseDataServices.shared.getUserFromID(userID: newTalentManagerID) { newUser in
+                                    print("Adding \(newUser.firstName)")
                                     self.agency.talentManagers.append(newUser)
                                 }
                             }
