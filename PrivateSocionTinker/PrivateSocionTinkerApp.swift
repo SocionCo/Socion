@@ -38,13 +38,13 @@ struct SocionApp: App {
                             AgencyRegistrationView(selected: $selected, agencyRegistration: $agencyRegistration)
                         } else {
                             if viewmodel.user.isInfluencer {
-//                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
+                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 InfluencerTabSelector()
                             } else if viewmodel.user.isAgencyOwner {
-//                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
+                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 OwnerTabView()
                             } else {
-//                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
+                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 DefaultTabSelector()
                             }
                         }

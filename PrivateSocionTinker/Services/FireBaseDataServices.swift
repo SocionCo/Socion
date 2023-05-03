@@ -64,6 +64,22 @@ class FireBaseDataServices {
         }
     }
     
+    func assignTalentManagerToAgency (userID : String, agencyID : String) {
+        self.documentExists(agencyID: agencyID) { completion in
+            if completion {
+                print("3Calling document: \(userID)")
+                self.db.collection("users").document(userID).updateData([
+                    "agency" : agencyID
+                ])
+                print("Completion successful")
+            }
+            else {
+                print("Agency not found")
+            }
+        }
+    }
+
+    
     /// Initializes a new agency in FireStore. Initializes and fills in values for ownerID, agencyName, and puts it under a document with the name agencyID in the agencies collection. Intiailizes but does not store values in influencers and talent managers section.
     /// - Parameters:
     ///   - ownerId: UUID of the user that is the "Creator" of the Agency
@@ -158,6 +174,15 @@ class FireBaseDataServices {
             ])
     }
     
+    func addTalentManagerToAgency (agencyID : String, talentManagerID: String) {
+        db.collection("agencies").document(agencyID).updateData([
+            "talentManagers": FieldValue.arrayUnion([talentManagerID])
+            ])
+    }
+    
+    
+    
+    
     func getContracts(userID : String)  -> [Contract] {
         var returnArray : [Contract] = []
         print("1Calling document: \(userID)")
@@ -250,6 +275,22 @@ class FireBaseDataServices {
             ])
         }
     }
+    
+    
+    func approveManager(userID : String) {
+        let userRef = db.collection("users")
+        userRef.document(userID).updateData([
+            "isTalentManager" : true
+        ])
+    }
+    
+    func declineManager(agencyID : String, userID : String) {
+        let userRef = db.collection("agencies")
+        userRef.document(agencyID).updateData([
+            "talentManagers" : FieldValue.arrayRemove([userID])
+        ])
+    }
+
     
     
     

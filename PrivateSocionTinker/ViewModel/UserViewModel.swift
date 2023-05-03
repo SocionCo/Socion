@@ -79,6 +79,16 @@ class UserViewModel: ObservableObject {
         }
     }
     
+    func addTalentManagerToAgency (agencyID : String) {
+        if agencyID != "" && agencyID != " " {
+            if let userID = self.getID() {
+                FireBaseDataServices.shared.addTalentManagerToAgency(agencyID: agencyID, talentManagerID: userID)
+            } else {
+                print("User not logged in error")
+            }
+        }
+    }
+    
     /// LogIn Function: Called with a user name and password, and attempts to log in the user. If it is succesful, will update the UserID of the model, and will also call the addListeners() private function that will add listeners for the current session.
     /// - Parameter completion: callback that says wether or not login was successful
     func logIn(completion: @escaping (Bool) -> Void) {
@@ -173,6 +183,14 @@ class UserViewModel: ObservableObject {
     func attachInfluencerToAgency (agencyID : String) {
         if let userID = self.getID() {
             FireBaseDataServices.shared.assignInfluencerToAgency(userID: userID, agencyID: agencyID)
+        } else {
+            print("User not found")
+        }
+    }
+    
+    func attachTalentManagerToAgency (agencyID : String) {
+        if let userID = self.getID() {
+            FireBaseDataServices.shared.assignTalentManagerToAgency(userID: userID, agencyID: agencyID)
         } else {
             print("User not found")
         }
@@ -311,7 +329,7 @@ class UserViewModel: ObservableObject {
     
     func setLastName (name: String) {
         if let id = self.getID() {
-            FireBaseDataServices.shared.setFirstName(id: id, name: name)
+            FireBaseDataServices.shared.setLastName(id: id, name: name)
         } else {
             print("Failure")
         }
@@ -319,7 +337,7 @@ class UserViewModel: ObservableObject {
     
     func setFirstName (name: String) -> Void {
         if let id = self.getID() {
-            FireBaseDataServices.shared.setLastName(id: id, name: name)
+            FireBaseDataServices.shared.setFirstName(id: id, name: name)
         } else {
             print("Failure")
         }

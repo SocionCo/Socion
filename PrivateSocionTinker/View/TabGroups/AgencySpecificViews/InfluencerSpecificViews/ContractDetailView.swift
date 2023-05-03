@@ -53,13 +53,13 @@ struct ContractDetailView: View {
                             .shadow(color: primaryColor.opacity(0.2), radius: 10, x: 0, y: 5)
                         }.padding()
                         VStack(alignment: .leading, spacing: 20) {
-                            Text("Contract Details")
+                            Text("Campaign Details")
                                 .font(.largeTitle)
                                 .foregroundColor(primaryColor)
                             
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
-                                    Text("Contract Name:")
+                                    Text("Campaign Name:")
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()
