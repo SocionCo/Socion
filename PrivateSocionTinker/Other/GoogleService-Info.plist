@@ -4,8 +4,6 @@
 <dict>
 	<key>CLIENT_ID</key>
 	<string>647691221141-3gmfevujqj4u73gm6udlbq1dgksk4gnb.apps.googleusercontent.com</string>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>REVERSED_CLIENT_ID</key>
 	<string>com.googleusercontent.apps.647691221141-3gmfevujqj4u73gm6udlbq1dgksk4gnb</string>
 	<key>API_KEY</key>

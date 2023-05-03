@@ -32,7 +32,7 @@ struct AgentContractDetailView: View {
                     VStack {
                         taskBar.background(backgroundColor)
                         VStack(alignment: .leading, spacing: 20) {
-                            Text("Contract PDF")
+                            Text("Campaign PDF")
                                 .font(.largeTitle)
                                 .foregroundColor(primaryColor)
                             HStack {
@@ -60,13 +60,13 @@ struct AgentContractDetailView: View {
                             
                             
                         VStack(alignment: .leading, spacing: 20) {
-                            Text("Contract Details")
+                            Text("Campaign Details")
                                 .font(.largeTitle)
                                 .foregroundColor(primaryColor)
                             
                             VStack(alignment: .leading, spacing: 10) {
                                 HStack {
-                                    Text("Contract Name:")
+                                    Text("Campaign Name:")
                                         .font(.headline)
                                         .foregroundColor(primaryColor)
                                     Spacer()

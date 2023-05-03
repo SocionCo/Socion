@@ -124,9 +124,9 @@ struct ContractListView: View {
         }.sheet(isPresented: $editSheet, onDismiss: setValues) {
             VStack {
                 Form {
-                    Section(header: Text("Contract Information")) {
+                    Section(header: Text("Campaign Information")) {
                         TextField("Company Name", text: $tempCompanyName)
-                        TextField("Contract Name", text: $tempName)
+                        TextField("Campaign Name", text: $tempName)
                         Picker("Status", selection: $tempStatus) {
                             ForEach(Contract.Progress.allCases, id: \.self) {value in
                                 Text(value.rawValue)
@@ -134,7 +134,7 @@ struct ContractListView: View {
                         }
                         TextField("Post Link (optional)", text: $tempPostLink)
                         Toggle(isOn: $includeDate) {
-                            Text("Contract has due date")
+                            Text("Campaign has due date")
                         }
                         if (includeDate) {
                             DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
@@ -171,9 +171,9 @@ struct ContractListView: View {
             .sheet(isPresented: $addSheet, onDismiss: addNew) {
             VStack {
             Form {
-                Section(header: Text("Contract Information")) {
+                Section(header: Text("Campaign Information")) {
                     TextField("Company Name", text: $tempCompanyName)
-                    TextField("Contract Name", text: $tempName)
+                    TextField("Campaign Name", text: $tempName)
                     Picker("Status", selection: $tempStatus) {
                         ForEach(Contract.Progress.allCases, id: \.self) {value in
                             Text(value.rawValue)
@@ -181,7 +181,7 @@ struct ContractListView: View {
                     }
                     TextField("Post Link (optional)", text: $tempPostLink)
                     Toggle(isOn: $includeDate) {
-                        Text("Contract has due date")
+                        Text("Campaign has due date")
                     }
                     if (includeDate) {
                         DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
@@ -256,7 +256,7 @@ struct ContractListView: View {
             
             print("Updating status to \(tempStatus.rawValue)")
             userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted)
-            print("Contract status is:: \(contract.status.rawValue)")
+            print("Campaign status is:: \(contract.status.rawValue)")
             resetValues()
         }
     }

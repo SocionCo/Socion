@@ -17,12 +17,19 @@ Then open the .xcodeproj file in xCode and launch the simulator.
 ## Technologies
 Socion currently uses SwiftUI on the front end, and Swift and FireBase on the backend.
 
-##Features to be implemented:
+## Features to be implemented:
 -Reset Password
 -Meta / TikTok API integration
 -ContractListView remake
 -Rate View
 -SnapshotListeners don't fire when a member is removed
+-Scrollview on login
+-Talent Manager
+-Snapshot listener on refresh
 
-
-
+For the 15th:
+-Basic Crashes
+-Change Firestore
+-Contract vs Campaign
+-Image/Fire storage
+-Media Kit View

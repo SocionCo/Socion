@@ -9,7 +9,7 @@ import Foundation
 
  
 
-struct User : Hashable {
+struct User : Hashable, Identifiable {
     var id : String = ""
     var firstName: String = ""
     var lastName: String = ""

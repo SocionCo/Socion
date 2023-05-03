@@ -1,6 +1,8 @@
 import SwiftUI
 
 struct SocialMediaStats: View {
+    let backgroundColor = Color(.sRGB, red: 0.93, green: 0.96, blue: 0.93, opacity: 1.0)
+    let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     var body: some View {
         VStack {
             
@@ -13,6 +15,7 @@ struct SocialMediaStats: View {
                 .padding()
             }
         }.navigationTitle("Social Media Statistics")
+            .background(backgroundColor)
     }
 }
 
@@ -21,13 +24,14 @@ struct SocialMediaStatsView: View {
     var followers: Int
     var engagementRate: Double
     var color: Color
+    let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     
     var body: some View {
         VStack(spacing: 20) {
             HStack {
                 Text(title)
                     .font(.system(size: 18, weight: .semibold))
-                    .foregroundColor(.primary)
+                    .foregroundColor(primaryColor)
                 Spacer()
             }
             
@@ -35,7 +39,7 @@ struct SocialMediaStatsView: View {
                 TikTokFollowerCountView()
                 Spacer()
                 VStack(spacing: 15) {
-                    Text("Engagement:")
+                    Text("Engagement:").foregroundColor(primaryColor)
                     EngagementBarView(engagementRate: engagementRate, color: color)
                 }
             }
@@ -82,6 +86,7 @@ struct TikTokFollowerCountView: View {
     private let updateInterval: TimeInterval = 2
     private let increaseProbability: Double = 0.8
     private let maxDelta: Int = 10
+    let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
     
     var body: some View {
         VStack {
@@ -95,7 +100,7 @@ struct TikTokFollowerCountView: View {
                             .foregroundColor(.white)
                     }
                     .padding(10)
-                    .background(Color.green)
+                    .background(primaryColor)
                     .cornerRadius(10)
                     .shadow(radius: 5)
                 }

@@ -8,6 +8,7 @@ struct NoAgencyView: View {
     @State var showFailure = false
     @State var wasSuccessful = false
     @State var textFieldDisabled = false
+    @State var joiningAsTalentManager = false
     let pasteBoard = UIPasteboard.general
     var body: some View {
         
@@ -76,29 +77,59 @@ struct NoAgencyView: View {
                                 }
                             }
                         }
+                        Toggle(isOn: $joiningAsTalentManager) {
+                            Text("Join as Talent Manager?")
+                                .font(.subheadline)
+                        }
+                        Spacer()
                         
                         Button(action: {
                             textFieldDisabled = true
-                            userViewModel.attachInfluencerToAgency(agencyID: joinCode)
-                            FireBaseDataServices.shared.documentExists(agencyID: joinCode) { completion in
-                                print("Printing completion: \(completion)")
-                                if completion {
-                                    userViewModel.addInfluencerToAgency(agencyID: joinCode)
-                                    withAnimation {
-                                        showThankYou = true
+                            if !joiningAsTalentManager {
+                                userViewModel.attachInfluencerToAgency(agencyID: joinCode)
+                                FireBaseDataServices.shared.documentExists(agencyID: joinCode) { completion in
+                                    print("Printing completion: \(completion)")
+                                    if completion {
+                                        userViewModel.addInfluencerToAgency(agencyID: joinCode)
+                                        withAnimation {
+                                            showThankYou = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            codeSheet = false
+                                            showThankYou = false
+                                        }
+                                    } else {
+                                        withAnimation {
+                                            showFailure = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            codeSheet = false
+                                            showFailure = false
+                                            
+                                        }
                                     }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        codeSheet = false
-                                        showThankYou = false
-                                    }
-                                } else {
-                                    withAnimation {
-                                        showFailure = true
-                                    }
-                                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                                        codeSheet = false
-                                        showFailure = false
-                                        
+                                }
+                            } else {
+                                userViewModel.attachTalentManagerToAgency(agencyID: joinCode)
+                                FireBaseDataServices.shared.documentExists(agencyID: joinCode) {
+                                    completion in
+                                    if completion {
+                                        userViewModel.addTalentManagerToAgency(agencyID: joinCode)
+                                        withAnimation {
+                                            showThankYou = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            codeSheet = false
+                                            showThankYou = false
+                                        }
+                                    } else {
+                                        withAnimation {
+                                            showFailure = true
+                                        }
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                            codeSheet = false
+                                            showFailure = false
+                                        }
                                     }
                                 }
                             }
@@ -118,6 +149,7 @@ struct NoAgencyView: View {
                     .cornerRadius(16.0)
                     .padding(.horizontal, 20)
                     .presentationDetents([.fraction(0.4)])
+                    Spacer()
                     if showThankYou {
                         RoundedRectangle(cornerRadius: 16)
                             .foregroundColor(Color(red: 220/255, green: 220/255, blue: 220/255))

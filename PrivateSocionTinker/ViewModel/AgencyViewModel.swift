@@ -29,6 +29,10 @@ class AgencyViewModel : ObservableObject {
             print("INFLUENCERS SHOULD BE IN MODEL BY NOW")
             self.attachContractListeners(influencers: influencers)
         }
+        self.attachTalentManagerListenersToAgency(agencyID: userViewModel.user.agency!) {
+            talentManagers in
+            self.attachContractListeners(influencers: talentManagers)
+        }
         
     }
     
@@ -76,7 +80,7 @@ class AgencyViewModel : ObservableObject {
             
             for influencerID in influencers {
                 print("Adding listener to influencer")
-                self.attachSnapshotListenerToInvdividual(userID: influencerID) {
+                self.attachSnapshotListenerToInfluencer(userID: influencerID) {
                     if self.agency.influencers.count == influencers.count {
                         print("Finished adding influecers to model")
                         completion(influencers)
@@ -91,11 +95,51 @@ class AgencyViewModel : ObservableObject {
     
     }
     
+    
+    
+    
+    private func attachTalentManagerListenersToAgency(agencyID : String, completion :  @escaping ([String]) -> Void) {
+        FireBaseDataServices.shared.db.collection("agencies").document(agencyID).getDocument { document, error in
+            
+            guard let document = document else {
+                print("Error line 59 AgencyViewModel")
+                return
+            }
+            
+            guard let data = document.data() else {
+                print("Error line 64 AgencyViewModel")
+                return
+            }
+            
+            guard let talentManagers = data["talentManagers"] as? [String] else {
+                print("Error line 69 AgencyViewModel")
+                return
+            }
+            
+            for talentManagerID in talentManagers {
+                print("Adding listener to influencer")
+                self.attachSnapshotListenerToTalentManager(userID: talentManagerID) {
+                    if self.agency.talentManagers.count == talentManagers.count {
+                        print("Finished adding influecers to model")
+                        completion(talentManagers)
+                    }
+                }
+            }
+            
+            
+            
+            
+        }
+    
+    }
+    
+    
+    
     /// Part of the attachInfluencerInfoListenersToAgency function, just adds the listeners to each individual and updatesUserInfo whenever something changes in the form of creating a new UserObject with the current database settings.
     /// - Parameters:
     ///   - userID: <#userID description#>
     ///   - completion: <#completion description#>
-    private func attachSnapshotListenerToInvdividual (userID: String, completion : @escaping () -> Void) {
+    private func attachSnapshotListenerToInfluencer (userID: String, completion : @escaping () -> Void) {
         FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
             var userToRemove : User
             var indexToRemove : Int?
@@ -113,9 +157,44 @@ class AgencyViewModel : ObservableObject {
                     self.agency.influencers.remove(at:indexToRemove)
                 }
             }
+            
+            
+            
+            
             FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
                 print("Appending New User")
                 self.agency.influencers.append(newUser)
+                completion()
+            }
+        }
+    }
+    
+    
+    private func attachSnapshotListenerToTalentManager (userID: String, completion : @escaping () -> Void) {
+        FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
+            var userToRemove : User
+            var indexToRemove : Int?
+            var userExistsLocally : Bool = false
+            
+            for currentTalentManager in self.agency.talentManagers {
+                if currentTalentManager.id == userID {
+                    userExistsLocally = true
+                    userToRemove = currentTalentManager
+                    indexToRemove = self.agency.talentManagers.firstIndex(of: userToRemove)
+                }
+            }
+            if userExistsLocally {
+                if let indexToRemove = indexToRemove {
+                    self.agency.talentManagers.remove(at:indexToRemove)
+                }
+            }
+            
+            
+            
+            
+            FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
+                print("Appending New User")
+                self.agency.talentManagers.append(newUser)
                 completion()
             }
         }
@@ -221,6 +300,17 @@ class AgencyViewModel : ObservableObject {
     func removeInfluencerFromAgency (influencerID : String) {
         FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
     
+    }
+    
+    private func getAllRequests () -> [User] {
+        var talentManagerArray : [User] = []
+        
+        for talentManager in agency.talentManagers {
+            if (talentManager.IsTalentManager == false) {
+                talentManagerArray.append(talentManager)
+            }
+        }
+        return talentManagerArray
     }
     
     

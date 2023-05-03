@@ -26,9 +26,9 @@ struct ModelView: View {
                 if userViewModel.user.agency != nil {
                     Text("Owned Agency: \(String(userViewModel.user.agency!))")
                 }
-                Text("Contracts: ")
+                Text("Campaigns: ")
                 ForEach(userViewModel.user.contracts, id: \.self) { contract in
-                    Text("Contract: \(contract.name)")
+                    Text("Campaign: \(contract.name)")
                         Text("Tasks: ")
                         ForEach (contract.tasks, id: \.self) { task in
                             Text("Task: \(task)")
@@ -47,7 +47,7 @@ struct ModelView: View {
                     Text("Influencers:")
                     ForEach(userViewModel.agencyViewModel.agency.influencers, id: \.self) { influencer in
                         Text("\(influencer.firstName)")
-                        Text("Contracts: ")
+                        Text("Campaigns: ")
                         ForEach(influencer.contracts, id: \.self) { contract in
                             Text("Name: \(contract.name)")
                             Text("Tasks: ")
@@ -57,6 +57,11 @@ struct ModelView: View {
                                 
                             }
                         }
+                    }
+                    Text("TalentManagers:")
+                    ForEach(userViewModel.agencyViewModel.agency.talentManagers, id: \.self) { talentManager in
+                        Text("\(talentManager.firstName)")
+                        Text("Is manager: \(String(talentManager.IsTalentManager))")
                     }
                 }
             }
