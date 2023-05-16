@@ -40,7 +40,7 @@ struct SocionApp: App {
                             if viewmodel.user.isInfluencer {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 InfluencerTabSelector()
-                            } else if viewmodel.user.isAgencyOwner {
+                            } else if viewmodel.user.isAgencyOwner || viewmodel.user.IsTalentManager {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 OwnerTabView()
                             } else {

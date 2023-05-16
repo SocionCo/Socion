@@ -27,9 +27,11 @@ Socion currently uses SwiftUI on the front end, and Swift and FireBase on the ba
 -Talent Manager
 -Snapshot listener on refresh
 
+Bugs:
+-Accepting an invite doesn't immediately give access to agency stuff
+
 For the 15th:
 -Basic Crashes
 -Change Firestore
--Contract vs Campaign
 -Image/Fire storage
 -Media Kit View

@@ -6,6 +6,12 @@ struct ManageTalentManagers: View {
     @State var darkGreen = Color(red: 19/255, green: 87/255, blue: 65/255)
     @State var green = Color(red: 34/255, green: 139/255, blue: 34/255)
     @ObservedObject var agencyViewModel : AgencyViewModel
+    let pasteBoard = UIPasteboard.general
+    @State private var inviteSheet : Bool = false
+    @State private var linkCopied : Bool = false
+    @State private var isShowingPopup = false
+    @State private var selectedFriend : User?
+    
     
     var body: some View {
         ZStack {
@@ -67,7 +73,9 @@ struct ManageTalentManagers: View {
                         }
                         
                         HStack(spacing: 15) {
-                            Button(action: { }) {
+                            Button {
+                                inviteSheet = true
+                            } label: {
                                 VStack(spacing: 5) {
                                     Image(systemName: "plus.circle.fill")
                                         .font(.title)
@@ -81,7 +89,9 @@ struct ManageTalentManagers: View {
                                 .cornerRadius(10)
                             }
                             
-                            Button(action: { }) {
+                            Button {
+                                isShowingPopup = true
+                            } label: {
                                 VStack(spacing: 5) {
                                     Image(systemName: "minus.circle.fill")
                                         .font(.title)
@@ -163,6 +173,78 @@ struct ManageTalentManagers: View {
                 Spacer()
             }
         }.navigationBarTitleDisplayMode(.inline)
-            
+        .sheet(isPresented: $inviteSheet){
+            ZStack {
+                VStack {
+                    Text("Copy Agency Join Code Below")
+                        .font(.headline)
+                        .padding(.bottom, 20)
+                    HStack {
+                        TextField("Copy Join Code", text: $userViewModel.agencyViewModel.agency.id)
+                            .padding()
+                            .background(Color.white)
+                            .cornerRadius(8.0)
+                            .padding(.bottom, 20)
+                            .disabled(true)
+                        Image(systemName: "doc.on.clipboard.fill").onTapGesture {
+                            pasteBoard.string = userViewModel.user.agency
+                            print(userViewModel.agencyViewModel.agency.id)
+                            withAnimation {
+                                linkCopied = true
+                            }
+                            
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                withAnimation {
+                                    linkCopied = false
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+                
+                .padding()
+                .background(Color.white)
+                .cornerRadius(16.0)
+                .padding(.horizontal, 20)
+                .presentationDetents([.fraction(0.4)])
+                if linkCopied {
+                    RoundedRectangle(cornerRadius: 16)
+                        .foregroundColor(Color(red: 220/255, green: 220/255, blue: 220/255))
+                        .opacity(0.5)
+                        .frame(width: 125, height: 100)
+                        .overlay(
+                            VStack {
+                                Text("Link Copied")
+                            }
+                        )
+                }
+            }
+        }.sheet(isPresented: $isShowingPopup, content: {
+            VStack {
+                Text("Select a Talent Manager to Remove")
+                    .font(.title)
+                    .padding()
+                
+                List(agencyViewModel.agency.talentManagers, selection: $selectedFriend) { manager in
+                    Text("\(manager.firstName) \(manager.lastName)")
+                }
+                
+                Button(action: {
+                    if let manager = selectedFriend, let index = agencyViewModel.agency.talentManagers.firstIndex(of: manager) {
+                        agencyViewModel.agency.talentManagers.remove(at: index)
+                    }
+                    isShowingPopup = false
+                }) {
+                    Text("Remove")
+                        .foregroundColor(.white)
+                        .padding()
+                        .background(Color.red)
+                        .cornerRadius(10)
+                }
+                .disabled(selectedFriend == nil)
+            }
+            .padding()
+        })
     }
 }

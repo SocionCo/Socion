@@ -24,11 +24,12 @@ struct User : Hashable, Identifiable {
     var instagramUserName : String?
     var youtubeUserName : String?
     var notes : String = ""
+    var managedInfluencers : [String]?
     
     
     init(){}
     
-    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool, tikTokUserName : String, youtubeUserName : String, instagramUserName : String, notes : String) {
+    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool, tikTokUserName : String, youtubeUserName : String, instagramUserName : String, notes : String, managedInfluencers : [String]?) {
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -43,6 +44,7 @@ struct User : Hashable, Identifiable {
         self.instagramUserName = instagramUserName
         self.notes = notes
         self.youtubeUserName = youtubeUserName
+        self.managedInfluencers = managedInfluencers
         
     }
     

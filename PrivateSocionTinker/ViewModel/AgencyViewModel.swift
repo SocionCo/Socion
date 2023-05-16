@@ -373,6 +373,7 @@ class AgencyViewModel : ObservableObject {
     
     func removeInfluencerFromAgency (influencerID : String) {
         FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
+        
     
     }
     
@@ -411,11 +412,11 @@ class AgencyViewModel : ObservableObject {
     }
     
     
-    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks: [String], isCompleted : [Bool]) {
+    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks: [String], isCompleted : [Bool], influencerAssignedToContract : String? ) {
         let user = self.getOwnerOfContract(contract: contract)
         if let user = user {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted)
+            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract)
         } else {
             print("Auth Issue")
         }
@@ -444,6 +445,14 @@ class AgencyViewModel : ObservableObject {
             }
         }
         return returnArray
+    }
+    
+//    func getContractsForManager(talentManagerID : User) -> [Contract] {
+//
+//    }
+    
+    func getContractsForManager(talentManager : User) {
+        
     }
     
     func getInfluencers() -> [User] {

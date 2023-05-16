@@ -17,11 +17,25 @@ struct OwnerTabView: View {
                     Image(systemName: "dollarsign.circle")
                     Text("Payments")
                 }.tag(1)
-                ManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
-                    .tabItem {
-                    Image(systemName: "newspaper.fill")
-                    Text("View All Contracts")
-                    }.tag(2)
+                if (userViewModel.user.isAgencyOwner) {
+                    ManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
+                        .tabItem {
+                            Image(systemName: "newspaper.fill")
+                            Text("View All Contracts")
+                        }.tag(2)
+                } else if userViewModel.user.IsTalentManager {
+                    TalentManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
+                        .tabItem {
+                            Image(systemName: "newspaper.fill")
+                            Text("View All Contracts")
+                        }.tag(2)
+                } else {
+                    ErrorView()
+                        .tabItem {
+                            Image(systemName: "newspaper.fill")
+                            Text("View All Contracts")
+                        }.tag(2)
+                }
                 AgencyView().tabItem {
                     Image(systemName: "person.3.sequence")
                     Text("Agency Dashboard")

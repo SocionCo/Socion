@@ -63,11 +63,6 @@ struct ManageInfluencersView: View {
                             } label: {
                                 Text("Invite Influencer")
                             }
-                            Button {
-                                inviteSheet = true
-                            } label : {
-                                Text("Invite Talent Manager")
-                            }
 
 
 

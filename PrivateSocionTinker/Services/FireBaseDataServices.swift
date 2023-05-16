@@ -22,11 +22,12 @@ class FireBaseDataServices {
     ///   - firstName: First Name
     ///   - lastName: Last Name
     ///   - email: Email
-    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String) {
+    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String, managedInfluencers : [String]? ) {
         let userAgencyID : String = agency == nil ? String() : agency!
         let unwrappedTikTok : String = tikTokUserName == nil ? "" : tikTokUserName!
         let unwrappedYoutube : String = youtubeUserName == nil ? "" : youtubeUserName!
         let unwrappedInstagram : String = instagramUserName == nil ? "" : instagramUserName!
+        let unwrappedInfluencers : [String] = managedInfluencers == nil ? [] : managedInfluencers!
         print("1Calling document: \(id)")
         db.collection("users").document(id).setData([
             "email" : email,
@@ -39,7 +40,8 @@ class FireBaseDataServices {
             "tikTokUserName" : unwrappedTikTok,
             "instagramUserName" : unwrappedInstagram,
             "youtubeUserName" : unwrappedYoutube,
-            "notes" : notes
+            "notes" : notes,
+            "managedInfluencers" : unwrappedInfluencers
         ])
     }
     
@@ -135,6 +137,7 @@ class FireBaseDataServices {
         }
         let unwrappedDate = returnUnwrappedOrEmptyString(optional: Contract.dateToStringForStorage(date: contract.dueDate))
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: contract.postLink)
+        let unwrappedInfluencerAssigned = returnUnwrappedOrEmptyString(optional: contract.influencerAssignedToContract)
         print("5Calling document: \(contract.id)")
         print("6Calling document: \(id)")
         db.collection("users").document(id).collection("contracts").document(contract.id).setData([
@@ -146,7 +149,8 @@ class FireBaseDataServices {
             "postLink" : unwrappedPostLink,
             "dueDate" : unwrappedDate,
             "tasks" : contract.tasks,
-            "completedTasks" : contract.isCompletedArray
+            "completedTasks" : contract.isCompletedArray,
+            "influencerAssignedToContract" : unwrappedInfluencerAssigned
         ])
     }
     
@@ -280,7 +284,8 @@ class FireBaseDataServices {
     func approveManager(userID : String) {
         let userRef = db.collection("users")
         userRef.document(userID).updateData([
-            "isTalentManager" : true
+            "isTalentManager" : true,
+            "managedInfluencers" : []
         ])
     }
     
@@ -288,6 +293,9 @@ class FireBaseDataServices {
         let userRef = db.collection("agencies")
         userRef.document(agencyID).updateData([
             "talentManagers" : FieldValue.arrayRemove([userID])
+        ])
+        db.collection("users").document(userID).updateData([
+            "agency" : ""
         ])
     }
 
@@ -344,7 +352,7 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool]) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
@@ -365,7 +373,8 @@ class FireBaseDataServices {
             "postLink" : unwrappedPostLink,
             "dueDate" : unwrappedDueDate,
             "tasks" : tasks,
-            "completedTasks" : isCompletedArray
+            "completedTasks" : isCompletedArray,
+            "influencerAssignedToContract" : returnUnwrappedOrEmptyString(optional: influencerAssignedToContract)
         ])
     }
     
@@ -440,6 +449,10 @@ class FireBaseDataServices {
             
             if let notes : String = data["notes"] as? String {
                 returnUser.notes = notes
+            }
+            
+            if let managedInfluencerAsString : [String]? = data["managedInfluencers"] as? [String]? {
+                    returnUser.managedInfluencers = managedInfluencerAsString
             }
             
             
