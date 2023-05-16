@@ -49,11 +49,9 @@ struct ModelView: View {
                         Text("\(influencer.firstName)")
                         Text("\(influencer.lastName)")
                     }
-                    Text("TalentManagers:")
-                    ForEach(userViewModel.agencyViewModel.agency.talentManagers, id: \.self) { talentManager in
-                        Text("\(talentManager.firstName)")
-                        Text("\(talentManager.lastName)")
-                        Text("Is manager: \(String(talentManager.IsTalentManager))")
+                    Text("Requests:")
+                    ForEach(userViewModel.agencyViewModel.getAllRequests(), id: \.id) { talentManager in
+                        Text("Name: \(talentManager.firstName)")
                     }
                 }
             }

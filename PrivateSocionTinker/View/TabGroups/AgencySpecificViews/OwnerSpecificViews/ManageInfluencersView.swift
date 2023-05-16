@@ -19,13 +19,14 @@ struct ManageInfluencersView: View {
     @EnvironmentObject var userViewModel : UserViewModel
     @State private var tempUser : User = User()
     @State private var isPresentingConfirm : Bool = false
+    @ObservedObject var agencyViewModel : AgencyViewModel
         
         var body: some View {
                 VStack {
                     SearchBar(text: $searchText)
                         .padding(.top, 10)
                         .padding(.horizontal, 20)
-                    NavigationLink (destination: ManageTalentManagers()) {
+                    NavigationLink (destination: ManageTalentManagers(agencyViewModel: agencyViewModel)) {
                         Text("Manage Talent Managers")
                     }
                     List(userViewModel.agencyViewModel.agency.influencers.filter {

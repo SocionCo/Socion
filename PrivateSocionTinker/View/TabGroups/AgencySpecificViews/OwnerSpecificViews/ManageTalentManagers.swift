@@ -5,6 +5,7 @@ struct ManageTalentManagers: View {
     @State private var showMenu = false
     @State var darkGreen = Color(red: 19/255, green: 87/255, blue: 65/255)
     @State var green = Color(red: 34/255, green: 139/255, blue: 34/255)
+    @ObservedObject var agencyViewModel : AgencyViewModel
     
     var body: some View {
         ZStack {
@@ -16,6 +17,54 @@ struct ManageTalentManagers: View {
                             .font(.title)
                             .fontWeight(.bold)
                             .foregroundColor(.white)
+                        
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 20) {
+                                ForEach(agencyViewModel.agency.talentManagers) { user in
+                                    VStack(alignment: .leading, spacing: 10) {
+                                        Image(systemName: "person.crop.circle.fill")
+                                            .font(.system(size: 44))
+                                            .foregroundColor(.white)
+                                            .padding(.bottom, 10)
+                                        
+                                        
+                                        Text("\(user.firstName) \(user.lastName) ")
+                                            .font(.title3)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.white)
+                                        
+                                        HStack(spacing: 15) {
+                                            Button(action: {
+                                                withAnimation {
+                                                    agencyViewModel.approveTalentManager(userID: user.id)
+                                                }
+                                            }) {
+                                                Image(systemName: "checkmark.circle.fill")
+                                                    .foregroundColor(.white)
+                                                    .padding(10)
+                                                    .background(Color.green)
+                                                    .clipShape(Circle())
+                                            }
+                                            
+                                            Button(action: {
+                                                withAnimation {
+                                                    agencyViewModel.declineTalentManager(userID: user.id)
+                                                }
+                                            }) {
+                                                Image(systemName: "xmark.circle.fill")
+                                                    .foregroundColor(.white)
+                                                    .padding(10)
+                                                    .background(Color.red)
+                                                    .clipShape(Circle())
+                                            }
+                                        }
+                                    }
+                                }
+                                .frame(width: 200, height: 250)
+                                .background(darkGreen)
+                                .cornerRadius(20)
+                            }
+                        }
                         
                         HStack(spacing: 15) {
                             Button(action: { }) {
@@ -57,7 +106,7 @@ struct ManageTalentManagers: View {
                         
                         ScrollView(.horizontal, showsIndicators: false) {
                             HStack(spacing: 20) {
-                                ForEach(userViewModel.agencyViewModel.getAllRequests()) { user in
+                                ForEach(agencyViewModel.getAllRequests()) { user in
                                     VStack(alignment: .leading, spacing: 10) {
                                         Image(systemName: "person.crop.circle.fill")
                                             .font(.system(size: 44))
@@ -73,7 +122,7 @@ struct ManageTalentManagers: View {
                                         HStack(spacing: 15) {
                                             Button(action: {
                                                 withAnimation {
-                                                    userViewModel.agencyViewModel.approveTalentManager(userID: user.id)
+                                                    agencyViewModel.approveTalentManager(userID: user.id)
                                                 }
                                             }) {
                                                 Image(systemName: "checkmark.circle.fill")
@@ -85,7 +134,7 @@ struct ManageTalentManagers: View {
                                             
                                             Button(action: {
                                                 withAnimation {
-                                                    userViewModel.agencyViewModel.declineTalentManager(userID: user.id)
+                                                    agencyViewModel.declineTalentManager(userID: user.id)
                                                 }
                                             }) {
                                                 Image(systemName: "xmark.circle.fill")
@@ -113,6 +162,7 @@ struct ManageTalentManagers: View {
                 
                 Spacer()
             }
-        }
+        }.navigationBarTitleDisplayMode(.inline)
+            
     }
 }

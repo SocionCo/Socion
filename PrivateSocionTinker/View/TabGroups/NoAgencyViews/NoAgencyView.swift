@@ -34,7 +34,7 @@ struct NoAgencyView: View {
                         NavigationLink(destination: EditUserSettingsView()) {
                             navigationLinkView(destination: "Edit User Settings")
                         }
-                        NavigationLink(destination: ManageInfluencersView()) {
+                        NavigationLink(destination: ManageInfluencersView(agencyViewModel: userViewModel.agencyViewModel)) {
                             navigationLinkView(destination: "Manage Influencers")
                         }
                         
