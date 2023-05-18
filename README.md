@@ -29,6 +29,8 @@ Socion currently uses SwiftUI on the front end, and Swift and FireBase on the ba
 
 Bugs:
 -Accepting an invite doesn't immediately give access to agency stuff
+-Will be glitches if TM sends out multiple invites, need to restrict that 
+-Listener bugs with the way contracts update (don't update automatically when new influencer joins and will sometimes double populate)
 
 For the 15th:
 -Basic Crashes

@@ -68,6 +68,7 @@
 		DB90A1772A13E7AA0058283A /* TalentManagerContractList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */; };
 		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
 		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
+		DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */; };
 		DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */; };
 /* End PBXBuildFile section */
 
@@ -107,6 +108,7 @@
 		DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerContractList.swift; sourceTree = "<group>"; };
 		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
 		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerTabView.swift; sourceTree = "<group>"; };
 		DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -314,6 +316,7 @@
 			isa = PBXGroup;
 			children = (
 				DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */,
+				DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */,
 			);
 			path = ManagerSpecificViews;
 			sourceTree = "<group>";
@@ -450,6 +453,7 @@
 				DB67389C29E48F9900C561D9 /* InfluencerTabSelector.swift in Sources */,
 				DB0B235C2A0219D0009EBBAA /* ManageTalentManagers.swift in Sources */,
 				DB0760C229DCCA5600E27EB8 /* Contract.swift in Sources */,
+				DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */,
 				DB6A8FA429D80DEB0065DAED /* PathSelect.swift in Sources */,
 				DB76ED6729D7C1CE002ABA34 /* PrivateSocionTinkerApp.swift in Sources */,
 				DB6A8F9529D7D8560065DAED /* User.swift in Sources */,

@@ -184,6 +184,31 @@ class FireBaseDataServices {
             ])
     }
     
+    func removeTalentManagerFromAgency (agencyID : String, talentManagerID : String) {
+        db.collection("agencies").document(agencyID).updateData([
+            "talentManagers" : FieldValue.arrayRemove([talentManagerID])
+        ])
+        db.collection("users").document(talentManagerID).updateData([
+            "isTalentManager" : false,
+            "managedInfluencers" : []
+        ])
+    }
+    
+    func addInfluencerToTalentManager (talentManagerID : String, influencerID : String) {
+        let userRef = db.collection("users")
+        userRef.document(talentManagerID).updateData([
+            "managedInfluencers" : FieldValue.arrayUnion([influencerID])
+        ])
+    }
+    
+    func removeInfluencerFromTalentManager (talentManagerID : String, influencerID : String) {
+        let userRef = db.collection("users")
+        userRef.document(talentManagerID).updateData([
+            "managedInfluencers" : FieldValue.arrayRemove([influencerID])
+        ])
+    }
+    
+    
     
     
     
@@ -295,7 +320,8 @@ class FireBaseDataServices {
             "talentManagers" : FieldValue.arrayRemove([userID])
         ])
         db.collection("users").document(userID).updateData([
-            "agency" : ""
+            "agency" : "",
+            "isTalentManager" : false
         ])
     }
 
@@ -452,7 +478,7 @@ class FireBaseDataServices {
             }
             
             if let managedInfluencerAsString : [String]? = data["managedInfluencers"] as? [String]? {
-                    returnUser.managedInfluencers = managedInfluencerAsString
+                returnUser.managedInfluencers = managedInfluencerAsString == nil ? [] : managedInfluencerAsString
             }
             
             

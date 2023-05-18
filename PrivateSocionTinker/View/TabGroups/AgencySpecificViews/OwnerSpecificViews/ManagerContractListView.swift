@@ -40,6 +40,11 @@ struct ManagerContractListView: View {
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
                     .background(greenColor)
+                    .onTapGesture {
+                        for influencer in agencyViewModel.agency.influencers {
+                            print(influencer.firstName)
+                        }
+                    }
                 
                 SearchBar(searchText: $searchText)
                 

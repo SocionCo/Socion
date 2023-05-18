@@ -48,7 +48,7 @@ class UserViewModel: ObservableObject {
                 FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes, managedInfluencers: user.managedInfluencers)
                 addListeners(id: user.id) { completion in
                     if completion {
-                        if self.user.isInfluencer || self.user.isInfluencer || self.user.isAgencyOwner {
+                        if self.user.IsTalentManager || self.user.isInfluencer || self.user.isAgencyOwner {
                             print("Agency \(self.user.agency!)")
                             self.agencyViewModel.initiateAgencyListeners(userViewModel: self)
                         }
@@ -105,7 +105,7 @@ class UserViewModel: ObservableObject {
                 user.id = FireBaseAuthServices.shared.getLoggedInID() ?? ""
                 addListeners(id: user.id) { completion in
                     if completion {
-                        if self.user.isInfluencer || self.user.isInfluencer || self.user.isAgencyOwner {
+                        if self.user.isInfluencer || self.user.IsTalentManager || self.user.isAgencyOwner {
                             self.agencyViewModel.initiateAgencyListeners(userViewModel: self)
                         }
                     }
@@ -280,6 +280,14 @@ class UserViewModel: ObservableObject {
                 user.instagramUserName = nil
             } else {
                 user.instagramUserName = instagramUserName
+            }
+        }
+        
+        if let managedInfluencers : [String] = data["managedInfluencers"] as? [String] {
+            if managedInfluencers.isEmpty {
+                user.managedInfluencers = nil
+            } else {
+                user.managedInfluencers = managedInfluencers
             }
         }
         

@@ -40,12 +40,17 @@ struct TalentManagerContractListView: View {
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
                     .background(greenColor)
+                    .onTapGesture {
+                        for influencer in agencyViewModel.getInfluencersForManager(talentManager: userViewModel.user) {
+                            print(influencer.getFullName())
+                        }
+                    }
                 
                 SearchBar(searchText: $searchText)
                 
                 List {
                     Section {
-                        ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
+                        ForEach(agencyViewModel.getContractsForManager(talentManager: userViewModel.user).sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
                                 if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
                                     AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)

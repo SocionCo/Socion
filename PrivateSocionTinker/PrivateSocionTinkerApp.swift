@@ -29,7 +29,7 @@ struct SocionApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-//                ViewTest()
+//                PersonListView()
                 if (!selected) {
                     PathSelect(registered: $registered, selected: $selected, agencyRegistration: $agencyRegistration)
                 } else {
@@ -40,9 +40,12 @@ struct SocionApp: App {
                             if viewmodel.user.isInfluencer {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 InfluencerTabSelector()
-                            } else if viewmodel.user.isAgencyOwner || viewmodel.user.IsTalentManager {
+                            } else if viewmodel.user.isAgencyOwner {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 OwnerTabView()
+                            } else if viewmodel.user.IsTalentManager {
+//                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
+                                TalentManagerTabView()
                             } else {
 //                                ModelView(agencyViewModel: viewmodel.agencyViewModel)
                                 DefaultTabSelector()

@@ -33,6 +33,7 @@ class AgencyViewModel : ObservableObject {
             self.influencersAddedToModel = true
         }
         self.attachTalentManagerListenersToAgency(agencyID: userViewModel.user.agency!) { completion in
+            print("NININININININ")
             self.talentManagersAddedToModel = true
         }
         
@@ -123,9 +124,12 @@ class AgencyViewModel : ObservableObject {
                 self.attachSnapshotListenerToTalentManager(userID: talentManagerID) {
                     if self.agency.talentManagers.count == talentManagers.count {
                         completion(true)
-                        
                     }
                 }
+            }
+            
+            if talentManagers.count == 0 && self.agency.talentManagers.count == 0 {
+                completion(true)
             }
             
             
@@ -156,6 +160,7 @@ class AgencyViewModel : ObservableObject {
             }
             if userExistsLocally {
                 if let indexToRemove = indexToRemove {
+                    print("RemovingInfluencer2: \(self.agency.influencers[indexToRemove].getFullName())")
                     self.agency.influencers.remove(at:indexToRemove)
                 }
             }
@@ -165,7 +170,10 @@ class AgencyViewModel : ObservableObject {
             
             FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
                 print("Appending New User")
-                self.agency.influencers.append(newUser)
+                if userExistsLocally || !self.influencersAddedToModel {
+                    print("AddingInfluencer2: \(newUser.getFullName())")
+                    self.agency.influencers.append(newUser)
+                }
                 completion()
             }
         }
@@ -174,7 +182,7 @@ class AgencyViewModel : ObservableObject {
     
     private func attachSnapshotListenerToTalentManager (userID: String, completion : @escaping () -> Void) {
         FireBaseDataServices.shared.db.collection("users").document(userID).addSnapshotListener { snapshot, error in
-            print("SNAPSHOTFORTALENT")
+            print("SNAPSHOTFORTALENTFIRED")
             var userToRemove : User
             var indexToRemove : Int?
             var userExistsLocally : Bool = false
@@ -196,8 +204,10 @@ class AgencyViewModel : ObservableObject {
             
             
             FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
-                print("Appending New User")
-                self.agency.talentManagers.append(newUser)
+                print("Appending New Talent Manager")
+                if userExistsLocally || !self.talentManagersAddedToModel {
+                    self.agency.talentManagers.append(newUser)
+                }
                 completion()
             }
         }
@@ -214,14 +224,14 @@ class AgencyViewModel : ObservableObject {
                     self.initialPop = false
                     return
                 }
+                
                 print("Contract listener popped")
                 print("Edit made to: \(influencer) ")
                 print("Listing all influencers: ")
                 for influencer in self.agency.influencers {
                     print(influencer)
                 }
-                var userToRemove : User
-                var indexToRemove : Int?
+                var userToRemove : User = User()
                 var userExistsLocally : Bool = false
                 
                 for currentInfluencer in self.agency.influencers {
@@ -230,17 +240,18 @@ class AgencyViewModel : ObservableObject {
                         print("They are the same")
                         userExistsLocally = true
                         userToRemove = currentInfluencer
-                        indexToRemove = self.agency.influencers.firstIndex(of: userToRemove)
                     }
                 }
                 
-                FireBaseDataServices.shared.getUserFromID(userID: influencer ) {newUser in
-                    print("Appending New User")
-                    self.agency.influencers.append(newUser)
-                    if userExistsLocally {
-                        if let indexToRemove = indexToRemove {
-                            print("Removing user")
-                            self.agency.influencers.remove(at:indexToRemove)
+                if userExistsLocally {
+                    print("Entered First Local Existence")
+                    FireBaseDataServices.shared.getUserFromID(userID: influencer ) {newUser in
+                        print("New User Retrieved")
+                        if userExistsLocally {
+                            print("RemovingInfluencer3: \(userToRemove.getFullName())")
+                            self.agency.influencers.removeAll(where: {$0 == userToRemove})
+                            print("AddingInfluencer3: \(newUser.getFullName())")
+                            self.agency.influencers.append(newUser)
                         }
                     }
                 }
@@ -274,6 +285,7 @@ class AgencyViewModel : ObservableObject {
                     
                     //This means influencer has been removed
                     for oldInfluencerID in oldInfluencerIDArray {
+                        print("removingNewInfluencer")
                         if (!newInfluencerArray.contains(oldInfluencerID)) {
                             let userToRemove : Int = agency.influencers.firstIndex(where: {$0.id == oldInfluencerID})!
                             agency.influencers.remove(at: userToRemove)
@@ -283,11 +295,14 @@ class AgencyViewModel : ObservableObject {
                 }
                 else if influencersAddedToModel && newInfluencerArray.count > agency.influencers.count {
                     //This means an influencer has been added
-                    
+                    print("AddingNewInfluencerBaby")
                     for newInfluencerID in newInfluencerArray {
                         if (!oldInfluencerIDArray.contains(newInfluencerID)) {
                             FireBaseDataServices.shared.getUserFromID(userID: newInfluencerID) { newUser in
+                                print("AddingInfluencer1 \(newUser.getFullName())")
                                 self.agency.influencers.append(newUser)
+                                self.attachSnapshotListenerToInfluencer(userID: newInfluencerID, completion: {})
+                                self.attachContractListeners(influencers: [newUser.id])
                             }
                         }
                     }
@@ -296,12 +311,17 @@ class AgencyViewModel : ObservableObject {
             
             if let newTalentManagerArray : [String] = data["talentManagers"] as? [String] {
                 print("Entered String Array")
+                print("New Talent Manager Array:")
+                print(newTalentManagerArray)
+                print("Old Talent Manager Array:")
+                print(agency.talentManagers.map({$0.id}))
+                print("Boolean Result: \(self.talentManagersAddedToModel)")
                 let oldTalentManagerIDArray = agency.talentManagers.map{$0.id}
                 
                 if newTalentManagerArray.count != agency.talentManagers.count {
                     if newTalentManagerArray.count < agency.talentManagers.count {
                         print("Talent Manager removed")
-                        //This means influencer has been removed
+                        //This means talent manager has been removed
                         for oldtalentManagerID in oldTalentManagerIDArray {
                             if (!newTalentManagerArray.contains(oldtalentManagerID)) {
                                 let userToRemove : Int = agency.talentManagers.firstIndex(where: {$0.id == oldtalentManagerID})!
@@ -311,14 +331,14 @@ class AgencyViewModel : ObservableObject {
                         }
                     }
                     else if talentManagersAddedToModel && newTalentManagerArray.count > agency.talentManagers.count {
-                        //This means an influencer has been added
+                        //This means a talent manager has been added
                         print("newTalentManager")
                         for newTalentManagerID in newTalentManagerArray {
                             if (!oldTalentManagerIDArray.contains(newTalentManagerID)) {
                                 print("Adding user")
                                 FireBaseDataServices.shared.getUserFromID(userID: newTalentManagerID) { newUser in
-                                    print("Adding \(newUser.firstName)")
                                     self.agency.talentManagers.append(newUser)
+                                    self.attachSnapshotListenerToTalentManager(userID: newTalentManagerID, completion: {})
                                 }
                             }
                         }
@@ -363,6 +383,9 @@ class AgencyViewModel : ObservableObject {
     
     //MARK: Getters and Setters (Changers) for Agency
     
+    
+    
+    //Talent Manager Changers
     func approveTalentManager (userID : String) {
         FireBaseDataServices.shared.approveManager(userID: userID)
     }
@@ -373,8 +396,30 @@ class AgencyViewModel : ObservableObject {
     
     func removeInfluencerFromAgency (influencerID : String) {
         FireBaseDataServices.shared.removeInfluencerFromAgency(agencyID: self.getAgencyID(), influencerID: influencerID)
-        
+    }
     
+    func removeTalentManagerFromAgency (talentManagerID : String) {
+        FireBaseDataServices.shared.removeTalentManagerFromAgency(agencyID: self.getAgencyID(), talentManagerID: talentManagerID)
+    }
+    
+    func getAllTalentManagers () -> [User] {
+        var returnArray : [User] = []
+        
+        for talentManager in agency.talentManagers {
+            if (talentManager.IsTalentManager) {
+                returnArray.append(talentManager)
+            }
+        }
+        
+        return returnArray
+    }
+    
+    func assignInfluencerToTalentManager(talentManagerID : String, influencerID : String) {
+        FireBaseDataServices.shared.addInfluencerToTalentManager(talentManagerID: talentManagerID, influencerID: influencerID)
+    }
+    
+    func removeInfluencerFromTalentManager(talentManagerID : String, influencerID : String) {
+        FireBaseDataServices.shared.removeInfluencerFromTalentManager(talentManagerID: talentManagerID, influencerID: influencerID)
     }
     
     func getAllRequests () -> [User] {
@@ -447,11 +492,24 @@ class AgencyViewModel : ObservableObject {
         return returnArray
     }
     
-//    func getContractsForManager(talentManagerID : User) -> [Contract] {
-//
-//    }
+    func getInfluencersForManager (talentManager : User) -> [User] {
+        var managedInfluencers : [User] = []
+        print(talentManager.managedInfluencers!)
+        for influencer in agency.influencers {
+            if (talentManager.managedInfluencers!.contains(influencer.id)) {
+                managedInfluencers.append(influencer)
+            }
+        }
+        return managedInfluencers
+    }
     
-    func getContractsForManager(talentManager : User) {
+    func getContractsForManager(talentManager : User) -> [Contract] {
+        var returnArray : [Contract] = []
+        let managedInfluencers : [User] = getInfluencersForManager(talentManager: talentManager)
+        for influencer in managedInfluencers {
+            returnArray += influencer.contracts
+        }
+        return returnArray
         
     }
     

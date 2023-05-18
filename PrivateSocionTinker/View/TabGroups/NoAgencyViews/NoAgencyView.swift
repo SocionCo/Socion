@@ -77,14 +77,11 @@ struct NoAgencyView: View {
                                 }
                             }
                         }
-                        Toggle(isOn: $joiningAsTalentManager) {
-                            Text("Join as Talent Manager?")
-                                .font(.subheadline)
-                        }
-                        Spacer()
                         
                         Button(action: {
                             textFieldDisabled = true
+                            let first3 = String(joinCode.prefix(3))
+                            joiningAsTalentManager = first3 == "0T-"
                             if !joiningAsTalentManager {
                                 userViewModel.attachInfluencerToAgency(agencyID: joinCode)
                                 FireBaseDataServices.shared.documentExists(agencyID: joinCode) { completion in
@@ -110,6 +107,7 @@ struct NoAgencyView: View {
                                     }
                                 }
                             } else {
+                                joinCode = String(joinCode.dropFirst(3))
                                 userViewModel.attachTalentManagerToAgency(agencyID: joinCode)
                                 FireBaseDataServices.shared.documentExists(agencyID: joinCode) {
                                     completion in
