@@ -65,8 +65,10 @@
 		DB76EDAD29D7C45C002ABA34 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDAC29D7C45C002ABA34 /* FirebaseRemoteConfigSwift */; };
 		DB76EDAF29D7C45C002ABA34 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDAE29D7C45C002ABA34 /* FirebaseStorage */; };
 		DB76EDB129D7C45C002ABA34 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = DB76EDB029D7C45C002ABA34 /* FirebaseStorageCombine-Community */; };
+		DB90A1772A13E7AA0058283A /* TalentManagerContractList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */; };
 		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
 		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
+		DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */; };
 		DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */; };
 /* End PBXBuildFile section */
 
@@ -103,8 +105,10 @@
 		DB76ED6F29D7C1CF002ABA34 /* Persistence.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Persistence.swift; sourceTree = "<group>"; };
 		DB76ED7229D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = PrivateSocionTinker.xcdatamodel; sourceTree = "<group>"; };
 		DB76ED7929D7C292002ABA34 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerContractList.swift; sourceTree = "<group>"; };
 		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
 		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
+		DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerTabView.swift; sourceTree = "<group>"; };
 		DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -161,7 +165,6 @@
 			isa = PBXGroup;
 			children = (
 				DBCD493229FEF4C800BD3D95 /* SocialMediaStats */,
-				DB295B2F29E5FB5E00338639 /* ModelView.swift */,
 				DB67388329E0E5E700C561D9 /* DefaultTabSelector.swift */,
 				DB67389B29E48F9900C561D9 /* InfluencerTabSelector.swift */,
 				DB67388A29E0F8F700C561D9 /* EditUserSettingsView.swift */,
@@ -175,6 +178,7 @@
 		DB67388229E0E59B00C561D9 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
+				DB295B2F29E5FB5E00338639 /* ModelView.swift */,
 				DB0760C529DFC03B00E27EB8 /* ViewTest.swift */,
 			);
 			path = Tests;
@@ -183,6 +187,7 @@
 		DB67388929E0F88400C561D9 /* AgencySpecificViews */ = {
 			isa = PBXGroup;
 			children = (
+				DB90A1752A13E7870058283A /* ManagerSpecificViews */,
 				DB67389629E488FB00C561D9 /* InfluencerSpecificViews */,
 				DB67389529E488C500C561D9 /* OwnerSpecificViews */,
 			);
@@ -305,6 +310,15 @@
 				DBCD493029FDA84E00BD3D95 /* ErrorView.swift */,
 			);
 			path = Other;
+			sourceTree = "<group>";
+		};
+		DB90A1752A13E7870058283A /* ManagerSpecificViews */ = {
+			isa = PBXGroup;
+			children = (
+				DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */,
+				DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */,
+			);
+			path = ManagerSpecificViews;
 			sourceTree = "<group>";
 		};
 		DBCD493229FEF4C800BD3D95 /* SocialMediaStats */ = {
@@ -439,9 +453,11 @@
 				DB67389C29E48F9900C561D9 /* InfluencerTabSelector.swift in Sources */,
 				DB0B235C2A0219D0009EBBAA /* ManageTalentManagers.swift in Sources */,
 				DB0760C229DCCA5600E27EB8 /* Contract.swift in Sources */,
+				DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */,
 				DB6A8FA429D80DEB0065DAED /* PathSelect.swift in Sources */,
 				DB76ED6729D7C1CE002ABA34 /* PrivateSocionTinkerApp.swift in Sources */,
 				DB6A8F9529D7D8560065DAED /* User.swift in Sources */,
+				DB90A1772A13E7AA0058283A /* TalentManagerContractList.swift in Sources */,
 				DB6A8FAC29D88BFA0065DAED /* FireBaseDataServices.swift in Sources */,
 				DB6A8F9A29D7D9F90065DAED /* UserViewModel.swift in Sources */,
 				DB6A8FA229D7F92E0065DAED /* LogInView.swift in Sources */,

@@ -49,14 +49,25 @@ struct ModelView: View {
                         Text("\(influencer.firstName)")
                         Text("\(influencer.lastName)")
                     }
-                    Text("TalentManagers:")
-                    ForEach(userViewModel.agencyViewModel.agency.talentManagers, id: \.self) { talentManager in
-                        Text("\(talentManager.firstName)")
-                        Text("\(talentManager.lastName)")
-                        Text("Is manager: \(String(talentManager.IsTalentManager))")
+                    if (userViewModel.user.IsTalentManager) {
+                        Text("Manages:")
+                        if (userViewModel.user.managedInfluencers != nil) {
+                            Text(userViewModel.user.managedInfluencers!.description)
+                        } else {
+                            Text("Click Here For Updates").onTapGesture {
+                                if userViewModel.user.managedInfluencers != nil {
+                                    print(userViewModel.user.managedInfluencers!.description)
+                                }
+                            }
+                        }
                     }
                 }
             }
+        }.onTapGesture {
+            print("Requests:")
+            print(agencyViewModel.getAllRequests())
+            print("Managers:")
+            print(agencyViewModel.getAllTalentManagers())
         }
     }
 }

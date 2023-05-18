@@ -1,7 +1,7 @@
 // Test
 import SwiftUI
 
-struct ManagerContractListView: View {
+struct TalentManagerContractListView: View {
     @State var searchText = ""
     @EnvironmentObject private var userViewModel : UserViewModel
     @ObservedObject var agencyViewModel : AgencyViewModel
@@ -15,9 +15,9 @@ struct ManagerContractListView: View {
     @State var tempDueDate : Date = Date()
     @State var tempPaymentStatus : Contract.Progress = .notStarted
     @State var tempInfluencer = User()
-    @State var tempInfluencerAssigned : String = ""
     @State var tempTasks : [String] = []
     @State var tempCompleted : [Bool] = []
+    @State var tempInfluencerAssigned : String = ""
     @State var contracts : [Contract] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
@@ -41,8 +41,8 @@ struct ManagerContractListView: View {
                     .minimumScaleFactor(0.5)
                     .background(greenColor)
                     .onTapGesture {
-                        for influencer in agencyViewModel.agency.influencers {
-                            print(influencer.firstName)
+                        for influencer in agencyViewModel.getInfluencersForManager(talentManager: userViewModel.user) {
+                            print(influencer.getFullName())
                         }
                     }
                 
@@ -50,7 +50,7 @@ struct ManagerContractListView: View {
                 
                 List {
                     Section {
-                        ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
+                        ForEach(agencyViewModel.getContractsForManager(talentManager: userViewModel.user).sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
                                 if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
                                     AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)
@@ -135,9 +135,9 @@ struct ManagerContractListView: View {
                                     tempCompanyName = contract.company
                                     tempTasks = contract.tasks
                                     tempCompleted = contract.isCompletedArray
-                                    tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
+                                    tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
                                     if contract.rate != nil {
                                         tempRate = contract.rate!
                                     }
@@ -306,8 +306,8 @@ struct ManagerContractListView: View {
         tempPaymentStatus = .inProgress
         currentlyEditing = nil
         formSubmittable = false
-        tempInfluencerAssigned = ""
         tempInfluencer = User()
+        tempInfluencerAssigned = ""
         tempTasks = []
         
     }
@@ -335,7 +335,7 @@ struct ManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract : tempInfluencerAssigned)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)

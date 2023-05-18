@@ -24,8 +24,9 @@ struct Contract: Hashable, Identifiable {
     var dueDate : Date?
     var tasks : [String] = []
     var isCompletedArray : [Bool] = []
+    var influencerAssignedToContract : String?
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool]) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?) {
         self.id = id
         self.company = company
         self.status = status
@@ -36,6 +37,11 @@ struct Contract: Hashable, Identifiable {
         self.rate = rate
         self.tasks = tasks
         self.isCompletedArray = isCompletedArray
+        if influencerAssignedToContract == "" || influencerAssignedToContract == " " {
+            self.influencerAssignedToContract = nil
+        } else {
+            self.influencerAssignedToContract = influencerAssignedToContract
+        }
     }
     
     /// This function takes a String:Any map that has all of the appropriate fields, coming from the FireStore databse, and convert's it to a Contract object for use locally.
@@ -75,8 +81,13 @@ struct Contract: Hashable, Identifiable {
             unwrappedCompletion = stringMap["completedTasks"] as! [Bool]
         }
         
+        var unwrappedInfluencerID : String? = nil
+        if stringMap["influencerAssignedToContract"] != nil {
+            unwrappedInfluencerID = stringMap["influencerAssignedToContract"] as! String?
+        }
         
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion)
+        
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID)
         return contractToReturn
     }
     

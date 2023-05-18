@@ -24,8 +24,8 @@ struct AgencyView: View {
                     NavigationLink(destination: EditUserSettingsView()) {
                         navigationLinkView(destination: "Edit User Settings")
                     }
-                    if (userViewModel.user.isAgencyOwner || userViewModel.user.IsTalentManager) {
-                        NavigationLink(destination: ManageInfluencersView()) {
+                    if (userViewModel.user.isAgencyOwner) {
+                        NavigationLink(destination: ManageInfluencersView(agencyViewModel: userViewModel.agencyViewModel)) {
                             navigationLinkView(destination: "Manage Influencers")
                         }
                     }

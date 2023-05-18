@@ -45,10 +45,10 @@ class UserViewModel: ObservableObject {
                 print("isOwner: \(user.isAgencyOwner)")
                 print("Name: \(user.firstName)")
                 print("agency: \(user.agency ?? "")")
-                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes)
+                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes, managedInfluencers: user.managedInfluencers)
                 addListeners(id: user.id) { completion in
                     if completion {
-                        if self.user.isInfluencer || self.user.isInfluencer || self.user.isAgencyOwner {
+                        if self.user.IsTalentManager || self.user.isInfluencer || self.user.isAgencyOwner {
                             print("Agency \(self.user.agency!)")
                             self.agencyViewModel.initiateAgencyListeners(userViewModel: self)
                         }
@@ -105,7 +105,7 @@ class UserViewModel: ObservableObject {
                 user.id = FireBaseAuthServices.shared.getLoggedInID() ?? ""
                 addListeners(id: user.id) { completion in
                     if completion {
-                        if self.user.isInfluencer || self.user.isInfluencer || self.user.isAgencyOwner {
+                        if self.user.isInfluencer || self.user.IsTalentManager || self.user.isAgencyOwner {
                             self.agencyViewModel.initiateAgencyListeners(userViewModel: self)
                         }
                     }
@@ -283,6 +283,14 @@ class UserViewModel: ObservableObject {
             }
         }
         
+        if let managedInfluencers : [String] = data["managedInfluencers"] as? [String] {
+            if managedInfluencers.isEmpty {
+                user.managedInfluencers = nil
+            } else {
+                user.managedInfluencers = managedInfluencers
+            }
+        }
+        
         print("Checking agency")
         if let agency : String = data["agency"] as? String {
             print("Agency we retried:\(agency)")
@@ -318,10 +326,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String], isCompleted : [Bool]) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract)
         } else {
             print("Auth Issue")
         }

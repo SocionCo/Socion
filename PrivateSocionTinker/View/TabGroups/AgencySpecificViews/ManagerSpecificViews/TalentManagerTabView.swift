@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct OwnerTabView: View {
+struct TalentManagerTabView: View {
     @EnvironmentObject var userViewModel : UserViewModel
     @State private var selection = 2
     var body: some View {
@@ -17,8 +17,8 @@ struct OwnerTabView: View {
                     Image(systemName: "dollarsign.circle")
                     Text("Payments")
                 }.tag(1)
-                if (userViewModel.user.isAgencyOwner) {
-                    ManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
+                if userViewModel.user.IsTalentManager {
+                    TalentManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
                         .tabItem {
                             Image(systemName: "newspaper.fill")
                             Text("View All Contracts")
