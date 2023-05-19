@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseAuth
 import Firebase
+import SwiftUI
 
 /// The viewmodel class is the viewmodel for the User model. It accesses FireBaseAuthServices and FireBaseDataServices in order to access the FireStore database and do Authentication related things. All edit's to the model are not done directly through the viewmodel. Rather, intents called on the viewmodel will make changes to the FireStore database. On Register and on Log-in attach the listeners and call functions that will update the model as those listeners fire.
 class UserViewModel: ObservableObject {
@@ -290,6 +291,22 @@ class UserViewModel: ObservableObject {
                 user.managedInfluencers = managedInfluencers
             }
         }
+        
+        FireBaseStorageServices.shared.getProfilePicture(userID: user.id) {
+            exists,image in
+            
+            if exists {
+                if let image = image {
+                    self.user.profilePicture = Image(uiImage: image)
+                } else {
+                    print("Weird Error")
+                }
+            } else {
+                print("User Does Not Have Profile Picture")
+                self.user.profilePicture = Image.defaultImage
+            }
+        }
+        
         
         print("Checking agency")
         if let agency : String = data["agency"] as? String {

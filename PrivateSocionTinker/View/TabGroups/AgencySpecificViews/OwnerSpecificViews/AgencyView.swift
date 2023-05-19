@@ -37,7 +37,7 @@ struct AgencyView: View {
             }
             .navigationTitle("Dashboard")
             .foregroundColor(.white)
-        }.toolbarColorScheme(.dark, for: .navigationBar).tint(.white)
+        }.accentColor(.black)
     
     }
 }

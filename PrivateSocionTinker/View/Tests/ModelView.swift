@@ -61,6 +61,14 @@ struct ModelView: View {
                             }
                         }
                     }
+                    userViewModel.user.profilePicture
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .scaledToFill()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+
                 }
             }
         }.onTapGesture {

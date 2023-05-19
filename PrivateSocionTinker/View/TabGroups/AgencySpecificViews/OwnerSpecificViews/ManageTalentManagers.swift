@@ -285,20 +285,17 @@ struct PersonListView: View {
     @ObservedObject var agencyViewModel : AgencyViewModel
     
     var body: some View {
-            
-        NavigationView {
-            List(agencyViewModel.getAllTalentManagers()) { talentManager in
-                Text(talentManager.getFullName())
-                    .font(.headline)
-                    .onTapGesture {
-                        selectedTalentManager = talentManager
-                        selectedInfluencers = selectedTalentManager?.managedInfluencers
-                    }
-            }
-            .navigationTitle("Talent Managers")
-            .sheet(item: $selectedTalentManager) { talentManager in
-                AttributeListView(talentManager: talentManager, selectedInfluencers: $selectedInfluencers, agencyViewModel: agencyViewModel)
-            }
+        List(agencyViewModel.getAllTalentManagers()) { talentManager in
+            Text(talentManager.getFullName())
+                .font(.headline)
+                .onTapGesture {
+                    selectedTalentManager = talentManager
+                    selectedInfluencers = selectedTalentManager?.managedInfluencers
+                }
+        }
+        .navigationTitle("Talent Managers")
+        .sheet(item: $selectedTalentManager) { talentManager in
+            AttributeListView(talentManager: talentManager, selectedInfluencers: $selectedInfluencers, agencyViewModel: agencyViewModel)
         }
     }
 }

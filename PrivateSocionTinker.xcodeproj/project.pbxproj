@@ -69,6 +69,11 @@
 		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
 		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
 		DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */; };
+		DBE289A12A1681B900CEBA50 /* FireBaseStorageServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE289A02A1681B900CEBA50 /* FireBaseStorageServices.swift */; };
+		DBE289A42A1685D600CEBA50 /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE289A32A1685D600CEBA50 /* ImagePicker.swift */; };
+		DBE289A62A1691B600CEBA50 /* ChangePFPView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE289A52A1691B600CEBA50 /* ChangePFPView.swift */; };
+		DBE289A92A1691F100CEBA50 /* ImageMoveandScaleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE289A82A1691F100CEBA50 /* ImageMoveandScaleSheet.swift */; };
+		DBE289AB2A16923300CEBA50 /* ImageManipulation.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE289AA2A16923300CEBA50 /* ImageManipulation.swift */; };
 		DBEFCE2A29F02EF30045EDD5 /* SocialMediaStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */; };
 /* End PBXBuildFile section */
 
@@ -109,6 +114,11 @@
 		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
 		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerTabView.swift; sourceTree = "<group>"; };
+		DBE289A02A1681B900CEBA50 /* FireBaseStorageServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FireBaseStorageServices.swift; sourceTree = "<group>"; };
+		DBE289A32A1685D600CEBA50 /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
+		DBE289A52A1691B600CEBA50 /* ChangePFPView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangePFPView.swift; sourceTree = "<group>"; };
+		DBE289A82A1691F100CEBA50 /* ImageMoveandScaleSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMoveandScaleSheet.swift; sourceTree = "<group>"; };
+		DBE289AA2A16923300CEBA50 /* ImageManipulation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageManipulation.swift; sourceTree = "<group>"; };
 		DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SocialMediaStats.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -228,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				DB6A8F9729D7D8B00065DAED /* FireBaseAuthServices.swift */,
+				DBE289A02A1681B900CEBA50 /* FireBaseStorageServices.swift */,
 				DB6A8FAB29D88BFA0065DAED /* FireBaseDataServices.swift */,
 				DB6A8F9B29D7E38E0065DAED /* Authentication.swift */,
 			);
@@ -286,6 +297,7 @@
 		DB76EDB429D7C606002ABA34 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				DBE289A72A1691D500CEBA50 /* PFPManagement */,
 				DB67388029E0E57300C561D9 /* RegistrationAndLogIn */,
 				DB67388129E0E58800C561D9 /* TabGroups */,
 				DB67388229E0E59B00C561D9 /* Tests */,
@@ -304,6 +316,7 @@
 		DB76EDB729D7C638002ABA34 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				DBE289A22A1685AD00CEBA50 /* UIKit Photo */,
 				DB76ED6A29D7C1CF002ABA34 /* Assets.xcassets */,
 				DB76ED7929D7C292002ABA34 /* GoogleService-Info.plist */,
 				DB76ED7129D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodeld */,
@@ -327,6 +340,24 @@
 				DBEFCE2929F02EF30045EDD5 /* SocialMediaStats.swift */,
 			);
 			path = SocialMediaStats;
+			sourceTree = "<group>";
+		};
+		DBE289A22A1685AD00CEBA50 /* UIKit Photo */ = {
+			isa = PBXGroup;
+			children = (
+				DBE289A32A1685D600CEBA50 /* ImagePicker.swift */,
+				DBE289AA2A16923300CEBA50 /* ImageManipulation.swift */,
+			);
+			path = "UIKit Photo";
+			sourceTree = "<group>";
+		};
+		DBE289A72A1691D500CEBA50 /* PFPManagement */ = {
+			isa = PBXGroup;
+			children = (
+				DBE289A52A1691B600CEBA50 /* ChangePFPView.swift */,
+				DBE289A82A1691F100CEBA50 /* ImageMoveandScaleSheet.swift */,
+			);
+			path = PFPManagement;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -452,13 +483,18 @@
 				DB76ED7329D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodeld in Sources */,
 				DB67389C29E48F9900C561D9 /* InfluencerTabSelector.swift in Sources */,
 				DB0B235C2A0219D0009EBBAA /* ManageTalentManagers.swift in Sources */,
+				DBE289A42A1685D600CEBA50 /* ImagePicker.swift in Sources */,
 				DB0760C229DCCA5600E27EB8 /* Contract.swift in Sources */,
+				DBE289A92A1691F100CEBA50 /* ImageMoveandScaleSheet.swift in Sources */,
+				DBE289A62A1691B600CEBA50 /* ChangePFPView.swift in Sources */,
 				DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */,
 				DB6A8FA429D80DEB0065DAED /* PathSelect.swift in Sources */,
+				DBE289A12A1681B900CEBA50 /* FireBaseStorageServices.swift in Sources */,
 				DB76ED6729D7C1CE002ABA34 /* PrivateSocionTinkerApp.swift in Sources */,
 				DB6A8F9529D7D8560065DAED /* User.swift in Sources */,
 				DB90A1772A13E7AA0058283A /* TalentManagerContractList.swift in Sources */,
 				DB6A8FAC29D88BFA0065DAED /* FireBaseDataServices.swift in Sources */,
+				DBE289AB2A16923300CEBA50 /* ImageManipulation.swift in Sources */,
 				DB6A8F9A29D7D9F90065DAED /* UserViewModel.swift in Sources */,
 				DB6A8FA229D7F92E0065DAED /* LogInView.swift in Sources */,
 				DB6A8F9C29D7E38E0065DAED /* Authentication.swift in Sources */,

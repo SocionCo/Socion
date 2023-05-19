@@ -57,10 +57,27 @@ struct EditUserSettingsView: View {
                             .foregroundColor(.gray)
                     }
                 }
-                
-                
-                
             }
+                
+            Section(header: Text("Profile Picture")) {
+                Image(systemName: "person.crop.circle.fill")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 100, height: 100)
+                    .cornerRadius(50)
+                    .foregroundColor(.systemGray2)
+                
+                NavigationLink {
+                    ChangePFPView()
+                } label: {
+                    Text("Change Profile Picture")
+                        .foregroundColor(.blue)
+                }
+            }
+                
+                
+                
+            
         }.navigationTitle("Settings")
     }
 }

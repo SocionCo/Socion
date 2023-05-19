@@ -494,7 +494,9 @@ class AgencyViewModel : ObservableObject {
     
     func getInfluencersForManager (talentManager : User) -> [User] {
         var managedInfluencers : [User] = []
-        print(talentManager.managedInfluencers!)
+        if talentManager.managedInfluencers == nil {
+            return []
+        }
         for influencer in agency.influencers {
             if (talentManager.managedInfluencers!.contains(influencer.id)) {
                 managedInfluencers.append(influencer)

@@ -22,7 +22,7 @@ class FireBaseDataServices {
     ///   - firstName: First Name
     ///   - lastName: Last Name
     ///   - email: Email
-    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String, managedInfluencers : [String]? ) {
+    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String, managedInfluencers : [String]?) {
         let userAgencyID : String = agency == nil ? String() : agency!
         let unwrappedTikTok : String = tikTokUserName == nil ? "" : tikTokUserName!
         let unwrappedYoutube : String = youtubeUserName == nil ? "" : youtubeUserName!
@@ -43,6 +43,7 @@ class FireBaseDataServices {
             "notes" : notes,
             "managedInfluencers" : unwrappedInfluencers
         ])
+        
     }
     
 
@@ -479,6 +480,21 @@ class FireBaseDataServices {
             
             if let managedInfluencerAsString : [String]? = data["managedInfluencers"] as? [String]? {
                 returnUser.managedInfluencers = managedInfluencerAsString == nil ? [] : managedInfluencerAsString
+            }
+            
+            FireBaseStorageServices.shared.getProfilePicture(userID: userID) {
+                exists, image in
+                if exists {
+                    print("User Profile Picture Exists and was added")
+                    if let image = image {
+                        returnUser.profilePicture = Image(uiImage: image)
+                    } else {
+                        print("Weird Error")
+                    }
+                } else {
+                    print("User Profile Picture Does Not Exist")
+                    returnUser.profilePicture = Image.defaultImage
+                }
             }
             
             

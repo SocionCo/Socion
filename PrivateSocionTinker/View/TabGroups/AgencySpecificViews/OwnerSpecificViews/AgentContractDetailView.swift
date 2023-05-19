@@ -8,8 +8,9 @@ struct AgentContractDetailView: View {
     @State var userID : String
     @State var newTask: String = ""
     @State var contractID: String
-    @State var presentImporter = false
     @Environment(\.dismiss) private var dismiss
+    @State var showPhotoLibrary : Bool = false
+    @State var image : UIImage = UIImage()
     
     var userIndex : Int {
         return userViewModel.agencyViewModel.agency.influencers.firstIndex(where: {$0.id == userID})!
@@ -40,17 +41,11 @@ struct AgentContractDetailView: View {
                                     .font(.headline)
                                     .foregroundColor(primaryColor)
                                 Spacer()
-                                Button {
-                                    presentImporter = true
-                                } label: {
+                                NavigationLink {
+                                    ChangePFPView()
+                                }
+                                 label: {
                                     Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
-                                }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
-                                    switch result {
-                                    case .success(let url):
-                                        print(url)
-                                    case .failure(let error):
-                                        print(error)
-                                    }
                                 }
                             }.padding()
                             .background(secondaryColor)
@@ -142,7 +137,8 @@ struct AgentContractDetailView: View {
                         Spacer()
                 }
             }
-        }.toolbar {
+        }
+        .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     dismiss()

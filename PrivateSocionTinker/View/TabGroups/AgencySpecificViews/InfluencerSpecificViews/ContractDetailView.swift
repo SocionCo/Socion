@@ -7,8 +7,9 @@ struct ContractDetailView: View {
     @EnvironmentObject var userViewModel : UserViewModel
     @State var newTask: String = ""
     @State var contractID: String
-    @State private var presentImporter = false
     @Environment(\.dismiss) private var dismiss
+    @State var showPhotoLibrary : Bool = false
+    @State var image : UIImage = UIImage()
     
     var currentIndex : Int {
         userViewModel.user.contracts.firstIndex(where: {$0.id == contractID})!
@@ -36,16 +37,9 @@ struct ContractDetailView: View {
                                     .foregroundColor(primaryColor)
                                 Spacer()
                                 Button {
-                                    presentImporter = true
+                                    showPhotoLibrary = true
                                 } label: {
                                     Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
-                                }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
-                                    switch result {
-                                    case .success(let url):
-                                        print(url)
-                                    case .failure(let error):
-                                        print(error)
-                                    }
                                 }
                             }.padding()
                             .background(secondaryColor)
@@ -125,16 +119,9 @@ struct ContractDetailView: View {
                                         .foregroundColor(primaryColor)
                                     Spacer()
                                     Button {
-                                       presentImporter = true
+                                       showPhotoLibrary = true
                                     } label: {
                                         Image(systemName: "tray.and.arrow.up").foregroundColor(primaryColor)
-                                    }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
-                                        switch result {
-                                        case .success(let url):
-                                            print(url)
-                                        case .failure(let error):
-                                            print(error)
-                                        }
                                     }
                                 }
                                 
@@ -153,7 +140,9 @@ struct ContractDetailView: View {
                         Spacer()
                 }
             }
-        }.toolbar {
+        }
+
+        .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
                     dismiss()
