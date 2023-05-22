@@ -29,7 +29,7 @@ struct SocionApp: App {
     var body: some Scene {
         WindowGroup {
             NavigationView {
-//                PersonListView()
+//                ViewTest()
                 if (!selected) {
                     PathSelect(registered: $registered, selected: $selected, agencyRegistration: $agencyRegistration)
                 } else {

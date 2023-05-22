@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseAuth
 import Firebase
+import SwiftUI
 
 /// The viewmodel class is the viewmodel for the User model. It accesses FireBaseAuthServices and FireBaseDataServices in order to access the FireStore database and do Authentication related things. All edit's to the model are not done directly through the viewmodel. Rather, intents called on the viewmodel will make changes to the FireStore database. On Register and on Log-in attach the listeners and call functions that will update the model as those listeners fire.
 class UserViewModel: ObservableObject {
@@ -134,6 +135,9 @@ class UserViewModel: ObservableObject {
         let userRef = FireBaseDataServices.shared.db.collection("users").document(id)
         
         userRef.addSnapshotListener {documentSnapshot, error in
+            if id != self.user.id {
+                return
+            }
             print("Listener Triggered")
             guard let document = documentSnapshot else {
                 print("Error with fetch")
@@ -291,6 +295,22 @@ class UserViewModel: ObservableObject {
             }
         }
         
+        FireBaseStorageServices.shared.getProfilePicture(userID: user.id) {
+            exists,image in
+            
+            if exists {
+                if let image = image {
+                    self.user.profilePicture = Image(uiImage: image)
+                } else {
+                    print("Weird Error")
+                }
+            } else {
+                print("User Does Not Have Profile Picture")
+                self.user.profilePicture = Image.defaultImage
+            }
+        }
+        
+        
         print("Checking agency")
         if let agency : String = data["agency"] as? String {
             print("Agency we retried:\(agency)")
@@ -303,6 +323,12 @@ class UserViewModel: ObservableObject {
         }
         completion(true)
         print(data)
+    }
+    
+    //MARK: LOCAL CHANGES, THESE FUNCTIONS DON'T INTERACT WITH FIREBASE AND SHOULD ONLY BE USED IF THE DATABSE IS ALSO BEING UPDATED
+    
+    func updateProfilePicLocally (image : UIImage) {
+        user.profilePicture = Image(uiImage: image)
     }
     
     
@@ -326,10 +352,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, miscellaneous: miscellaneous, notes: notes)
         } else {
             print("Auth Issue")
         }

@@ -13,7 +13,9 @@ struct ContractListView: View {
     @State var tempPostLink : String = ""
     @State var tempDueDate : Date = Date()
     @State var tempInfluencerAssigned : String = ""
-    @State var tempPaymentStatus : Contract.Progress = .notStarted
+    @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
+    @State var tempNotes : String = ""
+    @State var tempMiscellaneous : String = ""
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
@@ -28,101 +30,63 @@ struct ContractListView: View {
     
     var body: some View {
         NavigationStack {
-            VStack {
-                Text(userViewModel.getName())
-                    .frame(width: 700, height: 80)
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .minimumScaleFactor(0.5)
-                    .background(greenColor)
+            VStack (alignment: .center, spacing: 0) {
+                Group {
+                    Text(userViewModel.getName())
+                        .foregroundColor(.white)
+                        .frame(width: 700, height: 80)
+                        .font(.largeTitle)
+                        .fontWeight(.bold)
+                        .minimumScaleFactor(0.5)
+                    
+                    SearchBar(searchText: $searchText)
+                }
+                .background(.green)
                 
-                SearchBar(searchText: $searchText)
                 
-                List {
-                    Section {
-                        ForEach(userViewModel.user.contracts.sorted(by: sorterForDates)) { contract in
-                            NavigationLink {
-                                ContractDetailView(contractID: contract.id)
-                            }
-                        label: {
-                            HStack {
-                                VStack (alignment: .leading, spacing: 8) {
-                                    Text(contract.company)
-                                        .font(.title)
+                List() {
+                    ForEach (userViewModel.user.contracts.sorted(by: sorterForDates), id: \.self) { campaign in
+                        NavigationLink {
+                            ContractDetailView(contractID: campaign.id)
+                        } label: {
+                            VStack(alignment: .leading, spacing: 5) {
+                                Text(campaign.name)
+                                    .font(.title3)
+                                    .lineLimit(1)
+                                    .bold()
+                                    .padding(.bottom, 5.0)
+                                HStack (spacing: 10) {
+                                    Text("Campaign Status")
+                                        .foregroundColor(.gray)
+                                        .bold()
+                                        .listRowSeparator(.hidden)
+                                    Text(campaign.getStatus().rawValue)
+                                        .foregroundColor(.white)
                                         .fontWeight(.bold)
-                                        .foregroundColor(greenColor)
-                                    HStack {
-                                        Text(contract.status.rawValue)
-                                            .padding(.all, 7.0)
-                                            .font(.title2)
-                                            .foregroundColor(statusColor(contract: contract))
-                                        if let dueDate = contract.dueDate {
-                                            let dueString = Contract.timeUntilDate(date: dueDate)
-                                            Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
-                                                .font(.title2)
-                                                .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                        }
-                                    }
+                                        .frame(width: 110, height: 25)
+                                        .background(Contract.statusColor(contract: campaign))
+                                        .cornerRadius(20)
                                 }
-                                Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.black)
+                                HStack (spacing: 20) {
+                                    Text("Payment Status:")
+                                        .listRowSeparator(.hidden)
+                                        .foregroundColor(.gray)
+                                        .bold()
+                                    Text(campaign.paymentStatus.rawValue)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.bold)
+                                        .frame(width: 110, height: 25)
+                                        .background(Contract.paymentStatusColor(contract: campaign))
+                                        .cornerRadius(20)
+                                }
                             }
-                        }
-                        }
-                        .padding(.vertical)
-                        
+                        }.listRowBackground (
+                            RoundedRectangle(cornerRadius: 17)
+                                .fill(Color.white)
+                                .padding(2))
                     }
-                }
-                .listStyle(.plain)
+                }.listStyle(.automatic)
             }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button {
-                        withAnimation {
-                            authentication.updateValidation(success: false)
-                            userViewModel.logOut()
-                        }
-                    } label: {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
-                    }
-                }
-                ToolbarItem {
-                    Menu("Manage") {
-                        Button("New Contract") {
-                            addSheet = true
-                            formSubmittable = true
-                        }
-                        Menu("Delete Contract") {
-                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
-                                Button(contract.company) {
-                                    userViewModel.deleteContract(contract: contract)
-                                }
-                            }
-                        }
-                        Menu("Edit") {
-                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
-                                Button(contract.company) {
-                                    tempStatus = contract.status
-                                    tempName = contract.name
-                                    tempCompanyName = contract.company
-                                    currentlyEditing = contract
-                                    tempPaymentStatus = contract.paymentStatus
-                                    tempTasks = contract.tasks
-                                    tempCompleted = contract.isCompletedArray
-                                    tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
-                                    if contract.rate != nil {
-                                        tempRate = contract.rate!
-                                    }
-                                    if contract.dueDate != nil {
-                                        tempDueDate = contract.dueDate!
-                                    }
-                                    editSheet.toggle()
-                                }
-                            }
-                        }
-                    }
-                }
-            }.foregroundColor(.white)
         }.sheet(isPresented: $editSheet, onDismiss: setValues) {
             VStack {
                 Form {
@@ -134,6 +98,9 @@ struct ContractListView: View {
                                 Text(value.rawValue)
                             }
                         }
+                        TextField("Notes:", text: $tempNotes, axis: .vertical)
+                            .lineLimit(2...5)
+                        TextField("Miscellaneous", text: $tempMiscellaneous)
                         TextField("Post Link (optional)", text: $tempPostLink)
                         Toggle(isOn: $includeDate) {
                             Text("Campaign has due date")
@@ -145,7 +112,7 @@ struct ContractListView: View {
                         }
                         TextField("Rate (optional)", value: $tempRate, format: .number)
                         Picker("Payment Status", selection: $tempPaymentStatus) {
-                            ForEach(Contract.Progress.allCases, id: \.self) {value in
+                            ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
                                 Text(value.rawValue)
                             }
                         }
@@ -192,7 +159,7 @@ struct ContractListView: View {
                     }
                     TextField("Rate (optional)", value: $tempRate, format: .number)
                     Picker("Payment Status", selection: $tempPaymentStatus) {
-                        ForEach(Contract.Progress.allCases, id: \.self) {value in
+                        ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
                             Text(value.rawValue)
                         }
                     }
@@ -257,8 +224,8 @@ struct ContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned)
-            print("Campaign status is:: \(contract.status.rawValue)")
+            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+            print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
     }
@@ -270,12 +237,14 @@ struct ContractListView: View {
         tempStatus = .inProgress
         tempDueDate = Date()
         tempPostLink = ""
-        tempPaymentStatus = .inProgress
+        tempPaymentStatus = .notPaid
         tempInfluencerAssigned = ""
         currentlyEditing = nil
         formSubmittable = false
         tempTasks = []
         tempCompleted = []
+        tempMiscellaneous = ""
+        tempNotes = ""
 
     }
     
@@ -302,22 +271,12 @@ struct ContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
         
         userViewModel.addContract(contract: contractToAdd)
         resetValues()
     }
         
-    func statusColor(contract: Contract) -> Color {
-        switch contract.status {
-        case.notStarted:
-            return Color(red: 232/255, green: 142/255, blue: 143/255)
-        case .inProgress:
-            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
-        case .done:
-            return greenColor
-        }
-    }
     
     struct SearchBar: View {
         @Binding var searchText: String

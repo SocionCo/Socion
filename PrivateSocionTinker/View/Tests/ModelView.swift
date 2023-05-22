@@ -47,7 +47,11 @@ struct ModelView: View {
                     Text("Influencers:")
                     ForEach(userViewModel.agencyViewModel.agency.influencers, id: \.self) { influencer in
                         Text("\(influencer.firstName)")
-                        Text("\(influencer.lastName)")
+                        influencer.profilePicture
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .cornerRadius(50)
                     }
                     if (userViewModel.user.IsTalentManager) {
                         Text("Manages:")
@@ -61,6 +65,14 @@ struct ModelView: View {
                             }
                         }
                     }
+                    userViewModel.user.profilePicture
+                        .resizable()
+                        .frame(width: 100, height: 100)
+                        .scaledToFill()
+                        .aspectRatio(contentMode: .fit)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+
                 }
             }
         }.onTapGesture {

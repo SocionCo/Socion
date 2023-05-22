@@ -13,7 +13,6 @@ struct NoAgencyView: View {
     var body: some View {
         
         ZStack {
-            NavigationView {
                 ZStack {
                     LinearGradient(gradient: Gradient(colors: [Color.white, Color.green.opacity(0.6)]), startPoint: .topLeading, endPoint: .bottomTrailing)
                         .edgesIgnoringSafeArea(.all)
@@ -43,11 +42,9 @@ struct NoAgencyView: View {
                     .padding(.top, 80)
                     .padding(.horizontal)
                 }.blur(radius: 20).disabled(true)
-                
-            }
-            .navigationTitle("Dashboard")
-            .foregroundColor(.white)
-            .toolbarColorScheme(.dark, for: .navigationBar).blur(radius: 20)
+                .navigationTitle("Dashboard")
+                .foregroundColor(.white)
+                .toolbarColorScheme(.dark, for: .navigationBar).blur(radius: 20)
             
             HStack {
                 Spacer()

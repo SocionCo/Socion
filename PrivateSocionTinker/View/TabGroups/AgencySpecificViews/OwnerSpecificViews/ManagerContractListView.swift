@@ -13,7 +13,9 @@ struct ManagerContractListView: View {
     @State var tempRate : Double = 0
     @State var tempPostLink : String = ""
     @State var tempDueDate : Date = Date()
-    @State var tempPaymentStatus : Contract.Progress = .notStarted
+    @State var tempNotes : String = ""
+    @State var tempMiscellaneous : String = ""
+    @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
     @State var tempInfluencer = User()
     @State var tempInfluencerAssigned : String = ""
     @State var tempTasks : [String] = []
@@ -40,17 +42,12 @@ struct ManagerContractListView: View {
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
                     .background(greenColor)
-                    .onTapGesture {
-                        for influencer in agencyViewModel.agency.influencers {
-                            print(influencer.firstName)
-                        }
-                    }
                 
                 SearchBar(searchText: $searchText)
                 
                 List {
                     Section {
-                        ForEach(agencyViewModel.getContracts().sorted(by: sorterForDates), id: \.self) { contract in
+                        ForEach(agencyViewModel.getContracts(getCompletedContracts: false).sorted(by: sorterForDates), id: \.self) { contract in
                             NavigationLink {
                                 if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
                                     AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)
@@ -71,9 +68,9 @@ struct ManagerContractListView: View {
                                         .fontWeight(.bold)
                                         .foregroundColor(.black)
                                     
-                                    Text(contract.status.rawValue)
+                                    Text(contract.getStatus().rawValue)
                                         .font(.title2)
-                                        .foregroundColor(statusColor(contract: contract))
+                                        .foregroundColor(Contract.statusColor(contract: contract))
                                     
                                     if let dueDate = contract.dueDate {
                                         if refresh || !refresh {
@@ -130,7 +127,7 @@ struct ManagerContractListView: View {
                         Menu("Edit") {
                             ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
                                 Button(contract.company) {
-                                    tempStatus = contract.status
+                                    tempStatus = contract.getStatus()
                                     tempName = contract.name
                                     tempCompanyName = contract.company
                                     tempTasks = contract.tasks
@@ -138,6 +135,8 @@ struct ManagerContractListView: View {
                                     tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
                                     currentlyEditing = contract
                                     tempPaymentStatus = contract.paymentStatus
+                                    tempMiscellaneous = contract.miscellaneous
+                                    tempNotes = contract.notes
                                     if contract.rate != nil {
                                         tempRate = contract.rate!
                                     }
@@ -164,6 +163,9 @@ struct ManagerContractListView: View {
                                 Text(value.rawValue)
                             }
                         }
+                        TextField("Notes:", text: $tempNotes, axis: .vertical)
+                            .lineLimit(2...5)
+                        TextField("Miscellaneous", text: $tempMiscellaneous)
                         TextField("Post Link (optional)", text: $tempPostLink)
                         Toggle(isOn: $includeDate) {
                             Text("Campaign has due date")
@@ -175,7 +177,7 @@ struct ManagerContractListView: View {
                         }
                         TextField("Rate (optional)", value: $tempRate, format: .number)
                         Picker("Payment Status", selection: $tempPaymentStatus) {
-                            ForEach(Contract.Progress.allCases, id: \.self) {value in
+                            ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
                                 Text(value.rawValue)
                             }
                         }
@@ -223,7 +225,7 @@ struct ManagerContractListView: View {
                                 }
                                 TextField("Rate (optional)", value: $tempRate, format: .number)
                                 Picker("Payment Status", selection: $tempPaymentStatus) {
-                                    ForEach(Contract.Progress.allCases, id: \.self) {value in
+                                    ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
                                         Text(value.rawValue)
                                     }
                                 }
@@ -289,8 +291,8 @@ struct ManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned)
-            print("Campaign status is:: \(contract.status.rawValue)")
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+            print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
     }
@@ -303,12 +305,14 @@ struct ManagerContractListView: View {
         tempDueDate = Date()
         tempPostLink = ""
         tempCompleted = []
-        tempPaymentStatus = .inProgress
+        tempPaymentStatus = .notPaid
         currentlyEditing = nil
         formSubmittable = false
         tempInfluencerAssigned = ""
         tempInfluencer = User()
         tempTasks = []
+        tempMiscellaneous = ""
+        tempNotes = ""
         
     }
     
@@ -335,22 +339,11 @@ struct ManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract : tempInfluencerAssigned)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract : tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)
         resetValues()
-    }
-    
-    func statusColor(contract: Contract) -> Color {
-        switch contract.status {
-        case.notStarted:
-            return Color(red: 232/255, green: 142/255, blue: 143/255)
-        case .inProgress:
-            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
-        case .done:
-            return greenColor
-        }
     }
     
     struct SearchBar: View {

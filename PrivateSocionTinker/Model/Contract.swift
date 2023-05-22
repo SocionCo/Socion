@@ -5,6 +5,7 @@
 //  Created by Ted Wind on 4/1/23.
 //
 import Foundation
+import SwiftUI
 
 /// This Contract struct is the model behind all instances of contracts within the app
 struct Contract: Hashable, Identifiable {
@@ -14,19 +15,26 @@ struct Contract: Hashable, Identifiable {
         case done = "Done"
     }
     
+    enum PaymentProgress : String, CaseIterable {
+        case notPaid = "Not Paid"
+        case paid = "Paid"
+    }
+    
     var id : String = UUID().uuidString
     var company : String = ""
     var rate : Double?
-    var paymentStatus : Progress
-    var status: Progress
+    var paymentStatus : PaymentProgress
+    private var status: Progress
     var name : String = ""
     var postLink : String?
     var dueDate : Date?
     var tasks : [String] = []
     var isCompletedArray : [Bool] = []
     var influencerAssignedToContract : String?
+    var notes : String = ""
+    var miscellaneous : String = ""
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.Progress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
         self.id = id
         self.company = company
         self.status = status
@@ -42,6 +50,8 @@ struct Contract: Hashable, Identifiable {
         } else {
             self.influencerAssignedToContract = influencerAssignedToContract
         }
+        self.miscellaneous = miscellaneous
+        self.notes = notes
     }
     
     /// This function takes a String:Any map that has all of the appropriate fields, coming from the FireStore databse, and convert's it to a Contract object for use locally.
@@ -53,7 +63,7 @@ struct Contract: Hashable, Identifiable {
         let company = stringMap["company"] as! String
         let status = stringMap["status"] as! String
         let statusEnum : Progress = stringToStatus(stringStatus: status)
-        let paymentStatus : Progress = stringToStatus(stringStatus: stringMap["paymentStatus"] as! String)
+        let paymentStatus : PaymentProgress = paymentStringToStatus(stringStatus: stringMap["paymentStatus"] as! String)
         
         let rate : Double = stringMap["rate"] as! Double
         
@@ -86,8 +96,17 @@ struct Contract: Hashable, Identifiable {
             unwrappedInfluencerID = stringMap["influencerAssignedToContract"] as! String?
         }
         
+        var unwrappedNotes : String = ""
+        if stringMap["notes"] != nil {
+            unwrappedNotes = stringMap["notes"] as! String
+        }
         
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID)
+        var unwrappedMiscellaneous : String = ""
+        if stringMap["miscellaneous"] != nil {
+            unwrappedMiscellaneous = stringMap["miscellaneous"] as! String
+        }
+        
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID, miscellaneous: unwrappedMiscellaneous, notes: unwrappedNotes)
         return contractToReturn
     }
     
@@ -138,7 +157,7 @@ struct Contract: Hashable, Identifiable {
             return nil
         }
         let df = DateFormatter()
-        df.dateFormat = "yyyy-MM-dd"
+        df.dateFormat = "MM/dd/yyyy"
         let now = df.string(from: date!)
         return now
     }
@@ -179,6 +198,60 @@ struct Contract: Hashable, Identifiable {
                 statusEnum = .notStarted
         }
         return statusEnum
+    }
+    
+    static func paymentStringToStatus (stringStatus : String) -> PaymentProgress {
+        var statusEnum : PaymentProgress = .notPaid
+        
+        switch stringStatus {
+            case "Not Paid":
+                statusEnum = .notPaid
+            case "Paid":
+                statusEnum = .paid
+            default:
+                statusEnum = .notPaid
+        }
+        return statusEnum
+    }
+    
+    
+    
+    static func cutDownPresentationDate (date : String) -> String {
+        let last2 = date.suffix(2)
+        let firstpart = date.prefix(6)
+        return String("\(firstpart)\(last2)")
+    }
+            
+        
+    
+    static func statusColor(contract: Contract) -> Color {
+        switch contract.getStatus() {
+        case.notStarted:
+            return Color(red: 232/255, green: 142/255, blue: 143/255)
+        case .inProgress:
+            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
+        case .done:
+            return Color(red: 183/255, green: 215/255, blue: 181/255)
+        }
+    }
+    
+    static func paymentStatusColor(contract: Contract) -> Color {
+        switch contract.paymentStatus {
+        case.notPaid:
+            return Color(red: 232/255, green: 142/255, blue: 143/255)
+        case.paid:
+            return Color(red: 183/255, green: 215/255, blue: 181/255)
+        }
+    }
+    
+    func getStatus() -> Contract.Progress {
+        if AgencyViewModel.areAllTasksCompleted(contract: self) {
+            return .done
+        } else if AgencyViewModel.areAnyTasksCompleted(contract: self) {
+            return .inProgress
+        } else {
+            return .notStarted
+        }
     }
     
 }

@@ -14,7 +14,11 @@ struct AgencySettingsView: View {
                             .foregroundColor(.gray)
                     }
                 }
+                NavigationLink(destination: DeletedContractsView()) {
+                    Text("Completed Contracts")
+                }
             }
+            
         }.navigationTitle("Settings")
     }
 }
@@ -64,5 +68,52 @@ struct EditAgencySettingView: View {
             }
         }.navigationBarTitle("Edit Setting", displayMode: .inline)
         .background(Color.white)
+    }
+}
+
+
+import SwiftUI
+
+struct DeletedContractsView: View {
+    @EnvironmentObject var userViewModel : UserViewModel
+    @State var refresh : Bool = false
+
+    var body: some View {
+            List {
+                ForEach(userViewModel.agencyViewModel.getContracts(getCompletedContracts: true), id: \.self) { contract in
+                    ContractRow(contract: contract)
+                }
+            }
+            .navigationTitle("Deleted Contracts")
+            .accentColor(.green)
+    }
+}
+
+struct ContractRow: View {
+    let contract: Contract
+    @EnvironmentObject var userViewModel : UserViewModel
+
+    var body: some View {
+        HStack {
+            Text(contract.name)
+                .foregroundColor(.green)
+                .padding()
+            
+            Spacer()
+            
+            Button(action: {
+                userViewModel.agencyViewModel.restoreContracts(contract: contract)
+                
+            }) {
+                Text("Restore")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.green)
+                    .cornerRadius(10)
+            }
+        }
+        .padding(.vertical, 8)
     }
 }
