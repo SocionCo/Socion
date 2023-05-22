@@ -357,16 +357,14 @@ class AgencyViewModel : ObservableObject {
     
     func addTaskToContract (id : String, task : String, contract : Contract) {
         FireBaseDataServices.shared.addTasktoContract(userID: id, contract: contract, task: task)
-        
-        
     }
     
     func removeTaskfromContract (id : String, task : String,  contract : Contract) {
-            FireBaseDataServices.shared.removeTaskFromContract(userID: id, contract: contract, task: task)
+        FireBaseDataServices.shared.removeTaskFromContract(userID: id, contract: contract, task: task)
     }
     
     func toggleTask (id : String, task: String, contract : Contract) {
-            FireBaseDataServices.shared.toggleTask(userID: id, contract: contract, task: task)
+        FireBaseDataServices.shared.toggleTask(userID: id, contract: contract, task: task)
     }
     
     
@@ -376,6 +374,52 @@ class AgencyViewModel : ObservableObject {
             return contract.isCompletedArray[index!]
         }
         return false
+    }
+    
+    static func areAllTasksCompleted(contract : Contract) -> Bool {
+        for task in contract.isCompletedArray {
+            if !task {
+                return false
+            }
+        }
+        return true
+    }
+    
+    static func areAnyTasksCompleted(contract : Contract) -> Bool {
+        for task in contract.isCompletedArray {
+            if task {
+                return true
+            }
+        }
+        return false
+    }
+    
+    static func areAllTasksCompleted(isCompletedArray : [Bool]) -> Bool {
+        for task in isCompletedArray {
+            if !task {
+                return false
+            }
+        }
+        return true
+    }
+    
+    static func areAnyTasksCompleted(isCompletedArray : [Bool]) -> Bool {
+        for task in isCompletedArray {
+            if task {
+                return true
+            }
+        }
+        return false
+    }
+    
+    static func getStatus (contract : Contract) -> Contract.Progress {
+        if areAllTasksCompleted(contract: contract) {
+            return .done
+        } else if areAnyTasksCompleted(contract: contract) {
+            return .inProgress
+        } else {
+            return .notStarted
+        }
     }
     
     
@@ -457,13 +501,26 @@ class AgencyViewModel : ObservableObject {
     }
     
     
-    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks: [String], isCompleted : [Bool], influencerAssignedToContract : String? ) {
+    
+    
+    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks: [String], isCompleted : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String ) {
         let user = self.getOwnerOfContract(contract: contract)
         if let user = user {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract)
+            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, miscellaneous: miscellaneous, notes: notes)
         } else {
             print("Auth Issue")
+        }
+    }
+    
+    func updateContractPaymentStatus(userID : String, contract : Contract, newPaymentStatus : Contract.PaymentProgress) {
+        FireBaseDataServices.shared.updateContractPaymentStatus(userID: userID, contract: contract, newPaymentStatus: newPaymentStatus)
+    }
+    
+    func restoreContracts (contract : Contract) {
+        let contractOwner : User? = self.getOwnerOfContract(contract: contract)
+        if let contractOwner = contractOwner {
+            FireBaseDataServices.shared.restoreContract(userID: contractOwner.id, contract: contract)
         }
     }
     
@@ -492,6 +549,19 @@ class AgencyViewModel : ObservableObject {
         return returnArray
     }
     
+    func getContracts (getCompletedContracts : Bool) -> [Contract] {
+        var returnArrayCompleted : [Contract] = []
+        var returnArrayIncompleted : [Contract] = []
+        for contract in self.getContracts() {
+            if contract.getStatus() == .done && contract.paymentStatus == .paid {
+                returnArrayCompleted.append(contract)
+            } else {
+                returnArrayIncompleted.append(contract)
+            }
+        }
+        return getCompletedContracts ? returnArrayCompleted : returnArrayIncompleted
+    }
+    
     func getInfluencersForManager (talentManager : User) -> [User] {
         var managedInfluencers : [User] = []
         if talentManager.managedInfluencers == nil {
@@ -513,6 +583,21 @@ class AgencyViewModel : ObservableObject {
         }
         return returnArray
         
+    }
+    
+    func getContractsForManager(talentManager : User, getCompletedContracts : Bool) -> [Contract] {
+        var completedReturnArray : [Contract] = []
+        var incompletedReturnArray : [Contract] = []
+        
+        for contract in self.getContractsForManager(talentManager: talentManager) {
+            if contract.paymentStatus == .paid && contract.getStatus() == .done {
+                completedReturnArray.append(contract)
+            } else {
+                incompletedReturnArray.append(contract)
+            }
+        }
+        
+        return getCompletedContracts ? completedReturnArray : incompletedReturnArray
     }
     
     func getInfluencers() -> [User] {

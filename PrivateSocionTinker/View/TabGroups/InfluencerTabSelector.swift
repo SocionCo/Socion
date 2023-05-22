@@ -19,11 +19,11 @@ struct InfluencerTabSelector: View {
                 }.tag(1)
                 ContractListView().tabItem {
                     Image(systemName: "newspaper.fill")
-                    Text("View All Contracts")
+                    Text("Contracts")
                 }.tag(2)
                 AgencyView().tabItem {
                     Image(systemName: "person.3.sequence")
-                    Text("Agency Dashboard")
+                    Text("Agency")
                 }
                 .tag(3)
                 .opacity(1.0)

@@ -3,26 +3,35 @@ import SwiftUI
 struct AgencyView: View {
     @EnvironmentObject var userViewModel : UserViewModel
     var body: some View {
-        NavigationView {
             ZStack {
                 LinearGradient(gradient: Gradient(colors: [Color.white, Color.green.opacity(0.6)]), startPoint: .topLeading, endPoint: .bottomTrailing)
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(alignment: .leading, spacing: 30) {
-                    Image(systemName: "person.crop.circle.fill")
-                        .resizable()
-                        .frame(width: 100, height: 100)
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.green)
-                        .clipShape(Circle())
-                        .shadow(radius: 10)
+                    if userViewModel.user.profilePicture == Image.defaultImage {
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .foregroundColor(.white)
+                            .padding()
+                            .background(Color.green)
+                            .clipShape(Circle())
+                            .shadow(radius: 10)
+                    } else {
+                        userViewModel.user.profilePicture
+                            .resizable()
+                            .frame(width: 100, height: 100)
+                            .scaledToFill()
+                            .aspectRatio(contentMode: .fit)
+                            .clipShape(Circle())
+                            .shadow(radius: 4)
+                    }
 
                     NavigationLink(destination: (AgencySettingsView())) {
-                        navigationLinkView(destination: "Edit Agency Settings")
+                        navigationLinkView(destination: "Agency Settings")
                     }
                     NavigationLink(destination: EditUserSettingsView()) {
-                        navigationLinkView(destination: "Edit User Settings")
+                        navigationLinkView(destination: "User Settings")
                     }
                     if (userViewModel.user.isAgencyOwner) {
                         NavigationLink(destination: ManageInfluencersView(agencyViewModel: userViewModel.agencyViewModel)) {
@@ -34,9 +43,8 @@ struct AgencyView: View {
                 }
                 .padding(.top, 80)
                 .padding(.horizontal)
-            }
-            .navigationTitle("Dashboard")
-            .foregroundColor(.white)
+                .navigationTitle("Dashboard")
+                .foregroundColor(.white)
         }.accentColor(.black)
     
     }

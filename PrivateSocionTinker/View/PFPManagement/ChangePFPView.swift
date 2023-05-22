@@ -54,6 +54,7 @@ import SwiftUI
                }
                print("Calling")
                FireBaseStorageServices.shared.uploadProfilePicture(image: finalImage!, userID: userViewModel.user.id)
+               userViewModel.updateProfilePicLocally(image: finalImage!)
            }
        }
    }

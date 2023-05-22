@@ -47,7 +47,11 @@ struct ModelView: View {
                     Text("Influencers:")
                     ForEach(userViewModel.agencyViewModel.agency.influencers, id: \.self) { influencer in
                         Text("\(influencer.firstName)")
-                        Text("\(influencer.lastName)")
+                        influencer.profilePicture
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 50, height: 50)
+                            .cornerRadius(50)
                     }
                     if (userViewModel.user.IsTalentManager) {
                         Text("Manages:")

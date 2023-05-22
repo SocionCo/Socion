@@ -135,6 +135,9 @@ class UserViewModel: ObservableObject {
         let userRef = FireBaseDataServices.shared.db.collection("users").document(id)
         
         userRef.addSnapshotListener {documentSnapshot, error in
+            if id != self.user.id {
+                return
+            }
             print("Listener Triggered")
             guard let document = documentSnapshot else {
                 print("Error with fetch")
@@ -322,6 +325,12 @@ class UserViewModel: ObservableObject {
         print(data)
     }
     
+    //MARK: LOCAL CHANGES, THESE FUNCTIONS DON'T INTERACT WITH FIREBASE AND SHOULD ONLY BE USED IF THE DATABSE IS ALSO BEING UPDATED
+    
+    func updateProfilePicLocally (image : UIImage) {
+        user.profilePicture = Image(uiImage: image)
+    }
+    
     
     //MARK: All of the following functions are interactions with the model/databse. There should be NO direct updates to the model. Instead, all changes should be made to the databse, which are in turn updated directly through the listeners and the functions they call. Any changes to the model (ex. adding fields) need to be reflected in the listeners so that it is always updated.
     
@@ -343,10 +352,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, miscellaneous: miscellaneous, notes: notes)
         } else {
             print("Auth Issue")
         }

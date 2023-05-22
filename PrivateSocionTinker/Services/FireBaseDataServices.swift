@@ -143,7 +143,7 @@ class FireBaseDataServices {
         print("6Calling document: \(id)")
         db.collection("users").document(id).collection("contracts").document(contract.id).setData([
             "company" : contract.company,
-            "status" : contract.status.rawValue,
+            "status" : AgencyViewModel.getStatus(contract: contract),
             "name" : contract.name,
             "rate" : unwrappedRate,
             "paymentStatus" : contract.paymentStatus.rawValue,
@@ -151,11 +151,30 @@ class FireBaseDataServices {
             "dueDate" : unwrappedDate,
             "tasks" : contract.tasks,
             "completedTasks" : contract.isCompletedArray,
-            "influencerAssignedToContract" : unwrappedInfluencerAssigned
+            "influencerAssignedToContract" : unwrappedInfluencerAssigned,
+            "miscellaneous" : contract.miscellaneous,
+            "notes" : contract.notes
+        ])
+    }
+    
+    func updateContractPaymentStatus (userID : String, contract : Contract, newPaymentStatus : Contract.PaymentProgress) {
+        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+            "paymentStatus" : newPaymentStatus.rawValue
+        ])
+    }
+    
+    func updateContractStatus (userID : String, contract : Contract, newStatus : Contract.Progress) {
+        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+            "status" : newStatus.rawValue
         ])
     }
     
     
+    func restoreContract (userID : String, contract : Contract) {
+        db.collection("users").document(userID).collection("contracts").document(contract.id).updateData([
+            "paymentStatus" : Contract.PaymentProgress.notPaid.rawValue
+        ])
+    }
     
     
     func removeInfluencerFromAgency (agencyID : String, influencerID : String) {
@@ -379,7 +398,7 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.Progress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
@@ -394,14 +413,16 @@ class FireBaseDataServices {
         contractsRef.document(contract.id).setData([
             "company" : company,
             "name" : influencer,
-            "status" : status.rawValue,
+            "status" : AgencyViewModel.getStatus(contract: contract),
             "rate" : unwrappedRate,
             "paymentStatus" : paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
             "dueDate" : unwrappedDueDate,
             "tasks" : tasks,
             "completedTasks" : isCompletedArray,
-            "influencerAssignedToContract" : returnUnwrappedOrEmptyString(optional: influencerAssignedToContract)
+            "influencerAssignedToContract" : returnUnwrappedOrEmptyString(optional: influencerAssignedToContract),
+            "notes" : notes,
+            "miscellaneous" : miscellaneous
         ])
     }
     
@@ -414,6 +435,7 @@ class FireBaseDataServices {
     }
     
     func getUserFromID (userID : String, completion : @escaping (User) -> Void) {
+        var initialReturnComplete : Bool = false
         db.collection("users").document(userID).getDocument { document, error in
             var returnUser : User = User()
             guard let document = document else {
@@ -482,23 +504,36 @@ class FireBaseDataServices {
                 returnUser.managedInfluencers = managedInfluencerAsString == nil ? [] : managedInfluencerAsString
             }
             
+            returnUser.id = userID
+            
             FireBaseStorageServices.shared.getProfilePicture(userID: userID) {
                 exists, image in
                 if exists {
-                    print("User Profile Picture Exists and was added")
                     if let image = image {
                         returnUser.profilePicture = Image(uiImage: image)
+                        if initialReturnComplete {
+                            completion(returnUser)
+                        } else {
+                            initialReturnComplete = true
+                        }
                     } else {
                         print("Weird Error")
                     }
                 } else {
-                    print("User Profile Picture Does Not Exist")
                     returnUser.profilePicture = Image.defaultImage
+                    if initialReturnComplete {
+                        completion(returnUser)
+                    } else {
+                        initialReturnComplete = true
+                    }
+                    
+                    
                 }
+                
             }
             
             
-            returnUser.id = userID
+            
             
             
             
@@ -512,7 +547,12 @@ class FireBaseDataServices {
                     let contract = Contract.toContractFromStringMap(id: document.documentID, stringMap: document.data())
                     returnUser.contracts.append(contract)
                 }
-                completion(returnUser)
+                if initialReturnComplete {
+                    completion(returnUser)
+                } else {
+                    initialReturnComplete = true
+                }
+                
             }
             
             

@@ -22,7 +22,6 @@ class FireBaseStorageServices {
         let profilePicRef = storageRef.child("\(userID)/profilePicture.jpg")
         
         profilePicRef.putData(data, metadata: nil) { (metadata,error) in
-            print(error ?? "No Error")
             guard let _ = metadata else {
                 print("Failure With MetaData")
                 return
@@ -35,10 +34,9 @@ class FireBaseStorageServices {
         let profilePicRef = storageRef.child("\(userID)/profilePicture.jpg")
         profilePicRef.getData(maxSize: 200 * 1024 * 1024) {
             data, error in
-            print("Retrieving Picture for \(userID)")
+            print("Getting PFP for: \(userID)")
             if let error = error {
                 exists(false,nil)
-                print("-----------Error-----------")
                 print(error)
             } else {
                 if let data = data {
@@ -48,9 +46,4 @@ class FireBaseStorageServices {
             }
         }
     }
-    
-    func getProfilePicture () {
-        
-    }
-    
 }

@@ -31,3 +31,4 @@ Bugs:
 -Accepting an invite doesn't immediately give access to agency stuff
 -Will be glitches if TM sends out multiple invites, need to restrict that 
 -If PFP Image too big, won't alert user only alerts console
+-TalentManager accepting invite logs into his account??

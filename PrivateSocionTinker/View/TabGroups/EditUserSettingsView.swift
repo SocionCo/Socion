@@ -60,7 +60,7 @@ struct EditUserSettingsView: View {
             }
                 
             Section(header: Text("Profile Picture")) {
-                Image(systemName: "person.crop.circle.fill")
+                userViewModel.user.profilePicture
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 100, height: 100)

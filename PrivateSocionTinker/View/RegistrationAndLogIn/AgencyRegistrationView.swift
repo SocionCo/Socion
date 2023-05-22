@@ -25,7 +25,6 @@ struct AgencyRegistrationView: View {
     }
     
     var body : some View {
-        NavigationView {
                     Form{
                         Section(header: Text("Agency Information")) {
                             TextField("Agency Name", text: $agencyName).autocorrectionDisabled(true)
@@ -44,7 +43,7 @@ struct AgencyRegistrationView: View {
                             .cornerRadius(8)
                         }
                     }
-                }.toolbar {
+                 .toolbar {
                     ToolbarItem(placement: .navigationBarLeading) {
                         Button {
                             withAnimation {

@@ -21,18 +21,18 @@ struct TalentManagerTabView: View {
                     TalentManagerContractListView(agencyViewModel: userViewModel.agencyViewModel)
                         .tabItem {
                             Image(systemName: "newspaper.fill")
-                            Text("View All Contracts")
+                            Text("Contracts")
                         }.tag(2)
                 } else {
                     ErrorView()
                         .tabItem {
                             Image(systemName: "newspaper.fill")
-                            Text("View All Contracts")
+                            Text("Contracts")
                         }.tag(2)
                 }
                 AgencyView().tabItem {
                     Image(systemName: "person.3.sequence")
-                    Text("Agency Dashboard")
+                    Text("Agency")
                 }
                 .opacity(1.0)
                 .tag(3)
