@@ -32,9 +32,9 @@ struct Contract: Hashable, Identifiable {
     var isCompletedArray : [Bool] = []
     var influencerAssignedToContract : String?
     var notes : String = ""
-    var miscellaneous : String = ""
+    var attachments : [String] = []
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String) {
         self.id = id
         self.company = company
         self.status = status
@@ -50,7 +50,7 @@ struct Contract: Hashable, Identifiable {
         } else {
             self.influencerAssignedToContract = influencerAssignedToContract
         }
-        self.miscellaneous = miscellaneous
+        self.attachments = attachments
         self.notes = notes
     }
     
@@ -101,12 +101,12 @@ struct Contract: Hashable, Identifiable {
             unwrappedNotes = stringMap["notes"] as! String
         }
         
-        var unwrappedMiscellaneous : String = ""
-        if stringMap["miscellaneous"] != nil {
-            unwrappedMiscellaneous = stringMap["miscellaneous"] as! String
+        var unwrappedAttachments : [String] = []
+        if stringMap["attachments"] != nil {
+            unwrappedAttachments = stringMap["attachments"] as! [String]
         }
         
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID, miscellaneous: unwrappedMiscellaneous, notes: unwrappedNotes)
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID, attachments: unwrappedAttachments, notes: unwrappedNotes)
         return contractToReturn
     }
     
@@ -168,13 +168,17 @@ struct Contract: Hashable, Identifiable {
     static func stringToDateForStorage(stringDate : String?) -> Date? {
         let df = DateFormatter()
         df.dateFormat = "yyy-MM-dd hh:mm:ss"
+        print("Input Date : \(stringDate!)")
         if stringDate == nil {
+            print("Output Date: nil")
             return nil
         }
+        
         let now = df.date(from: stringDate!)
         if (now == nil) {
             print("Error with date conversion")
         }
+        print("Output date : \(now)")
         return now
     }
     

@@ -15,7 +15,7 @@ struct ContractListView: View {
     @State var tempInfluencerAssigned : String = ""
     @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
     @State var tempNotes : String = ""
-    @State var tempMiscellaneous : String = ""
+    @State var tempAttachments : [String] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
@@ -55,6 +55,7 @@ struct ContractListView: View {
                                     .lineLimit(1)
                                     .bold()
                                     .padding(.bottom, 5.0)
+                                    .foregroundColor(.black)
                                 HStack (spacing: 10) {
                                     Text("Campaign Status")
                                         .foregroundColor(.gray)
@@ -87,6 +88,61 @@ struct ContractListView: View {
                     }
                 }.listStyle(.automatic)
             }
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        withAnimation {
+                            authentication.updateValidation(success: false)
+                            userViewModel.logOut()
+                        }
+                    } label: {
+                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                    }
+                }
+                ToolbarItem {
+                    Menu("Manage") {
+                        Button("New Contract") {
+                            addSheet = true
+                            formSubmittable = true
+                        }
+                        Menu("Delete Contract") {
+                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
+                                Button(contract.company) {
+                                    userViewModel.deleteContract(contract: contract)
+                                }
+                            }
+                        }
+                        Menu("Edit") {
+                            ForEach(userViewModel.user.contracts, id: \.self) { contract in
+                                Button(contract.company) {
+                                    tempStatus = contract.getStatus()
+                                    tempName = contract.name
+                                    tempCompanyName = contract.company
+                                    currentlyEditing = contract
+                                    tempPaymentStatus = contract.paymentStatus
+                                    tempTasks = contract.tasks
+                                    tempCompleted = contract.isCompletedArray
+                                    if contract.rate != nil {
+                                        tempRate = contract.rate!
+                                    }
+                                    if contract.dueDate != nil {
+                                        tempDueDate = contract.dueDate!
+                                    }
+                                    editSheet.toggle()
+                                    if contract.postLink != nil {
+                                        tempPostLink = contract.postLink!
+                                    }
+                                    if contract.influencerAssignedToContract != nil {
+                                        tempInfluencerAssigned = contract.influencerAssignedToContract!
+                                    }
+                                    tempAttachments = contract.attachments
+                                    tempNotes = contract.notes
+                                }
+                            }
+                        }
+                    }
+                }
+            }.foregroundColor(.white)
         }.sheet(isPresented: $editSheet, onDismiss: setValues) {
             VStack {
                 Form {
@@ -100,7 +156,6 @@ struct ContractListView: View {
                         }
                         TextField("Notes:", text: $tempNotes, axis: .vertical)
                             .lineLimit(2...5)
-                        TextField("Miscellaneous", text: $tempMiscellaneous)
                         TextField("Post Link (optional)", text: $tempPostLink)
                         Toggle(isOn: $includeDate) {
                             Text("Campaign has due date")
@@ -118,72 +173,72 @@ struct ContractListView: View {
                         }
                     }
                 }
-                    HStack(spacing: 20) {
-                        Spacer()
-                        Button {
-                            formSubmittable = true
-                            editSheet = false
-                        } label : {
-                            Text("Done")
-                        } .disabled(submitFormDisabeled)
-                        Spacer()
-                        Button {
-                            resetValues()
-                            editSheet = false
-                        } label: {
-                            Text("Cancel")
-                        }
-                        Spacer()
-                    }
-                }
-            }.interactiveDismissDisabled(true)
-            .sheet(isPresented: $addSheet, onDismiss: addNew) {
-            VStack {
-            Form {
-                Section(header: Text("Campaign Information")) {
-                    TextField("Company Name", text: $tempCompanyName)
-                    TextField("Campaign Name", text: $tempName)
-                    Picker("Status", selection: $tempStatus) {
-                        ForEach(Contract.Progress.allCases, id: \.self) {value in
-                            Text(value.rawValue)
-                        }
-                    }
-                    TextField("Post Link (optional)", text: $tempPostLink)
-                    Toggle(isOn: $includeDate) {
-                        Text("Campaign has due date")
-                    }
-                    if (includeDate) {
-                        DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
-                            Text("Select a date")
-                        }
-                    }
-                    TextField("Rate (optional)", value: $tempRate, format: .number)
-                    Picker("Payment Status", selection: $tempPaymentStatus) {
-                        ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
-                            Text(value.rawValue)
-                        }
-                    }
-                }
-            }
                 HStack(spacing: 20) {
                     Spacer()
                     Button {
-                        addSheet = false
-                        resetValues()
-                    } label : {
-                        Text("Cancel")
-                    }
-                    Spacer()
-                    Button {
                         formSubmittable = true
-                        addSheet = false
+                        editSheet = false
                     } label : {
                         Text("Done")
                     } .disabled(submitFormDisabeled)
                     Spacer()
+                    Button {
+                        resetValues()
+                        editSheet = false
+                    } label: {
+                        Text("Cancel")
+                    }
+                    Spacer()
                 }
-            }.interactiveDismissDisabled(true)
-        }
+            }
+        }.interactiveDismissDisabled(true)
+            .sheet(isPresented: $addSheet, onDismiss: addNew) {
+                VStack {
+                    Form {
+                        Section(header: Text("Campaign Information")) {
+                            TextField("Company Name", text: $tempCompanyName)
+                            TextField("Campaign Name", text: $tempName)
+                            Picker("Status", selection: $tempStatus) {
+                                ForEach(Contract.Progress.allCases, id: \.self) {value in
+                                    Text(value.rawValue)
+                                }
+                            }
+                            TextField("Post Link (optional)", text: $tempPostLink)
+                            Toggle(isOn: $includeDate) {
+                                Text("Campaign has due date")
+                            }
+                            if (includeDate) {
+                                DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
+                                    Text("Select a date")
+                                }
+                            }
+                            TextField("Rate (optional)", value: $tempRate, format: .number)
+                            Picker("Payment Status", selection: $tempPaymentStatus) {
+                                ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
+                                    Text(value.rawValue)
+                                }
+                            }
+                        }
+                    }
+                    HStack(spacing: 20) {
+                        Spacer()
+                        Button {
+                            addSheet = false
+                            resetValues()
+                        } label : {
+                            Text("Cancel")
+                        }
+                        Spacer()
+                        Button {
+                            formSubmittable = true
+                            addSheet = false
+                        } label : {
+                            Text("Done")
+                        } .disabled(submitFormDisabeled)
+                        Spacer()
+                    }
+                }.interactiveDismissDisabled(true)
+            }
     }
     
     func sorterForDates(this: Contract, that: Contract) -> Bool {
@@ -224,7 +279,7 @@ struct ContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
             print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
@@ -243,9 +298,9 @@ struct ContractListView: View {
         formSubmittable = false
         tempTasks = []
         tempCompleted = []
-        tempMiscellaneous = ""
+        tempAttachments = []
         tempNotes = ""
-
+        
     }
     
     func addNew () {
@@ -271,12 +326,12 @@ struct ContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
         
         userViewModel.addContract(contract: contractToAdd)
         resetValues()
     }
-        
+    
     
     struct SearchBar: View {
         @Binding var searchText: String
@@ -314,5 +369,5 @@ struct ContractListView: View {
             .padding(.bottom, 5)
         }
     }
-
+    
 }

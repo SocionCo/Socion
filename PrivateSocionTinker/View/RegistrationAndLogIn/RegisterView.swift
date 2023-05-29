@@ -1,8 +1,6 @@
 import SwiftUI
 
 struct RegisterView: View {
-    @Binding var selected : Bool
-    @Binding var registered : Bool
     @EnvironmentObject private var userViewModel : UserViewModel
     @State var showPassword : Bool = false
     @EnvironmentObject var authentication : Authentication
@@ -208,10 +206,9 @@ struct RegisterView: View {
                         .font(.subheadline)
                         .foregroundColor(.white)
                     
-                    Button(action: {
-                        registered = true
-                        selected = true
-                    }) {
+                    NavigationLink {
+                        LogInView()
+                    } label: {
                         Text(" Sign In")
                             .font(.subheadline)
                             .foregroundColor(.white)
@@ -228,20 +225,10 @@ struct RegisterView: View {
         .alert(item: $userViewModel.error) {
             error in
             Alert(title: Text("Error"), message: Text(error.localizedDescription))
-        }.toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    withAnimation {
-                        selected = false
-                    }
-                } label: {
-                    Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(offWhite)
-                }
-            }
         }
         .onTapGesture {
             dismissKeyboard()
-        }
+        }.tint(.blue)
     }
     
     func dismissKeyboard () {

@@ -15,8 +15,6 @@ import SwiftUI
 
 struct LogInView: View {
     @EnvironmentObject private var userViewModel : UserViewModel
-    @Binding var selected : Bool
-    @Binding var agencyRegistration : Bool
     @EnvironmentObject var authentication : Authentication
     var isSignInButtonDisabled: Bool {
         userViewModel.registerDisable
@@ -89,21 +87,12 @@ struct LogInView: View {
                 .cornerRadius(20.0)
                 .shadow(radius: 10)
             }
+            .tint(.blue)
             .padding()
         } .alert(item: $userViewModel.error) {
             error in
             Alert(title: Text("Error"), message: Text(error.localizedDescription))
-        }.toolbar {
-            ToolbarItem(placement: .navigationBarLeading) {
-                Button {
-                    withAnimation {
-                        selected = false
-                        agencyRegistration = false
-                    }
-                } label: {
-                    Image(systemName: "rectangle.portrait.and.arrow.right").foregroundColor(offWhite)
-                }
-            }
+            
         }
         .onTapGesture {
             dismissKeyboard()

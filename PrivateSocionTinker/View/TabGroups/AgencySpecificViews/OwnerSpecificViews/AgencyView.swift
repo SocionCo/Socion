@@ -8,7 +8,7 @@ struct AgencyView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(alignment: .leading, spacing: 30) {
-                    if userViewModel.user.profilePicture == Image.defaultImage {
+                    if userViewModel.user.profilePicture == UIImage.defaultImage {
                         Image(systemName: "person.crop.circle.fill")
                             .resizable()
                             .frame(width: 100, height: 100)
@@ -18,7 +18,7 @@ struct AgencyView: View {
                             .clipShape(Circle())
                             .shadow(radius: 10)
                     } else {
-                        userViewModel.user.profilePicture
+                        Image(uiImage: userViewModel.user.profilePicture)
                             .resizable()
                             .frame(width: 100, height: 100)
                             .scaledToFill()
@@ -36,7 +36,7 @@ struct AgencyView: View {
                     if (userViewModel.user.isAgencyOwner) {
                         NavigationLink(destination: ManageInfluencersView(agencyViewModel: userViewModel.agencyViewModel)) {
                             navigationLinkView(destination: "Manage Influencers")
-                        }
+                        }.tint(.white)
                     }
                     
                     Spacer()

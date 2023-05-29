@@ -7,11 +7,7 @@
 
 import SwiftUI
 
-struct PathSelect: View {
-    @Binding var registered : Bool
-    @Binding var selected : Bool
-    @Binding var agencyRegistration : Bool
-
+struct InfluencerSelect: View {
     var body: some View {
         ZStack {
             LinearGradient(gradient: Gradient(colors: [Color("GradientStart"), Color("GradientEnd")]), startPoint: .topLeading, endPoint: .bottomTrailing)
@@ -33,13 +29,11 @@ struct PathSelect: View {
                     .foregroundColor(.white)
                 
                 VStack(spacing: 20) {
-                    Button(action: {
-                        withAnimation {
-                            registered = true
-                            selected = true
-                        }
-                    }) {
-                        Text("Sign In")
+                    NavigationLink {
+                        LogInView()
+                    } label:
+                    {
+                        Text("Influencer Sign In")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
@@ -50,13 +44,11 @@ struct PathSelect: View {
                             .padding(.horizontal)
                     }
                     
-                    Button(action: {
-                        withAnimation {
-                            registered = false
-                            selected = true
-                        }
-                    }) {
-                        Text("Register Account")
+                    NavigationLink {
+                        LogInView()
+                    } label:
+                    {
+                        Text("Register Influencer Account")
                             .font(.headline)
                             .foregroundColor(.white)
                             .padding()
@@ -67,23 +59,6 @@ struct PathSelect: View {
                             .padding(.horizontal)
                     }
                     
-                    Button(action: {
-                        withAnimation {
-                            registered = true
-                            selected = true
-                            agencyRegistration = true
-                        }
-                    }) {
-                        Text("Create your Agency")
-                            .font(.headline)
-                            .foregroundColor(.white)
-                            .padding()
-                            .frame(maxWidth: .infinity)
-                            .background(Color("ButtonColor"))
-                            .cornerRadius(15.0)
-                            .overlay(RoundedRectangle(cornerRadius: 15.0).stroke(Color.white, lineWidth: 2))
-                            .padding(.horizontal)
-                    }
                 }
                 
                 Spacer()

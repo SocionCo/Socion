@@ -53,8 +53,7 @@ import SwiftUI
                    print("Image Too Big")
                }
                print("Calling")
-               FireBaseStorageServices.shared.uploadProfilePicture(image: finalImage!, userID: userViewModel.user.id)
-               userViewModel.updateProfilePicLocally(image: finalImage!)
+               userViewModel.updateProfilePic(image: finalImage!)
            }
        }
    }

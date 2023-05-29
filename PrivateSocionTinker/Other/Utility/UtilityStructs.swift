@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import CoreData
+import PDFKit
 
 
 struct ExpandableText: View {
@@ -349,6 +351,22 @@ extension CustomAlertModifier {
     }
 }
 
+extension UIImage {
+    static let defaultImage = UIImage(systemName: "person.crop.circle.fill") ?? UIImage()
+}
+
+extension NSManagedObjectContext {
+  func saveIfChanged() -> NSError? {
+    guard hasChanges else { return nil }
+    do {
+      try save()
+      return nil
+    } catch {
+      return error as NSError
+    }
+  }
+}
+
 extension View {
 
     func alert(title: String = "", message: String = "", dismissButton: CustomAlertButton = CustomAlertButton(title: "ok"), isPresented: Binding<Bool>) -> some View {
@@ -365,3 +383,42 @@ extension View {
         return modifier(CustomAlertModifier(title: title, message: message, primaryButton: primaryButton, secondaryButton: secondaryButton, isPresented: isPresented))
     }
 }
+
+
+extension Color {
+    init(hex: UInt32) {
+        let red = Double((hex >> 16) & 0xFF) / 255.0
+        let green = Double((hex >> 8) & 0xFF) / 255.0
+        let blue = Double(hex & 0xFF) / 255.0
+        self.init(red: red, green: green, blue: blue)
+    }
+}
+
+struct PDFKitRepresentedView: UIViewRepresentable {
+    let url: URL
+
+    init(_ url: URL) {
+        self.url = url
+    }
+
+    func makeUIView(context: UIViewRepresentableContext<PDFKitRepresentedView>) -> PDFKitRepresentedView.UIViewType {
+        // Create a `PDFView` and set its `PDFDocument`.
+        let pdfView = PDFView()
+        pdfView.document = PDFDocument(url: self.url)
+        return pdfView
+    }
+
+    func updateUIView(_ uiView: UIView, context: UIViewRepresentableContext<PDFKitRepresentedView>) {
+        // Update the view.
+    }
+}
+
+struct PDFKitView: View {
+    var url: URL
+
+    var body: some View {
+        PDFKitRepresentedView(url)
+    }
+}
+
+
