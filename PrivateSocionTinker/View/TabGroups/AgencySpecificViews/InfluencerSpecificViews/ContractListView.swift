@@ -16,6 +16,9 @@ struct ContractListView: View {
     @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
     @State var tempNotes : String = ""
     @State var tempAttachments : [String] = []
+    @State var tempApprovals : [Contract.Approval] = []
+    @State var tempApprovalNotes : [String] = []
+    @State var tempDrafts : [String] = []
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
@@ -31,17 +34,17 @@ struct ContractListView: View {
     var body: some View {
         NavigationStack {
             VStack (alignment: .center, spacing: 0) {
-                Group {
+                Group( {
                     Text(userViewModel.getName())
                         .foregroundColor(.white)
                         .frame(width: 700, height: 80)
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .minimumScaleFactor(0.5)
-                    
-                    SearchBar(searchText: $searchText)
                 }
                 .background(.green)
+                
+                SearchBar(searchText: $searchText)
                 
                 
                 List() {
@@ -137,6 +140,9 @@ struct ContractListView: View {
                                     }
                                     tempAttachments = contract.attachments
                                     tempNotes = contract.notes
+                                    tempApprovals = contract.approvals
+                                    tempDrafts = contract.drafts
+                                    tempApprovalNotes = contract.approvalNotes
                                 }
                             }
                         }
@@ -279,7 +285,7 @@ struct ContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
+            userViewModel.editContract(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
             print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
@@ -300,6 +306,9 @@ struct ContractListView: View {
         tempCompleted = []
         tempAttachments = []
         tempNotes = ""
+        tempDrafts = []
+        tempApprovals = []
+        tempApprovalNotes = []
         
     }
     
@@ -326,7 +335,7 @@ struct ContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
         
         userViewModel.addContract(contract: contractToAdd)
         resetValues()
