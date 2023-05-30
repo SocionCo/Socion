@@ -34,7 +34,7 @@ struct ContractListView: View {
     var body: some View {
         NavigationStack {
             VStack (alignment: .center, spacing: 0) {
-                Group( {
+                Group {
                     Text(userViewModel.getName())
                         .foregroundColor(.white)
                         .frame(width: 700, height: 80)
