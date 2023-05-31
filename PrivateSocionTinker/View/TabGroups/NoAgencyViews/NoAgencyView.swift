@@ -35,7 +35,7 @@ struct NoAgencyView: View {
                         }
                         NavigationLink(destination: ManageInfluencersView(agencyViewModel: userViewModel.agencyViewModel)) {
                             navigationLinkView(destination: "Manage Influencers")
-                        }
+                        }.tint(.white)
                         
                         Spacer()
                     }

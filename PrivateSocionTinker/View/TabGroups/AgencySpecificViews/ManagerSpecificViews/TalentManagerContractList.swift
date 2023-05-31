@@ -14,7 +14,10 @@ struct TalentManagerContractListView: View {
     @State var tempPostLink : String = ""
     @State var tempDueDate : Date = Date()
     @State var tempNotes : String = ""
-    @State var tempMiscellaneous : String = ""
+    @State var tempAttachments : [String] = []
+    @State var tempApprovals : [Contract.Approval] = []
+    @State var tempApprovalNotes : [String] = []
+    @State var tempDrafts : [String] = []
     @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
     @State var tempInfluencer = User()
     @State var tempTasks : [String] = []
@@ -45,55 +48,8 @@ struct TalentManagerContractListView: View {
                 
                 SearchBar(searchText: $searchText)
                 
-                List {
-                    Section {
-                        ForEach(agencyViewModel.getContractsForManager(talentManager: userViewModel.user, getCompletedContracts: false).sorted(by: sorterForDates), id: \.self) { contract in
-                            NavigationLink {
-                                if agencyViewModel.getOwnerOfContract(contract: contract) != nil {
-                                    AgentContractDetailView(userID: agencyViewModel.getOwnerOfContract(contract: contract)!.id, contractID: contract.id)
-                                } else {
-                                    ErrorView()
-                                }
-                            }
-                        label: {
-                            HStack {
-                                VStack (alignment: .leading, spacing: 10) {
-                                    Text(contract.company)
-                                        .font(.title)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(greenColor)
-                                    
-                                    Text("Influencer: \(agencyViewModel.getOwnerOfContract(contract: contract)?.getFullName() ?? "")")
-                                        .font(.title2)
-                                        .fontWeight(.bold)
-                                        .foregroundColor(.black)
-                                    
-                                    Text(contract.getStatus().rawValue)
-                                        .font(.title2)
-                                        .foregroundColor(Contract.statusColor(contract: contract))
-                                    
-                                    if let dueDate = contract.dueDate {
-                                        if refresh || !refresh {
-                                            let dueString = Contract.timeUntilDate(date: dueDate)
-                                            Text("Due in: \(dueString!.trimmingCharacters(in: .whitespaces))")
-                                                .font(.title2)
-                                                .foregroundColor(Color(red: 51/255, green: 51/255, blue: 51/255))
-                                        }
-                                    }
-                                }
-                                Spacer()
-                                Image(systemName: "chevron.right").foregroundColor(.black)
-                            }
-                        }
-                        }
-                        .onDelete { argument in
-                            
-                        }
-                        .padding(.vertical)
-                        
-                    }
-                }
-                .listStyle(.plain)
+            getAgencyList(agencyViewModel.getContractsForManager(talentManager: userViewModel.user, getCompletedContracts: false).sorted(by: sorterForDates))
+                
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
@@ -142,7 +98,11 @@ struct TalentManagerContractListView: View {
                                         tempDueDate = contract.dueDate!
                                     }
                                     tempNotes = contract.notes
-                                    tempMiscellaneous = contract.miscellaneous
+                                    tempAttachments = contract.attachments
+                                    tempApprovals = contract.approvals
+                                    tempDrafts = contract.drafts
+                                    tempApprovalNotes = contract.approvalNotes
+                                    
                                     
                                     editSheet.toggle()
                                 }
@@ -150,10 +110,13 @@ struct TalentManagerContractListView: View {
                         }
                     }
                 }
-            }.foregroundColor(.white)
-        }.refreshable {
+            }            .foregroundColor(.white)
+        }
+        
+        .refreshable {
             refresh.toggle()
-        }.sheet(isPresented: $editSheet, onDismiss: setValues) {
+        }
+        .sheet(isPresented: $editSheet, onDismiss: setValues) {
             VStack {
                 Form {
                     Section(header: Text("Campaign Information")) {
@@ -166,7 +129,6 @@ struct TalentManagerContractListView: View {
                         }
                         TextField("Notes:", text: $tempNotes, axis: .vertical)
                             .lineLimit(2...5)
-                        TextField("Miscellaneous:", text: $tempMiscellaneous)
                         TextField("Post Link (optional)", text: $tempPostLink)
                         Toggle(isOn: $includeDate) {
                             Text("Campaign has due date")
@@ -292,7 +254,7 @@ struct TalentManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
             print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
@@ -312,8 +274,11 @@ struct TalentManagerContractListView: View {
         tempInfluencer = User()
         tempInfluencerAssigned = ""
         tempTasks = []
-        tempMiscellaneous = ""
+        tempAttachments = []
         tempNotes = ""
+        tempApprovals = []
+        tempDrafts = []
+        tempApprovalNotes = []
         
     }
     
@@ -340,7 +305,7 @@ struct TalentManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, miscellaneous: tempMiscellaneous, notes: tempNotes)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)
@@ -384,4 +349,74 @@ struct TalentManagerContractListView: View {
         }
     }
     
+    func getAgencyList (_ contracts : [Contract]) -> some View {
+        ZStack {
+            Color(hex: 0xeceef5)
+                .ignoresSafeArea()
+            ScrollView {
+                VStack (alignment: .leading) {
+                    ForEach(contracts) { contract in
+                        NavigationLink {
+                            if let owner = userViewModel.agencyViewModel.getOwnerOfContract(contract: contract) {
+                                AgentContractDetailView(userID: owner.id, contractID: contract.id)
+                            } else {
+                                ErrorView()
+                            }
+                        } label: {
+                            HStack {
+                                if let owner = userViewModel.agencyViewModel.getOwnerOfContract(contract: contract) {
+                                    Image(uiImage: owner.profilePicture)
+                                        .resizable()
+                                        .frame(width: 80, height: 80)
+                                        .scaledToFill()
+                                        .aspectRatio(contentMode: .fit)
+                                        .clipShape(Circle())
+                                        .shadow(radius: 4)
+                                    
+                                } else {
+                                    Text("Error")
+                                }
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(contract.name)
+                                        .font(.title3)
+                                        .bold()
+                                        .padding(1)
+                                        .lineLimit(1)
+                                        .minimumScaleFactor(0.5)
+                                    if let owner = userViewModel.agencyViewModel.getOwnerOfContract(contract: contract) {
+                                        Text(owner.getFullName())
+                                            .padding(1)
+                                            .font(.body)
+                                    } else {
+                                        Text("Error")
+                                            .padding(1)
+                                            .font(.body)
+                                    }
+                                    Text(contract.getStatus().rawValue)
+                                        .foregroundColor(.white)
+                                        .fontWeight(.bold)
+                                        .padding(3)
+                                        .background(Contract.statusColor(contract: contract))
+                                        .cornerRadius(20)
+                                }
+                                .padding(.leading, 5)
+                                .foregroundColor(.black)
+                                Spacer()
+                            }
+                            .padding(10)
+                            .background(Color.white)
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 0) //Edit this line for spacing
+                            .cornerRadius(20)
+                        }
+                    }
+                }.padding(.top, 10)
+            }
+        }
+    }
+    
 }
+
+
+

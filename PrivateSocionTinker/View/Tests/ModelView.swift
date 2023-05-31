@@ -47,7 +47,7 @@ struct ModelView: View {
                     Text("Influencers:")
                     ForEach(userViewModel.agencyViewModel.agency.influencers, id: \.self) { influencer in
                         Text("\(influencer.firstName)")
-                        influencer.profilePicture
+                        Image(uiImage: influencer.profilePicture)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 50, height: 50)
@@ -65,7 +65,7 @@ struct ModelView: View {
                             }
                         }
                     }
-                    userViewModel.user.profilePicture
+                    Image(uiImage: userViewModel.user.profilePicture)
                         .resizable()
                         .frame(width: 100, height: 100)
                         .scaledToFill()

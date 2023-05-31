@@ -9,6 +9,7 @@ import Foundation
 import FirebaseAuth
 import Firebase
 import SwiftUI
+import CoreData
 
 /// The viewmodel class is the viewmodel for the User model. It accesses FireBaseAuthServices and FireBaseDataServices in order to access the FireStore database and do Authentication related things. All edit's to the model are not done directly through the viewmodel. Rather, intents called on the viewmodel will make changes to the FireStore database. On Register and on Log-in attach the listeners and call functions that will update the model as those listeners fire.
 class UserViewModel: ObservableObject {
@@ -17,6 +18,11 @@ class UserViewModel: ObservableObject {
     @Published var loading = false
     @Published var error : Authentication.AuthenticationError?
     @Published var hasError : Bool = false
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    var context : NSManagedObjectContext {
+        delegate.persistentContainer.viewContext
+    }
     
     var registerDisable : Bool {
         user.email.isEmpty || user.password.isEmpty
@@ -46,7 +52,8 @@ class UserViewModel: ObservableObject {
                 print("isOwner: \(user.isAgencyOwner)")
                 print("Name: \(user.firstName)")
                 print("agency: \(user.agency ?? "")")
-                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes, managedInfluencers: user.managedInfluencers)
+                FireBaseDataServices.shared.startUser(id: user.id, firstName: user.firstName, lastName: user.lastName, email: user.email, isAgencyOwner: user.isAgencyOwner, agency: user.agency, isTalentManager: user.IsTalentManager, isInfluencer: user.isInfluencer, tikTokUserName: user.tikTokUserName, instagramUserName: user.instagramUserName, youtubeUserName: user.youtubeUserName, notes: user.notes, managedInfluencers: user.managedInfluencers, profilePictureID: "default")
+                DataManager.startUser(userID: user.id, context: context)
                 addListeners(id: user.id) { completion in
                     if completion {
                         if self.user.IsTalentManager || self.user.isInfluencer || self.user.isAgencyOwner {
@@ -295,21 +302,9 @@ class UserViewModel: ObservableObject {
             }
         }
         
-        FireBaseStorageServices.shared.getProfilePicture(userID: user.id) {
-            exists,image in
-            
-            if exists {
-                if let image = image {
-                    self.user.profilePicture = Image(uiImage: image)
-                } else {
-                    print("Weird Error")
-                }
-            } else {
-                print("User Does Not Have Profile Picture")
-                self.user.profilePicture = Image.defaultImage
-            }
+        if let profilePictureID : String = data["profilePictureID"] as? String {
+            user.profilePictureID = profilePictureID
         }
-        
         
         print("Checking agency")
         if let agency : String = data["agency"] as? String {
@@ -325,10 +320,22 @@ class UserViewModel: ObservableObject {
         print(data)
     }
     
-    //MARK: LOCAL CHANGES, THESE FUNCTIONS DON'T INTERACT WITH FIREBASE AND SHOULD ONLY BE USED IF THE DATABSE IS ALSO BEING UPDATED
     
-    func updateProfilePicLocally (image : UIImage) {
-        user.profilePicture = Image(uiImage: image)
+    func updateProfilePic (image : UIImage) {
+        FireBaseStorageServices.shared.uploadProfilePicture(image: image, userID: self.getID()!)
+        let newProfileUUID = UUID()
+        FireBaseDataServices.shared.updateProfilePictureID(userID: self.getID()!, pictureID: newProfileUUID.uuidString)
+        DataManager.assignProfilePicID(userID: self.getID()!, context: self.context, newProfilePicID: newProfileUUID.uuidString)
+        user.profilePicture = image
+        
+    }
+    
+    func getLocalProfilePicID (userID : String) -> String {
+        return DataManager.getLocalProfilePicID(userID: userID, context: self.context) ?? "Not Avaiable"
+    }
+    
+    func setLocalProfilePicID (userID : String, newProfilePicID : String) {
+        DataManager.assignProfilePicID(userID: userID, context: self.context, newProfilePicID: newProfilePicID)
     }
     
     
@@ -352,10 +359,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Contract.Approval], drafts : [String], approvalNotes : [String]) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, miscellaneous: miscellaneous, notes: notes)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, attachments: attachments, notes: notes, approvals: approvals, drafts: drafts, approvalNotes: approvalNotes)
         } else {
             print("Auth Issue")
         }
@@ -398,6 +405,9 @@ class UserViewModel: ObservableObject {
             print("Failure")
         }
     }
+    
+    
+    
     
     func setYoutubeUserName (username : String) {
         if let id = self.getID() {

@@ -11,6 +11,8 @@ struct ContractDetailView: View {
     @State var showPhotoLibrary : Bool = false
     @State var image : UIImage = UIImage()
     @State var isExpanded : Bool = false
+    @State private var isPDFSheetPresented = false
+    @State private var pdfView : PDFKitView?
     
     var currentIndex : Int {
         userViewModel.user.contracts.firstIndex(where: {$0.id == contractID})!
@@ -80,10 +82,75 @@ struct ContractDetailView: View {
                     .cornerRadius(10)
                     taskMenu.background(backgroundColor)
                     VStack(alignment: .leading, spacing: 10) {
-                        Text("Attachments")
-                            .font(.title2)
-                            .foregroundColor(DetailViewConstants.lightGrey)
-                            .fontWeight(.bold)
+                        HStack {
+                            Text("Drafts")
+                                .font(.title2)
+                                .foregroundColor(DetailViewConstants.lightGrey)
+                                .fontWeight(.bold)
+                            NavigationLink {
+                                InfluencerAddDraft(contract: contract)
+                            } label: {
+                                Image(systemName: "plus")
+                                    .font(.title2)
+                                    .foregroundColor(Color(red: 172/255, green: 245/255, blue: 183/255))
+                                    .fontWeight(.bold)
+                            }
+                        }
+                        ForEach(Array(contract.approvals.enumerated()), id: \.element) { index,element in
+                            HStack {
+                                Text("Draft #\(index+1)")
+                                    .font(.headline)
+                                    .foregroundColor(primaryColor)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text("\(element.rawValue)")
+                                    .foregroundColor(.white)
+                                    .fontWeight(.bold)
+                                    .padding(3)
+                                    .background(Contract.approvalColor(approval: element))
+                                    .cornerRadius(20)
+                                Image(systemName: "x.circle")
+                                    .foregroundColor(.red)
+                                    .onTapGesture {
+                                        userViewModel.agencyViewModel.deleteDraft(name: contract.drafts[index], userID: userViewModel.getID()!, contract: contract)
+                                    }
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
+                            Text("Attachments")
+                                .font(.title2)
+                                .foregroundColor(DetailViewConstants.lightGrey)
+                                .fontWeight(.bold)
+                        }
+                        if contract.attachments.count == 0 {
+                            Text("Campaign has no attachments to show")
+                                .font(.subheadline)
+                                .fontWeight(.semibold)
+                        } else {
+                            ForEach(contract.attachments, id: \.self) { name in
+                                    HStack {
+                                        Text("\(name)").onTapGesture {
+                                            DocumentServices.retrievePDFFromFileorFireStorage(name: name, contractID: contract.id) {pdfDocument, url in
+                                                if pdfDocument != nil {
+                                                    if let url = url {
+                                                        self.pdfView = PDFKitView(url: url)
+                                                        self.isPDFSheetPresented = true
+                                                    } else {
+                                                        print("Error with URL conversion")
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
+                                        Spacer()
+                                }
+                            }
+                            
+                        }
                         
                     }
                 }
@@ -108,7 +175,15 @@ struct ContractDetailView: View {
                         .foregroundColor(DetailViewConstants.lightGrey)
                 }
             }
-        }.navigationBarBackButtonHidden(true)
+        }
+        .sheet(isPresented: $isPDFSheetPresented) {
+            if pdfView != nil {
+                ModalView(showModal: $isPDFSheetPresented, pdfView: pdfView!)
+            } else {
+                ErrorView()
+            }
+        }
+        .navigationBarBackButtonHidden(true)
             .refreshable {
                 print(userViewModel.user.contracts[0].tasks)
                 print(userViewModel.user.contracts[currentIndex].tasks)
@@ -328,6 +403,19 @@ struct ContractDetailView: View {
         func dismissKeyboard () {
             UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
         }
+    
+    struct ModalView: View {
+        @Binding var showModal: Bool
+        @State var pdfView : PDFKitView
+        
+        var body: some View {
+            Button("Dismiss") {
+                self.showModal.toggle()
+            }
+            .padding()
+            pdfView
+        }
+    }
     }
     
     

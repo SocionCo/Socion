@@ -7,12 +7,19 @@
 
 import Foundation
 import SwiftUI
+import CoreData
+import PDFKit
 
 class AgencyViewModel : ObservableObject {
     @Published var agency = Agency()
     var initialPop : Bool = true
     var influencersAddedToModel : Bool = false
     var talentManagersAddedToModel : Bool = false
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
+    var context : NSManagedObjectContext {
+        delegate.persistentContainer.viewContext
+    }
     
     func createAgencyForUser(userID : String, agencyName : String) -> String {
         return FireBaseDataServices.shared.startAgency(ownerId: userID, agencyName: agencyName)
@@ -27,7 +34,6 @@ class AgencyViewModel : ObservableObject {
         self.initialPop = true
         self.attachAgencyInfoListeners(agencyID: userViewModel.user.agency!)
         self.attachInfluencerInfoListenersToAgency(agencyID: userViewModel.user.agency!) { influencers in
-            //Once all influencers are added, attachContractListeners to those influencers
             print("INFLUENCERS SHOULD BE IN MODEL BY NOW")
             self.attachContractListeners(influencers: influencers)
             self.influencersAddedToModel = true
@@ -123,6 +129,24 @@ class AgencyViewModel : ObservableObject {
                 print("Adding listener to talent")
                 self.attachSnapshotListenerToTalentManager(userID: talentManagerID) {
                     if self.agency.talentManagers.count == talentManagers.count {
+                        
+                        for var talentManager in self.agency.talentManagers {
+                            FireBaseStorageServices.shared.getProfilePicture(userID: talentManager.id) {
+                                exists, image in
+                                
+                                if exists {
+                                    if let image = image {
+                                        talentManager.profilePicture = image
+                                    } else {
+                                        print("Weird Error")
+                                    }
+                                } else {
+                                    talentManager.profilePicture = UIImage.defaultImage
+                                }
+                            }
+                        }
+                        
+                        
                         completion(true)
                     }
                 }
@@ -158,6 +182,7 @@ class AgencyViewModel : ObservableObject {
                     indexToRemove = self.agency.influencers.firstIndex(of: userToRemove)
                 }
             }
+            
             if userExistsLocally {
                 if let indexToRemove = indexToRemove {
                     print("RemovingInfluencer2: \(self.agency.influencers[indexToRemove].getFullName())")
@@ -168,7 +193,7 @@ class AgencyViewModel : ObservableObject {
             
             
             
-            FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
+            FireBaseDataServices.shared.getUserFromID(userID: userID, localImageID: DataManager.getLocalProfilePicID(userID: userID, context: self.context) ?? "fail1"){newUser in
                 print("Appending New User")
                 if userExistsLocally || !self.influencersAddedToModel {
                     print("AddingInfluencer2: \(newUser.getFullName())")
@@ -194,6 +219,7 @@ class AgencyViewModel : ObservableObject {
                     indexToRemove = self.agency.talentManagers.firstIndex(of: userToRemove)
                 }
             }
+            
             if userExistsLocally {
                 if let indexToRemove = indexToRemove {
                     self.agency.talentManagers.remove(at:indexToRemove)
@@ -203,7 +229,7 @@ class AgencyViewModel : ObservableObject {
             
             
             
-            FireBaseDataServices.shared.getUserFromID(userID: userID ) {newUser in
+            FireBaseDataServices.shared.getUserFromID(userID: userID, localImageID: DataManager.getLocalProfilePicID(userID: userID, context: self.context) ?? "fail2") {newUser in
                 print("Appending New Talent Manager")
                 if userExistsLocally || !self.talentManagersAddedToModel {
                     self.agency.talentManagers.append(newUser)
@@ -245,7 +271,7 @@ class AgencyViewModel : ObservableObject {
                 
                 if userExistsLocally {
                     print("Entered First Local Existence")
-                    FireBaseDataServices.shared.getUserFromID(userID: influencer ) {newUser in
+                    FireBaseDataServices.shared.getUserFromID(userID: influencer, localImageID: DataManager.getLocalProfilePicID(userID: userToRemove.id, context: self.context) ?? "fail3") {newUser in
                         print("New User Retrieved")
                         if userExistsLocally {
                             print("RemovingInfluencer3: \(userToRemove.getFullName())")
@@ -260,6 +286,159 @@ class AgencyViewModel : ObservableObject {
         
     }
     
+    //MARK: Video Functions
+    
+    func deleteDraft (name : String, userID : String, contract : Contract) {
+        guard userID != "" else {
+            return
+        }
+        let index = contract.drafts.firstIndex(where: {$0 == name})
+        if let index = index {
+            var newDrafts = contract.drafts
+            newDrafts.remove(at: index)
+            var newApprovals = contract.approvals
+            newApprovals.remove(at: index)
+            var newApprovalNotes = contract.approvalNotes
+            newApprovalNotes.remove(at: index)
+            FireBaseDataServices.shared.editApprovals(contractID: contract.id, userID: userID, approvals: newApprovals, notes: newApprovalNotes, drafts: newDrafts)
+            FireBaseStorageServices.shared.deleteVideo(contractID: contract.id, videoName: name)
+        } else {
+            print("Error finding contract")
+            return
+        }
+        
+    }
+    
+    func submitUpload (name : String, contract :  Contract, userID : String, completion : @escaping (Bool) -> () ) {
+        guard userID != "" else {
+            completion(false)
+            return
+        }
+        if contract.drafts.contains(name) {
+            print("Pick a unique video draft name")
+            completion(false)
+            return
+        }
+        var newApprovals : [Contract.Approval] = contract.approvals
+        newApprovals.append(Contract.Approval.unreviewed)
+        var newNotes : [String] = contract.approvalNotes
+        newNotes.append("")
+        var newDrafts = contract.drafts
+        newDrafts.append(name)
+        FireBaseDataServices.shared.editApprovals(contractID: contract.id, userID: userID, approvals: newApprovals, notes: newNotes, drafts: newDrafts)
+        FireBaseStorageServices.shared.addVideo(contractID: contract.id, videoName: name)
+    }
+    
+    func submitReview (draftName : String, contractID : String, userID : String, approval : Contract.Approval, notes : String, completion : @escaping (Bool) -> ()) {
+        if let contract = self.getContractFromID(contractID: contractID) {
+            if let index = contract.drafts.firstIndex(of: draftName) {
+                var newApprovals = contract.approvals
+                newApprovals[index] = approval
+                var newNotes = contract.approvalNotes
+                newNotes[index] = notes
+                FireBaseDataServices.shared.editApprovals(contractID: contract.id, userID: userID, approvals: newApprovals, notes: newNotes, drafts: contract.drafts)
+            } else {
+                completion(false)
+                return
+            }
+        } else {
+            completion(false)
+            return
+        }
+    }
+    
+   
+    
+    func approveDraft (contractID : String, draftName : String, notes : String) {
+        if let user = self.getOwnerOfContract(contractID: contractID) {
+            self.submitReview(draftName: draftName, contractID: contractID, userID: user.id, approval: .approved, notes: notes, completion: {_ in})
+        } else {
+            print("Error fetching UserID")
+            return
+        }
+    }
+    
+    func rejectDraft (contractID : String, draftName : String, notes : String) {
+        if let user = self.getOwnerOfContract(contractID: contractID) {
+            self.submitReview(draftName: draftName, contractID: contractID, userID: user.id, approval: .rejected, notes: notes, completion: {_ in})
+        } else {
+            print("Error fetching UserID")
+            return
+        }
+    }
+    
+    func setDraftToUnreviewed (contractID : String, draftName : String, notes : String) {
+        if let user = self.getOwnerOfContract(contractID: contractID) {
+            self.submitReview(draftName: draftName, contractID: contractID, userID: user.id, approval: .unreviewed, notes: notes, completion: {_ in})
+        } else {
+            print("Error fetching UserID")
+            return
+        }
+    }
+    
+    func getApprovals (contractID : String) -> [Contract.Approval] {
+        for contract in self.getContracts() {
+            if contract.id == contractID {
+                return contract.approvals
+            }
+        }
+        return []
+    }
+    
+    func getApprovalNotes (contractID : String) -> [String] {
+        for contract in self.getContracts() {
+            if contract.id == contractID {
+                return contract.approvalNotes
+            }
+        }
+        return []
+    }
+
+
+    
+    func checkIfVideosExistLocallyAndDownload (contract : Contract) {
+        for draft in contract.drafts {
+            if !DocumentServices.videoExistsLocally(name: draft, contractID: contract.id) {
+                FireBaseStorageServices.shared.getVideo(contractID: contract.id, videoName: draft, completion: {_ in})
+            }
+        }
+    }
+    
+    
+    
+    
+    //MARK: PDF Functions
+    private func pdfFromURL(string: URL) -> PDFDocument? {
+        return PDFDocument(url: string)
+    }
+    
+    func uploadPDFFromURL(url : URL, contract : Contract, userID : String,  completion : @escaping (BasicError) -> ()) {
+        let name = url.lastPathComponent
+        if contract.attachments.contains(name) {
+            print("Already contains file name")
+            completion(.error)
+        } else {
+            if let pdfDocument = PDFDocument(url: url) {
+                DocumentServices.storePDF(url: url, name: name, contractID: contract.id)
+                FireBaseDataServices.shared.addAttachmentID(userID: userID, contractID: contract.id, attachmentID: name)
+                FireBaseStorageServices.shared.uploadFirestoragePDF(document: pdfDocument, name: name, contractID: contract.id)
+                completion(.noError)
+            } else {
+                print("Document doesn't exist")
+                completion(.error)
+            }
+        }
+    }
+    
+    func deletePDF(name : String, userID : String, contract : Contract) {
+        let currentURL = DocumentServices.getAttachmentsDirectory(contractID: contract.id, name: name)
+        FireBaseStorageServices.shared.deleteFirestoragePDF(name: name, contractID: contract.id)
+        FireBaseDataServices.shared.removeAttachmentID(userID : userID, contractID: contract.id, attachmentID: name)
+        DocumentServices.deleteAttachmentFromDocuments(url: currentURL)
+    }
+    
+    
+    
     
     
     private func updateOnlyAgencyInfo (data : [String : Any]) {
@@ -270,7 +449,7 @@ class AgencyViewModel : ObservableObject {
         }
         
         if let owner : String = data["owner"] as? String {
-            FireBaseDataServices.shared.getUserFromID(userID: owner) {newUser in
+            FireBaseDataServices.shared.getUserFromID(userID: owner, localImageID: DataManager.getLocalProfilePicID(userID: owner, context: self.context) ?? "default") {newUser in
                 self.agency.owner = newUser
             }
         }
@@ -298,7 +477,7 @@ class AgencyViewModel : ObservableObject {
                     print("AddingNewInfluencerBaby")
                     for newInfluencerID in newInfluencerArray {
                         if (!oldInfluencerIDArray.contains(newInfluencerID)) {
-                            FireBaseDataServices.shared.getUserFromID(userID: newInfluencerID) { newUser in
+                            FireBaseDataServices.shared.getUserFromID(userID: newInfluencerID, localImageID: DataManager.getLocalProfilePicID(userID: newInfluencerID, context: self.context) ?? "fail4") { newUser in
                                 print("AddingInfluencer1 \(newUser.getFullName())")
                                 self.agency.influencers.append(newUser)
                                 self.attachSnapshotListenerToInfluencer(userID: newInfluencerID, completion: {})
@@ -336,7 +515,7 @@ class AgencyViewModel : ObservableObject {
                         for newTalentManagerID in newTalentManagerArray {
                             if (!oldTalentManagerIDArray.contains(newTalentManagerID)) {
                                 print("Adding user")
-                                FireBaseDataServices.shared.getUserFromID(userID: newTalentManagerID) { newUser in
+                                FireBaseDataServices.shared.getUserFromID(userID: newTalentManagerID, localImageID: DataManager.getLocalProfilePicID(userID: newTalentManagerID, context: self.context) ?? "fail6") { newUser in
                                     self.agency.talentManagers.append(newUser)
                                     self.attachSnapshotListenerToTalentManager(userID: newTalentManagerID, completion: {})
                                 }
@@ -489,6 +668,28 @@ class AgencyViewModel : ObservableObject {
         return nil
     }
     
+    func getOwnerOfContract (contractID : String) -> User? {
+        for influencer in agency.influencers {
+            for userContract in influencer.contracts {
+                if contractID == userContract.id {
+                    return influencer
+                }
+            }
+        }
+        return nil
+    }
+    
+    func getOwnerOfContract(contractID : String) -> String {
+        for influencer in agency.influencers {
+            for userContract in influencer.contracts {
+                if contractID == userContract.id {
+                    return influencer.id
+                }
+            }
+        }
+        return ""
+    }
+    
     func addContractToInfluencer (contract : Contract, influencerID : String) {
         FireBaseDataServices.shared.addContract(id: influencerID, contract: contract)
     }
@@ -502,12 +703,11 @@ class AgencyViewModel : ObservableObject {
     
     
     
-    
-    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks: [String], isCompleted : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String ) {
+    func editContractAsAgency (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks: [String], isCompleted : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Contract.Approval], drafts : [String], approvalNotes : [String] ) {
         let user = self.getOwnerOfContract(contract: contract)
         if let user = user {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, miscellaneous: miscellaneous, notes: notes)
+            FireBaseDataServices.shared.editExistingContract(userID: user.id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, attachments: attachments, notes: notes, approvals: approvals, drafts: drafts, approvalNotes: approvalNotes)
         } else {
             print("Auth Issue")
         }
@@ -547,6 +747,15 @@ class AgencyViewModel : ObservableObject {
             }
         }
         return returnArray
+    }
+    
+    func getContractFromID (contractID : String) -> Contract? {
+        for contract in self.getContracts() {
+            if contract.id == contractID {
+                return contract
+            }
+        }
+        return nil
     }
     
     func getContracts (getCompletedContracts : Bool) -> [Contract] {
@@ -603,4 +812,10 @@ class AgencyViewModel : ObservableObject {
     func getInfluencers() -> [User] {
         return agency.influencers
     }
+}
+
+
+enum BasicError : Error {
+    case error
+    case noError
 }

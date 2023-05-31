@@ -15,7 +15,13 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "781"
+<<<<<<< HEAD
             endingLineNumber = "781">
+=======
+            endingLineNumber = "781"
+            landmarkName = "getInfluencersForManager(talentManager:)"
+            landmarkType = "7">
+>>>>>>> dev_branch
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -30,7 +36,43 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "482"
             endingLineNumber = "482"
+<<<<<<< HEAD
             landmarkName = "getOwnerOfContract(contract:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "40FE87C5-DF06-4D1F-AB25-67B92BD44802"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "419"
+            endingLineNumber = "419"
+            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:approvals:drafts:approvalNotes:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "745F94F8-1FDB-4A0A-A76F-3C5CC382120A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
+            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:approvals:drafts:approvalNotes:)"
+=======
+            landmarkName = "updateOnlyAgencyInfo(data:)"
+>>>>>>> dev_branch
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

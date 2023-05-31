@@ -7,6 +7,8 @@
 
 import Foundation
 import SwiftUI
+import CoreData
+import Combine
 
  
 
@@ -26,7 +28,8 @@ struct User : Hashable, Identifiable {
     var youtubeUserName : String?
     var notes : String = ""
     var managedInfluencers : [String]?
-    var profilePicture : Image = Image(systemName: "person.crop.circle.fill")
+    var profilePicture : UIImage = UIImage(systemName: "person.crop.circle.fill") ?? UIImage()
+    var profilePictureID : String = ""
     
     func hash (into hasher : inout Hasher) {
         hasher.combine(id)
@@ -49,7 +52,8 @@ struct User : Hashable, Identifiable {
     
     init(){}
     
-    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool, tikTokUserName : String, youtubeUserName : String, instagramUserName : String, notes : String, managedInfluencers : [String]?, profilePic: Image?) {
+    init(id: String, firstName: String, lastName: String, password: String, email: String, contracts: [Contract], isAgencyOwner: Bool, agency: String? = nil, isInfluencer: Bool, IsTalentManager: Bool, tikTokUserName : String, youtubeUserName : String, instagramUserName : String, notes : String, managedInfluencers : [String]?, profilePic: UIImage?) {
+        @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
         self.id = id
         self.firstName = firstName
         self.lastName = lastName
@@ -66,14 +70,19 @@ struct User : Hashable, Identifiable {
         self.youtubeUserName = youtubeUserName
         self.managedInfluencers = managedInfluencers
         if profilePic == nil {
-            self.profilePicture = Image(systemName: "person.crop.circle.fill")
+            self.profilePicture = UIImage(systemName: "person.crop.circle.fill") ?? UIImage()
         } else {
             self.profilePicture = profilePic!
         }
+        self.profilePictureID = DataManager.getLocalProfilePicID(userID: id, context: delegate.persistentContainer.viewContext) ?? "default"
         
     }
     
     func getFullName() -> String {
         return "\(firstName) \(lastName)"
     }
+    
+    
+    
+    
 }

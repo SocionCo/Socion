@@ -1,4 +1,5 @@
 import SwiftUI
+import PDFKit
 
 struct AgentContractDetailView: View {
     let backgroundColor = Color(.white)
@@ -9,10 +10,13 @@ struct AgentContractDetailView: View {
     @State var newTask: String = ""
     @State var contractID: String
     @Environment(\.dismiss) private var dismiss
-    @State var showPhotoLibrary : Bool = false
+    @State var presentImporter : Bool = false
     @State var image : UIImage = UIImage()
     @State private var isDeleteAlertPresented = false
     @State private var isPaidAlertPresented = false
+    @State private var isPDFSheetPresented = false
+    @State private var pdfView : PDFKitView?
+    @State private var showAlert : Bool = false
     
     var userIndex : Int {
         return userViewModel.agencyViewModel.agency.influencers.firstIndex(where: {$0.id == userID})!
@@ -46,95 +50,190 @@ struct AgentContractDetailView: View {
     
     
     var body: some View {
-        VStack(spacing: 0) {
-            taskBar.background(backgroundColor).padding(.bottom,15)
-            Divider()
-                .frame(height: 1)
-                .background(primaryColor)
-                .padding(0)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    Text("Campaign Details")
-                        .foregroundColor(DetailViewConstants.lightGrey)
-                        .fontWeight(.bold)
-                        .font(.title2)
-                    
-                    VStack(alignment: .leading, spacing: 10) {
+        ZStack {
+            VStack(spacing: 0) {
+                taskBar.background(backgroundColor).padding(.bottom,15)
+                Divider()
+                    .frame(height: 1)
+                    .background(primaryColor)
+                    .padding(0)
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        Text("Campaign Details")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
                         
-                        HStack {
-                            Text("Company:")
+                        VStack(alignment: .leading, spacing: 10) {
+                            
+                            HStack {
+                                Text("Company:")
+                                    .font(.headline)
+                                    .foregroundColor(primaryColor)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text(contract.company)
+                                    .font(.title3)
+                                    .foregroundColor(primaryColor)
+                            }
+                            Text("Notes:")
                                 .font(.headline)
                                 .foregroundColor(primaryColor)
                                 .fontWeight(.bold)
+                            if contract.notes == "" || contract.notes == " " {
+                                Text("No notes provided.")
+                                    .foregroundColor(primaryColor)
+                            } else {
+                                ExpandableText(contract.notes, lineLimit: 3, fontColor: primaryColor)
+                            }
+                            
+                        }
+                        .padding()
+                        .background(DetailViewConstants.lightGreenBackground)
+                        .cornerRadius(10)
+                        assignView
+                        taskMenu.background(backgroundColor)
+                        VStack(alignment: .leading, spacing: 10) {
+                            Text("Drafts")
+                                .font(.title2)
+                                .foregroundColor(DetailViewConstants.lightGrey)
+                                .fontWeight(.bold)
+                            ForEach(Array(contract.approvals.enumerated()), id: \.element) { index,element in
+                                HStack {
+                                    Text("Draft #\(index+1)")
+                                        .font(.headline)
+                                        .foregroundColor(primaryColor)
+                                        .fontWeight(.bold)
+                                    Spacer()
+                                    Text("\(element.rawValue)")
+                                        .foregroundColor(.white)
+                                        .fontWeight(.bold)
+                                        .padding(3)
+                                        .background(Contract.approvalColor(approval: element))
+                                        .cornerRadius(20)
+                                }
+                            }
+                            NavigationLink {
+                                AgentDraftDashboard(contract: contract)
+                            } label: {
+                                let reviewResults : (Bool, Int) = contract.hasDraftsToReview()
+                                let plural = reviewResults.1 == 1 ? false : true
+                                if reviewResults.0 {
+                                    Text("\(reviewResults.1) draft\(plural ? "s" : "") need\(!plural ? "s" : "") to be reviewed")
+                                } else {
+                                    Text("Draft Dashboard")
+                                }
+                            }
+                            .onTapGesture {
+                                userViewModel.agencyViewModel.checkIfVideosExistLocallyAndDownload(contract: contract)
+                            }
+                        }
+                        VStack(alignment: .leading, spacing: 10) {
+                            HStack {
+                                Text("Attachments")
+                                    .font(.title2)
+                                    .foregroundColor(DetailViewConstants.lightGrey)
+                                    .fontWeight(.bold)
+                                Button {
+                                    presentImporter = true
+                                } label: {
+                                    Image(systemName: "plus")
+                                        .font(.title2)
+                                        .foregroundColor(Color(red: 172/255, green: 245/255, blue: 183/255))
+                                        .fontWeight(.bold)
+                                }.fileImporter(isPresented: $presentImporter, allowedContentTypes: [.pdf]) { result in
+                                    switch result {
+                                    case .success(let url):
+                                        userViewModel.agencyViewModel.uploadPDFFromURL(url: url, contract: contract, userID: userID) { basicError in
+                                            switch basicError {
+                                            case .error:
+                                                showAlert = true
+                                            default:
+                                                print("No error")
+                                            }
+                                            
+                                        }
+                                    case .failure(let error):
+                                        print(error)
+                                    }
+                                }
+                            }
+                            if contract.attachments.count == 0 {
+                                Text("Campaign has no attachments to show")
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            } else {
+                                ForEach(contract.attachments, id: \.self) { name in
+                                    HStack {
+                                        Text("\(name)").onTapGesture {
+                                            DocumentServices.retrievePDFFromFileorFireStorage(name: name, contractID: contract.id) {pdfDocument, url in
+                                                if pdfDocument != nil {
+                                                    if let url = url {
+                                                        self.pdfView = PDFKitView(url: url)
+                                                        self.isPDFSheetPresented = true
+                                                    } else {
+                                                        print("Error with URL conversion")
+                                                    }
+                                                }
+                                                
+                                            }
+                                        }
+                                        Spacer()
+                                        Image(systemName: "x.circle")
+                                            .foregroundColor(.red)
+                                            .onTapGesture {
+                                                userViewModel.agencyViewModel.deletePDF(name: name, userID: userID, contract: contract)
+                                            }
+                                            .font(.subheadline)
+                                            .fontWeight(.semibold)
+                                    }
+                                }
+                                
+                            }
+                            
+                        }
+                        HStack {
                             Spacer()
-                            Text(contract.company)
-                                .font(.title3)
-                                .foregroundColor(primaryColor)
-                        }
-                        Text("Notes:")
-                            .font(.headline)
-                            .foregroundColor(primaryColor)
-                            .fontWeight(.bold)
-                        if contract.notes == "" || contract.notes == " " {
-                            Text("No notes provided.")
-                                .foregroundColor(primaryColor)
-                        } else {
-                            ExpandableText(contract.notes, lineLimit: 3, fontColor: primaryColor)
-                        }
-                        
-                    }
-                    .padding()
-                    .background(DetailViewConstants.lightGreenBackground)
-                    .cornerRadius(10)
-                    assignView
-                    taskMenu.background(backgroundColor)
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("Attachments")
-                            .font(.title2)
-                            .foregroundColor(DetailViewConstants.lightGrey)
-                            .fontWeight(.bold)
-                        Text("Campaign has no attachments to show")
-                            .font(.subheadline)
-                            .fontWeight(.semibold)
-                        
-                    }
-                    HStack {
-                        Spacer()
-                        Button(action: {
-                            isDeleteAlertPresented = true
-                        }) {
-                            Text("Delete")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color(red: 245/255, green: 172/255, blue: 172/255))
-                                .cornerRadius(10)
+                            Button(action: {
+                                isDeleteAlertPresented = true
+                            }) {
+                                Text("Delete")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color(red: 245/255, green: 172/255, blue: 172/255))
+                                    .cornerRadius(10)
                             }
-                        Button(action: {
-                            isPaidAlertPresented = true
-                        }) {
-                            Text("Paid")
-                                .font(.headline)
-                                .foregroundColor(.white)
-                                .padding()
-                                .background(Color(red: 172/255, green: 245/255, blue: 183/255))
-                                .cornerRadius(10)
+                            Button(action: {
+                                isPaidAlertPresented = true
+                            }) {
+                                Text("Paid")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .padding()
+                                    .background(Color(red: 172/255, green: 245/255, blue: 183/255))
+                                    .cornerRadius(10)
                             }
-                        Spacer()
+                            Spacer()
                         }
                     }
                 }
                 .padding()
                 .background(backgroundColor)
             }
+
+        }
+        .alert("Error uploading file. Filename may not be unique.", isPresented: $showAlert) {
+            Button("Ok", role: .cancel) {}
+        }
         .alert(title: "Are you sure you want to delete this campaign?", message: "This action is permanent. You will not be able to recover campaigns that are deleted.",
                primaryButton: CustomAlertButton(title: "Yes", action: {userViewModel.agencyViewModel.deleteContractForAgency(contract: contract)}),
-                   secondaryButton: CustomAlertButton(title: "No", action: {  }),
-                   isPresented: $isDeleteAlertPresented)
+               secondaryButton: CustomAlertButton(title: "No", action: {  }),
+               isPresented: $isDeleteAlertPresented)
         .alert(title: "Are you sure you want to mark this campaign as paid?", message: "If you wish to access past campaigns, they are accessible in the agency settings section of the agency dashboard. ",
-                   primaryButton: CustomAlertButton(title: "Yes", action: {userViewModel.agencyViewModel.updateContractPaymentStatus(userID: userID, contract: contract, newPaymentStatus: .paid)}),
-                   secondaryButton: CustomAlertButton(title: "No", action: { }),
-                   isPresented: $isPaidAlertPresented)
+               primaryButton: CustomAlertButton(title: "Yes", action: {userViewModel.agencyViewModel.updateContractPaymentStatus(userID: userID, contract: contract, newPaymentStatus: .paid)}),
+               secondaryButton: CustomAlertButton(title: "No", action: { }),
+               isPresented: $isPaidAlertPresented)
         .toolbar {
             ToolbarItem(placement: .navigationBarLeading) {
                 Button {
@@ -151,17 +250,25 @@ struct AgentContractDetailView: View {
                         .foregroundColor(DetailViewConstants.lightGrey)
                 }
             }
-        }.navigationBarBackButtonHidden(true)
-            .refreshable {
-                print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[0].tasks)
-                print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks)
+        }
+        .sheet(isPresented: $isPDFSheetPresented) {
+            if pdfView != nil {
+                ModalView(showModal: $isPDFSheetPresented, pdfView: pdfView!)
+            } else {
+                ErrorView()
             }
-            .onTapGesture {
-                dismissKeyboard()
-            }
+        }
+        .navigationBarBackButtonHidden(true)
+        .refreshable {
+            print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[0].tasks)
+            print(userViewModel.agencyViewModel.agency.influencers[userIndex].contracts[currentIndex].tasks)
+        }
+        .onTapGesture {
+            dismissKeyboard()
+        }
         
     }
-        
+    
     
     
     var taskMenu : some View {
@@ -331,7 +438,7 @@ struct AgentContractDetailView: View {
                 .font(.title2)
                 .fontWeight(.bold)
             HStack(spacing: 15) {
-                userViewModel.agencyViewModel.agency.influencers[userIndex].profilePicture
+                Image(uiImage: userViewModel.agencyViewModel.agency.influencers[userIndex].profilePicture)
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 50, height: 50)
@@ -357,44 +464,59 @@ struct AgentContractDetailView: View {
     
     @ViewBuilder
     func fullCircleAndRectangle (completedTasks : Int, text : String) -> some View {
-            Circle()
-                .frame(width: 30, height: 30)
-                .foregroundColor(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
-            Rectangle()
-                .fill(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
-                .frame(width: CGFloat(taskGap), height: 3)
+        Circle()
+            .frame(width: 30, height: 30)
+            .foregroundColor(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
+        Rectangle()
+            .fill(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
+            .frame(width: CGFloat(taskGap), height: 3)
     }
     
     @ViewBuilder
     func emptyCircleandRectangle (completedTasks : Int, text : String) -> some View {
-            Circle()
-                .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
-                .background(Color.white)
-                .frame(width: 30, height: 30)
-            Rectangle()
-                .fill(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
-                .frame(width: CGFloat(taskGap), height: 3)
+        Circle()
+            .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
+            .background(Color.white)
+            .frame(width: 30, height: 30)
+        Rectangle()
+            .fill(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
+            .frame(width: CGFloat(taskGap), height: 3)
     }
     
     @ViewBuilder
     func emptyCircle (completedTasks : Int, text : String) -> some View {
-            Circle()
-                .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
-                .background(Color.white)
-                .frame(width: 30, height: 30)
+        Circle()
+            .stroke(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0), lineWidth: 2)
+            .background(Color.white)
+            .frame(width: 30, height: 30)
     }
     
     @ViewBuilder
     func fullCircle (completedTasks : Int, text : String) -> some View {
-            Circle()
-                .frame(width: 30, height: 30)
-                .foregroundColor(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
+        Circle()
+            .frame(width: 30, height: 30)
+            .foregroundColor(Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0))
     }
     
     func dismissKeyboard () {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
+    
+    struct ModalView: View {
+        @Binding var showModal: Bool
+        @State var pdfView : PDFKitView
+        
+        var body: some View {
+            Button("Dismiss") {
+                self.showModal.toggle()
+            }
+            .padding()
+            pdfView
+        }
+    }
 }
+
+
 
 
 

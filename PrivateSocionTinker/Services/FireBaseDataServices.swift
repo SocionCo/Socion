@@ -13,6 +13,7 @@ import SwiftUI
 /// Class with a singleton (shared) that should be the access point for all interactions with the FireStore database.
 class FireBaseDataServices {
     static let shared = FireBaseDataServices()
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     let db = Firestore.firestore()
     
     
@@ -22,7 +23,7 @@ class FireBaseDataServices {
     ///   - firstName: First Name
     ///   - lastName: Last Name
     ///   - email: Email
-    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String, managedInfluencers : [String]?) {
+    func startUser (id: String, firstName : String, lastName : String, email : String, isAgencyOwner : Bool, agency : String?, isTalentManager : Bool, isInfluencer : Bool, tikTokUserName : String?, instagramUserName : String?, youtubeUserName : String?, notes : String, managedInfluencers : [String]?, profilePictureID : String) {
         let userAgencyID : String = agency == nil ? String() : agency!
         let unwrappedTikTok : String = tikTokUserName == nil ? "" : tikTokUserName!
         let unwrappedYoutube : String = youtubeUserName == nil ? "" : youtubeUserName!
@@ -41,7 +42,8 @@ class FireBaseDataServices {
             "instagramUserName" : unwrappedInstagram,
             "youtubeUserName" : unwrappedYoutube,
             "notes" : notes,
-            "managedInfluencers" : unwrappedInfluencers
+            "managedInfluencers" : unwrappedInfluencers,
+            "profilePictureID" : profilePictureID
         ])
         
     }
@@ -152,8 +154,11 @@ class FireBaseDataServices {
             "tasks" : contract.tasks,
             "completedTasks" : contract.isCompletedArray,
             "influencerAssignedToContract" : unwrappedInfluencerAssigned,
-            "miscellaneous" : contract.miscellaneous,
-            "notes" : contract.notes
+            "attachments" : contract.attachments,
+            "notes" : contract.notes,
+            "approvals" : contract.approvals,
+            "drafts" : contract.drafts,
+            "approvalNotes" : contract.approvalNotes
         ])
     }
     
@@ -398,13 +403,14 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?, miscellaneous : String, notes : String) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Contract.Approval], drafts : [String], approvalNotes : [String]) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
         if rate != nil {
             unwrappedRate = rate!
         }
+        let unwrappedApprovals : [String] = approvals.map({$0.rawValue})
         print("DataBaseServices updating status to \(status.rawValue)")
         print("15Calling document: \(userID)")
         
@@ -413,7 +419,7 @@ class FireBaseDataServices {
         contractsRef.document(contract.id).setData([
             "company" : company,
             "name" : influencer,
-            "status" : AgencyViewModel.getStatus(contract: contract),
+            "status" : AgencyViewModel.getStatus(contract: contract).rawValue,
             "rate" : unwrappedRate,
             "paymentStatus" : paymentStatus.rawValue,
             "postLink" : unwrappedPostLink,
@@ -422,7 +428,10 @@ class FireBaseDataServices {
             "completedTasks" : isCompletedArray,
             "influencerAssignedToContract" : returnUnwrappedOrEmptyString(optional: influencerAssignedToContract),
             "notes" : notes,
-            "miscellaneous" : miscellaneous
+            "attachments" : attachments,
+            "approvals" : unwrappedApprovals,
+            "drafts" : drafts,
+            "approvalNotes" : approvalNotes
         ])
     }
     
@@ -434,10 +443,42 @@ class FireBaseDataServices {
         }
     }
     
-    func getUserFromID (userID : String, completion : @escaping (User) -> Void) {
-        var initialReturnComplete : Bool = false
+    //MARK: Video Functions
+    
+    func editApprovals (contractID : String, userID : String, approvals : [Contract.Approval], notes : [String], drafts : [String]) {
+        let unwrappedApprovals : [String] = Contract.approvalArrayToString(approvalArray: approvals)
+        db.collection("users").document(userID).collection("contracts").document(contractID).updateData([
+            "approvals" : unwrappedApprovals,
+            "drafts" : drafts,
+            "approvalNotes" : notes
+        ])
+    }
+    
+    
+    
+    func updateProfilePictureID (userID : String, pictureID : String) {
+        db.collection("users").document(userID).updateData([
+            "profilePictureID" : pictureID
+        ])
+    }
+    
+    func addAttachmentID (userID : String, contractID : String, attachmentID : String) {
+        print("Adding New AttachmentID: \(attachmentID) contractID: \(contractID)")
+        db.collection("users").document(userID).collection("contracts").document(contractID).updateData([
+            "attachments" : FieldValue.arrayUnion([attachmentID])
+        ])
+    }
+    
+    func removeAttachmentID (userID : String, contractID : String, attachmentID : String) {
+        db.collection("users").document(userID).collection("contracts").document(contractID).updateData([
+            "attachments" : FieldValue.arrayRemove([attachmentID])
+        ])
+    }
+    
+    func getUserFromID (userID : String, localImageID : String, completion : @escaping (User) -> Void) {
         db.collection("users").document(userID).getDocument { document, error in
             var returnUser : User = User()
+            var firstCompletion : Bool = false
             guard let document = document else {
                 print("Error line 251 FireBaseDataServices")
                 return
@@ -471,6 +512,7 @@ class FireBaseDataServices {
             if let isTalentManager : Bool = data["isTalentManager"] as? Bool {
                 returnUser.IsTalentManager = isTalentManager
             }
+            
             
             if let tikTokUserName : String = data["tikTokUserName"] as? String {
                 if (tikTokUserName == "" || tikTokUserName == " ") {
@@ -506,35 +548,50 @@ class FireBaseDataServices {
             
             returnUser.id = userID
             
-            FireBaseStorageServices.shared.getProfilePicture(userID: userID) {
-                exists, image in
-                if exists {
-                    if let image = image {
-                        returnUser.profilePicture = Image(uiImage: image)
-                        if initialReturnComplete {
+            var needsDownload = false
+            
+            
+            if let profilePictureID : String = data["profilePictureID"] as? String {
+                needsDownload = !(localImageID == profilePictureID)
+                print("Comparing local: \(localImageID) to remote \(profilePictureID)")
+                
+                if needsDownload {
+                    print("NEEDS DOWNLOAD FOR \(userID)")
+                    FireBaseStorageServices.shared.getProfilePicture(userID: userID)  {
+                        exists, image in
+                        
+                        if exists {
+                            if let image = image {
+                                returnUser.profilePicture = image
+                                DataManager.assignProfilePicID(userID: userID, context: self.delegate.persistentContainer.viewContext, newProfilePicID: profilePictureID)
+                                DataManager.saveLocalProfilePic(userID: userID, image: image, context: self.delegate.persistentContainer.viewContext)
+                            }
+                        }
+                        if firstCompletion {
                             completion(returnUser)
                         } else {
-                            initialReturnComplete = true
+                            firstCompletion = true
                         }
-                    } else {
-                        print("Weird Error")
+                        
                     }
                 } else {
-                    returnUser.profilePicture = Image.defaultImage
-                    if initialReturnComplete {
+                    print("\(returnUser.id)DOESN'T NEED DOWNLOAD USING LOCAL")
+                    returnUser.profilePicture = DataManager.getLocalProfilPic(userID: returnUser.id, context: self.delegate.persistentContainer.viewContext) ?? UIImage.defaultImage
+                    if firstCompletion {
                         completion(returnUser)
                     } else {
-                        initialReturnComplete = true
+                        firstCompletion = true
                     }
-                    
-                    
                 }
-                
+            } else {
+                if firstCompletion {
+                    completion(returnUser)
+                } else {
+                    firstCompletion = true
+                }
             }
             
-            
-            
-            
+
             
             
             self.db.collection("users").document(userID).collection("contracts").getDocuments {snapshot, error in
@@ -547,11 +604,13 @@ class FireBaseDataServices {
                     let contract = Contract.toContractFromStringMap(id: document.documentID, stringMap: document.data())
                     returnUser.contracts.append(contract)
                 }
-                if initialReturnComplete {
+                
+                if firstCompletion {
                     completion(returnUser)
-                } else {
-                    initialReturnComplete = true
+                } else  {
+                    firstCompletion = true
                 }
+                
                 
             }
             
