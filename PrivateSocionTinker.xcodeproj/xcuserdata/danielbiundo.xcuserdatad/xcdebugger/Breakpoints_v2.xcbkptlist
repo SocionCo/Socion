@@ -14,8 +14,8 @@
             filePath = "PrivateSocionTinker/ViewModel/AgencyViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "628"
-            endingLineNumber = "628"
+            startingLineNumber = "781"
+            endingLineNumber = "781"
             landmarkName = "getInfluencersForManager(talentManager:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "PrivateSocionTinker/ViewModel/AgencyViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "360"
-            endingLineNumber = "360"
+            startingLineNumber = "482"
+            endingLineNumber = "482"
             landmarkName = "updateOnlyAgencyInfo(data:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -46,9 +46,9 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "415"
-            endingLineNumber = "415"
-            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:)"
+            startingLineNumber = "419"
+            endingLineNumber = "419"
+            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:approvals:drafts:approvalNotes:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -62,9 +62,9 @@
             filePath = "PrivateSocionTinker/Services/FireBaseDataServices.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "428"
-            endingLineNumber = "428"
-            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:)"
+            startingLineNumber = "435"
+            endingLineNumber = "435"
+            landmarkName = "editExistingContract(userID:contract:company:influencer:status:rate:paymentStatus:postLink:dueDate:tasks:isCompletedArray:influencerAssignedToContract:attachments:notes:approvals:drafts:approvalNotes:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

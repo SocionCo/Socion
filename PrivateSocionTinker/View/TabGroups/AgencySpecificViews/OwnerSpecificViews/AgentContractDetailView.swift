@@ -94,6 +94,41 @@ struct AgentContractDetailView: View {
                         assignView
                         taskMenu.background(backgroundColor)
                         VStack(alignment: .leading, spacing: 10) {
+                            Text("Drafts")
+                                .font(.title2)
+                                .foregroundColor(DetailViewConstants.lightGrey)
+                                .fontWeight(.bold)
+                            ForEach(Array(contract.approvals.enumerated()), id: \.element) { index,element in
+                                HStack {
+                                    Text("Draft #\(index+1)")
+                                        .font(.headline)
+                                        .foregroundColor(primaryColor)
+                                        .fontWeight(.bold)
+                                    Spacer()
+                                    Text("\(element.rawValue)")
+                                        .foregroundColor(.white)
+                                        .fontWeight(.bold)
+                                        .padding(3)
+                                        .background(Contract.approvalColor(approval: element))
+                                        .cornerRadius(20)
+                                }
+                            }
+                            NavigationLink {
+                                AgentDraftDashboard(contract: contract)
+                            } label: {
+                                let reviewResults : (Bool, Int) = contract.hasDraftsToReview()
+                                let plural = reviewResults.1 == 1 ? false : true
+                                if reviewResults.0 {
+                                    Text("\(reviewResults.1) draft\(plural ? "s" : "") need\(!plural ? "s" : "") to be reviewed")
+                                } else {
+                                    Text("Draft Dashboard")
+                                }
+                            }
+                            .onTapGesture {
+                                userViewModel.agencyViewModel.checkIfVideosExistLocallyAndDownload(contract: contract)
+                            }
+                        }
+                        VStack(alignment: .leading, spacing: 10) {
                             HStack {
                                 Text("Attachments")
                                     .font(.title2)

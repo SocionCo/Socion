@@ -15,6 +15,9 @@ struct TalentManagerContractListView: View {
     @State var tempDueDate : Date = Date()
     @State var tempNotes : String = ""
     @State var tempAttachments : [String] = []
+    @State var tempApprovals : [Contract.Approval] = []
+    @State var tempApprovalNotes : [String] = []
+    @State var tempDrafts : [String] = []
     @State var tempPaymentStatus : Contract.PaymentProgress = .notPaid
     @State var tempInfluencer = User()
     @State var tempTasks : [String] = []
@@ -96,6 +99,10 @@ struct TalentManagerContractListView: View {
                                     }
                                     tempNotes = contract.notes
                                     tempAttachments = contract.attachments
+                                    tempApprovals = contract.approvals
+                                    tempDrafts = contract.drafts
+                                    tempApprovalNotes = contract.approvalNotes
+                                    
                                     
                                     editSheet.toggle()
                                 }
@@ -247,7 +254,7 @@ struct TalentManagerContractListView: View {
             }
             
             print("Updating status to \(tempStatus.rawValue)")
-            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
+            agencyViewModel.editContractAsAgency(contract: contract, company: tempCompanyName, influencer: tempName, status: tempStatus, dueDate: useDate, rate: useRate, paymentStatus: tempPaymentStatus, postLink: usePostLink, tasks: tempTasks, isCompleted: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
             print("Campaign status is:: \(contract.getStatus().rawValue)")
             resetValues()
         }
@@ -269,6 +276,9 @@ struct TalentManagerContractListView: View {
         tempTasks = []
         tempAttachments = []
         tempNotes = ""
+        tempApprovals = []
+        tempDrafts = []
+        tempApprovalNotes = []
         
     }
     
@@ -295,7 +305,7 @@ struct TalentManagerContractListView: View {
             usePostLink = tempPostLink
         }
         
-        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes)
+        let contractToAdd = Contract(id: UUID().uuidString, company: tempCompanyName, status: tempStatus, influencer: tempName, paymentStatus: tempPaymentStatus, postLink: usePostLink, dueDate: Contract.stringToDateForStorage(stringDate: useDate), rate: useRate, tasks: tempTasks, isCompletedArray: tempCompleted, influencerAssignedToContract: tempInfluencerAssigned, attachments: tempAttachments, notes: tempNotes, approvals: tempApprovals, drafts: tempDrafts, approvalNotes: tempApprovalNotes)
         
         
         agencyViewModel.addContractToInfluencer(contract: contractToAdd, influencerID: tempInfluencer.id)

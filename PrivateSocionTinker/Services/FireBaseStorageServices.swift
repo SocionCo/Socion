@@ -18,6 +18,8 @@ class FireBaseStorageServices {
     static let shared = FireBaseStorageServices()
     let storageRef = Storage.storage().reference()
     
+    //MARK: Profile Picture Functions
+    
     func uploadProfilePicture(image : UIImage, userID : String) {
         let data : Data = image.pngData() ?? Data()
         let profilePicRef = storageRef.child("\(userID)/profilePicture.jpg")
@@ -30,6 +32,26 @@ class FireBaseStorageServices {
         }
         
     }
+    
+    func getProfilePicture (userID : String,  exists : @escaping (Bool,UIImage?) -> ()) {
+        print("Downloading Brand New PFP")
+        let profilePicRef = storageRef.child("\(userID)/profilePicture.jpg")
+        profilePicRef.getData(maxSize: 200 * 1024 * 1024) {
+            data, error in
+            print("Getting PFP for: \(userID)")
+            if let error = error {
+                exists(false,nil)
+                print(error)
+            } else {
+                if let data = data {
+                    let image = UIImage(data: data)
+                    exists(true,image)
+                }
+            }
+        }
+    }
+    
+    //MARK: PDF Functions
     
     func uploadFirestoragePDF (document : PDFDocument, name : String, contractID : String) {
         let attachmentRef  = storageRef.child("\(contractID)/\(name)")
@@ -60,24 +82,6 @@ class FireBaseStorageServices {
     
     
     
-    func getProfilePicture (userID : String,  exists : @escaping (Bool,UIImage?) -> ()) {
-        print("Downloading Brand New PFP")
-        let profilePicRef = storageRef.child("\(userID)/profilePicture.jpg")
-        profilePicRef.getData(maxSize: 200 * 1024 * 1024) {
-            data, error in
-            print("Getting PFP for: \(userID)")
-            if let error = error {
-                exists(false,nil)
-                print(error)
-            } else {
-                if let data = data {
-                    let image = UIImage(data: data)
-                    exists(true,image)
-                }
-            }
-        }
-    }
-    
     func getPDF (contractID : String, documentName : String, completion : @escaping (PDFDocument?) -> ()) {
         let attachmentRef  = storageRef.child("\(contractID)/\(documentName)")
         attachmentRef.getData(maxSize: 1000 * 1024 * 1024) { data, error in
@@ -99,6 +103,48 @@ class FireBaseStorageServices {
                 }
             }
             
+        }
+    }
+    
+    //MARK: Video Functions
+    
+    func addVideo (contractID : String, videoName : String) {
+        let videoRef = storageRef.child("\(contractID)/drafts/\(videoName)")
+        let videoData =  DocumentServices.getVideoAsData(name: videoName, contractID: contractID)
+        if let videoData = videoData {
+            videoRef.putData(videoData) {metadata, error in
+                if let error = error {
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    func deleteVideo (contractID : String, videoName : String) {
+        let videoRef = storageRef.child("\(contractID)/drafts/\(videoName)")
+        videoRef.delete {error in
+            if let error = error {
+                print(error)
+            }
+        }
+    }
+    
+    func getVideo (contractID : String, videoName : String, completion : @escaping (URL) -> ()) {
+        let videoRef = storageRef.child("\(contractID)/drafts/\(videoName)")
+        videoRef.getData(maxSize: 2000 * 1024 * 1024) { data, error in
+            if error == nil {
+                print(error ?? "")
+            } else {
+                guard let data = data else {
+                    print("Error converting data")
+                    return
+                }
+                let newURL = DocumentServices.storeVideo(name: videoName, contractID: contractID, data: data)
+                completion(newURL)
+                
+            }
+            
+             
         }
     }
 }

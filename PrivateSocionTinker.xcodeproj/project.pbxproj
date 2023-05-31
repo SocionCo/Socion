@@ -70,8 +70,9 @@
 		DBA858612A1C501100D4C963 /* InfluencerSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA858602A1C501100D4C963 /* InfluencerSelect.swift */; };
 		DBA858632A1C501E00D4C963 /* ManagerSelect.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA858622A1C501E00D4C963 /* ManagerSelect.swift */; };
 		DBA858672A1FDC0300D4C963 /* DataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA858662A1FDC0300D4C963 /* DataManager.swift */; };
-		DBA858692A21279000D4C963 /* CacheServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA858682A21278F00D4C963 /* CacheServices.swift */; };
 		DBA8586B2A2524D300D4C963 /* DocumentServices.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA8586A2A2524D300D4C963 /* DocumentServices.swift */; };
+		DBA8586D2A25435000D4C963 /* AgentDraftDashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA8586C2A25435000D4C963 /* AgentDraftDashboard.swift */; };
+		DBA8586F2A25436C00D4C963 /* InfluencerAddDraft.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBA8586E2A25436C00D4C963 /* InfluencerAddDraft.swift */; };
 		DBCD492F29FDA68700BD3D95 /* AgentContractDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */; };
 		DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBCD493029FDA84E00BD3D95 /* ErrorView.swift */; };
 		DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */; };
@@ -131,8 +132,9 @@
 		DBA858602A1C501100D4C963 /* InfluencerSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfluencerSelect.swift; sourceTree = "<group>"; };
 		DBA858622A1C501E00D4C963 /* ManagerSelect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManagerSelect.swift; sourceTree = "<group>"; };
 		DBA858662A1FDC0300D4C963 /* DataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataManager.swift; sourceTree = "<group>"; };
-		DBA858682A21278F00D4C963 /* CacheServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CacheServices.swift; sourceTree = "<group>"; };
 		DBA8586A2A2524D300D4C963 /* DocumentServices.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentServices.swift; sourceTree = "<group>"; };
+		DBA8586C2A25435000D4C963 /* AgentDraftDashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentDraftDashboard.swift; sourceTree = "<group>"; };
+		DBA8586E2A25436C00D4C963 /* InfluencerAddDraft.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfluencerAddDraft.swift; sourceTree = "<group>"; };
 		DBCD492E29FDA68700BD3D95 /* AgentContractDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgentContractDetailView.swift; sourceTree = "<group>"; };
 		DBCD493029FDA84E00BD3D95 /* ErrorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorView.swift; sourceTree = "<group>"; };
 		DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TalentManagerTabView.swift; sourceTree = "<group>"; };
@@ -265,6 +267,7 @@
 			children = (
 				DB0760BF29DCCA3000E27EB8 /* ContractDetailView.swift */,
 				DB6A8F9D29D7E45C0065DAED /* ContractListView.swift */,
+				DBA8586E2A25436C00D4C963 /* InfluencerAddDraft.swift */,
 			);
 			path = InfluencerSpecificViews;
 			sourceTree = "<group>";
@@ -276,7 +279,6 @@
 				DBA8586A2A2524D300D4C963 /* DocumentServices.swift */,
 				DBE289A02A1681B900CEBA50 /* FireBaseStorageServices.swift */,
 				DBA858662A1FDC0300D4C963 /* DataManager.swift */,
-				DBA858682A21278F00D4C963 /* CacheServices.swift */,
 				DB6A8FAB29D88BFA0065DAED /* FireBaseDataServices.swift */,
 				DB6A8F9B29D7E38E0065DAED /* Authentication.swift */,
 			);
@@ -336,8 +338,8 @@
 		DB76EDB429D7C606002ABA34 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				DBE289A72A1691D500CEBA50 /* PFPManagement */,
 				DB67388029E0E57300C561D9 /* RegistrationAndLogIn */,
+				DBE289A72A1691D500CEBA50 /* PFPManagement */,
 				DB67388129E0E58800C561D9 /* TabGroups */,
 				DB67388229E0E59B00C561D9 /* Tests */,
 			);
@@ -369,6 +371,7 @@
 			isa = PBXGroup;
 			children = (
 				DB90A1762A13E7AA0058283A /* TalentManagerContractList.swift */,
+				DBA8586C2A25435000D4C963 /* AgentDraftDashboard.swift */,
 				DBE2899E2A15C95F00CEBA50 /* TalentManagerTabView.swift */,
 			);
 			path = ManagerSpecificViews;
@@ -549,6 +552,7 @@
 				DB67387F29E0D80E00C561D9 /* AgencyRegistrationView.swift in Sources */,
 				DBCD493129FDA84E00BD3D95 /* ErrorView.swift in Sources */,
 				DB76ED6929D7C1CE002ABA34 /* RegisterView.swift in Sources */,
+				DBA8586D2A25435000D4C963 /* AgentDraftDashboard.swift in Sources */,
 				DB67388F29E0F92F00C561D9 /* AgencySettingsView.swift in Sources */,
 				DB67388429E0E5E700C561D9 /* DefaultTabSelector.swift in Sources */,
 				DBA8585D2A1952E200D4C963 /* UtilityStructs.swift in Sources */,
@@ -558,6 +562,7 @@
 				DB0760C629DFC03B00E27EB8 /* ViewTest.swift in Sources */,
 				DB67389829E4892200C561D9 /* ManagerContractListView.swift in Sources */,
 				DB67387D29E0D4E600C561D9 /* AgencyViewModel.swift in Sources */,
+				DBA8586F2A25436C00D4C963 /* InfluencerAddDraft.swift in Sources */,
 				DB67388629E0E67E00C561D9 /* AgencyView.swift in Sources */,
 				DB76ED7329D7C1CF002ABA34 /* PrivateSocionTinker.xcdatamodeld in Sources */,
 				DB67389C29E48F9900C561D9 /* InfluencerTabSelector.swift in Sources */,
@@ -569,7 +574,6 @@
 				DBA858612A1C501100D4C963 /* InfluencerSelect.swift in Sources */,
 				DBE289A62A1691B600CEBA50 /* ChangePFPView.swift in Sources */,
 				DBE2899F2A15C95F00CEBA50 /* TalentManagerTabView.swift in Sources */,
-				DBA858692A21279000D4C963 /* CacheServices.swift in Sources */,
 				DBE289A12A1681B900CEBA50 /* FireBaseStorageServices.swift in Sources */,
 				DB76ED6729D7C1CE002ABA34 /* PrivateSocionTinkerApp.swift in Sources */,
 				DBA858672A1FDC0300D4C963 /* DataManager.swift in Sources */,

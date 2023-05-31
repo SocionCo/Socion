@@ -20,6 +20,12 @@ struct Contract: Hashable, Identifiable {
         case paid = "Paid"
     }
     
+    enum Approval : String, CaseIterable {
+        case approved = "approved"
+        case rejected = "rejected"
+        case unreviewed = "unreviewed"
+    }
+    
     var id : String = UUID().uuidString
     var company : String = ""
     var rate : Double?
@@ -33,8 +39,11 @@ struct Contract: Hashable, Identifiable {
     var influencerAssignedToContract : String?
     var notes : String = ""
     var attachments : [String] = []
+    var approvals : [Approval] = []
+    var drafts : [String] = []
+    var approvalNotes : [String] = []
     
-    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String) {
+    init(id : String, company: String, status: Contract.Progress, influencer: String, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : Date?, rate : Double?, tasks : [String],  isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Approval], drafts : [String], approvalNotes : [String]) {
         self.id = id
         self.company = company
         self.status = status
@@ -52,6 +61,9 @@ struct Contract: Hashable, Identifiable {
         }
         self.attachments = attachments
         self.notes = notes
+        self.approvals = approvals
+        self.drafts = drafts
+        self.approvalNotes = approvalNotes
     }
     
     /// This function takes a String:Any map that has all of the appropriate fields, coming from the FireStore databse, and convert's it to a Contract object for use locally.
@@ -106,7 +118,24 @@ struct Contract: Hashable, Identifiable {
             unwrappedAttachments = stringMap["attachments"] as! [String]
         }
         
-        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID, attachments: unwrappedAttachments, notes: unwrappedNotes)
+        var aprovals : [String] = []
+        var returnApprovals : [Contract.Approval] = []
+        if stringMap["approvals"] != nil {
+            aprovals = stringMap["approvals"] as! [String]
+            returnApprovals = aprovals.map({Contract.funcApprovalStringToEnum(approval: $0)})
+        }
+        
+        var drafts : [String] = []
+        if stringMap["drafts"] != nil {
+            drafts = stringMap["drafts"] as! [String]
+        }
+        
+        var approvalNotes : [String] = []
+        if stringMap["approvalNotes"] != nil {
+            approvalNotes = stringMap["approvalNotes"] as! [String]
+        }
+        
+        let contractToReturn = Contract(id: id, company: company, status: statusEnum, influencer: influencer, paymentStatus: paymentStatus, postLink: postLink, dueDate: Contract.stringToDateForStorage(stringDate: dueDate), rate: rate, tasks : unwrappedTasks, isCompletedArray: unwrappedCompletion, influencerAssignedToContract: unwrappedInfluencerID, attachments: unwrappedAttachments, notes: unwrappedNotes, approvals: returnApprovals, drafts: drafts, approvalNotes: approvalNotes)
         return contractToReturn
     }
     
@@ -178,7 +207,6 @@ struct Contract: Hashable, Identifiable {
         if (now == nil) {
             print("Error with date conversion")
         }
-        print("Output date : \(now)")
         return now
     }
     
@@ -239,6 +267,18 @@ struct Contract: Hashable, Identifiable {
         }
     }
     
+    static func approvalColor(approval : Contract.Approval) -> Color {
+        switch approval {
+        case.rejected:
+            return Color(red: 232/255, green: 142/255, blue: 143/255)
+        case .unreviewed:
+            return Color(UIColor(red: 1.0, green: 0.9, blue: 0.6, alpha: 1.0))
+        case .approved:
+            return Color(red: 183/255, green: 215/255, blue: 181/255)
+        }
+    }
+    
+    
     static func paymentStatusColor(contract: Contract) -> Color {
         switch contract.paymentStatus {
         case.notPaid:
@@ -256,6 +296,34 @@ struct Contract: Hashable, Identifiable {
         } else {
             return .notStarted
         }
+    }
+    
+    func hasDraftsToReview() -> (Bool, Int) {
+        var count : Int = 0
+        for approval in self.approvals {
+            if approval == .unreviewed {
+                count+=1
+            }
+        }
+        return count == 0 ? (false,0) : (true,count)
+        
+    }
+    
+    static func funcApprovalStringToEnum (approval : String) -> Approval {
+        switch approval {
+        case "approved":
+            return Approval.approved
+        case "rejected":
+            return Approval.rejected
+        case "unreviewed":
+            return Approval.unreviewed
+        default:
+            return Approval.unreviewed
+        }
+    }
+    
+    static func approvalArrayToString (approvalArray : [Approval]) -> [String] {
+        return approvalArray.map({$0.rawValue})
     }
     
 }

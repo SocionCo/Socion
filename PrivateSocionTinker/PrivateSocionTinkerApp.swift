@@ -37,6 +37,7 @@ struct SocionApp: App {
     
     
     var body: some Scene {
+        
         WindowGroup {
             if !authentication.isValidated {
                 NavigationView {

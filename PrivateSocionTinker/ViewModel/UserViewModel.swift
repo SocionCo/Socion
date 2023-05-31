@@ -359,10 +359,10 @@ class UserViewModel: ObservableObject {
         }
     }
     
-    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String) {
+    func editContract (contract : Contract, company : String, influencer : String, status : Contract.Progress, dueDate : String?, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, tasks : [String], isCompleted : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Contract.Approval], drafts : [String], approvalNotes : [String]) {
         if let id = self.getID() {
             print("Updating contract status to \(status.rawValue)")
-            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, attachments: attachments, notes: notes)
+            FireBaseDataServices.shared.editExistingContract(userID: id, contract: contract, company: company, influencer: influencer, status: status, rate : rate, paymentStatus: paymentStatus, postLink: postLink, dueDate: dueDate, tasks: tasks, isCompletedArray: isCompleted, influencerAssignedToContract: influencerAssignedToContract, attachments: attachments, notes: notes, approvals: approvals, drafts: drafts, approvalNotes: approvalNotes)
         } else {
             print("Auth Issue")
         }

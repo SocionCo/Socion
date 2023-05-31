@@ -83,6 +83,44 @@ struct ContractDetailView: View {
                     taskMenu.background(backgroundColor)
                     VStack(alignment: .leading, spacing: 10) {
                         HStack {
+                            Text("Drafts")
+                                .font(.title2)
+                                .foregroundColor(DetailViewConstants.lightGrey)
+                                .fontWeight(.bold)
+                            NavigationLink {
+                                InfluencerAddDraft(contract: contract)
+                            } label: {
+                                Image(systemName: "plus")
+                                    .font(.title2)
+                                    .foregroundColor(Color(red: 172/255, green: 245/255, blue: 183/255))
+                                    .fontWeight(.bold)
+                            }
+                        }
+                        ForEach(Array(contract.approvals.enumerated()), id: \.element) { index,element in
+                            HStack {
+                                Text("Draft #\(index+1)")
+                                    .font(.headline)
+                                    .foregroundColor(primaryColor)
+                                    .fontWeight(.bold)
+                                Spacer()
+                                Text("\(element.rawValue)")
+                                    .foregroundColor(.white)
+                                    .fontWeight(.bold)
+                                    .padding(3)
+                                    .background(Contract.approvalColor(approval: element))
+                                    .cornerRadius(20)
+                                Image(systemName: "x.circle")
+                                    .foregroundColor(.red)
+                                    .onTapGesture {
+                                        userViewModel.agencyViewModel.deleteDraft(name: contract.drafts[index], userID: userViewModel.getID()!, contract: contract)
+                                    }
+                                    .font(.subheadline)
+                                    .fontWeight(.semibold)
+                            }
+                        }
+                    }
+                    VStack(alignment: .leading, spacing: 10) {
+                        HStack {
                             Text("Attachments")
                                 .font(.title2)
                                 .foregroundColor(DetailViewConstants.lightGrey)

@@ -155,7 +155,10 @@ class FireBaseDataServices {
             "completedTasks" : contract.isCompletedArray,
             "influencerAssignedToContract" : unwrappedInfluencerAssigned,
             "attachments" : contract.attachments,
-            "notes" : contract.notes
+            "notes" : contract.notes,
+            "approvals" : contract.approvals,
+            "drafts" : contract.drafts,
+            "approvalNotes" : contract.approvalNotes
         ])
     }
     
@@ -400,13 +403,14 @@ class FireBaseDataServices {
     ///   - paymentStatus: new payment status
     ///   - postLink: new post link
     ///   - dueDate: new DueDate
-    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String) {
+    func editExistingContract (userID : String, contract : Contract, company : String, influencer : String, status : Contract.Progress, rate : Double?, paymentStatus : Contract.PaymentProgress, postLink : String?, dueDate : String?, tasks : [String], isCompletedArray : [Bool], influencerAssignedToContract : String?, attachments : [String], notes : String, approvals : [Contract.Approval], drafts : [String], approvalNotes : [String]) {
         let unwrappedPostLink = returnUnwrappedOrEmptyString(optional: postLink)
         let unwrappedDueDate = returnUnwrappedOrEmptyString(optional: dueDate)
         var unwrappedRate : Double = 0
         if rate != nil {
             unwrappedRate = rate!
         }
+        let unwrappedApprovals : [String] = approvals.map({$0.rawValue})
         print("DataBaseServices updating status to \(status.rawValue)")
         print("15Calling document: \(userID)")
         
@@ -424,7 +428,10 @@ class FireBaseDataServices {
             "completedTasks" : isCompletedArray,
             "influencerAssignedToContract" : returnUnwrappedOrEmptyString(optional: influencerAssignedToContract),
             "notes" : notes,
-            "attachments" : attachments
+            "attachments" : attachments,
+            "approvals" : unwrappedApprovals,
+            "drafts" : drafts,
+            "approvalNotes" : approvalNotes
         ])
     }
     
@@ -435,6 +442,19 @@ class FireBaseDataServices {
             return ""
         }
     }
+    
+    //MARK: Video Functions
+    
+    func editApprovals (contractID : String, userID : String, approvals : [Contract.Approval], notes : [String], drafts : [String]) {
+        let unwrappedApprovals : [String] = Contract.approvalArrayToString(approvalArray: approvals)
+        db.collection("users").document(userID).collection("contracts").document(contractID).updateData([
+            "approvals" : unwrappedApprovals,
+            "drafts" : drafts,
+            "approvalNotes" : notes
+        ])
+    }
+    
+    
     
     func updateProfilePictureID (userID : String, pictureID : String) {
         db.collection("users").document(userID).updateData([
