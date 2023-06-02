@@ -145,7 +145,7 @@ class FireBaseDataServices {
         print("6Calling document: \(id)")
         db.collection("users").document(id).collection("contracts").document(contract.id).setData([
             "company" : contract.company,
-            "status" : AgencyViewModel.getStatus(contract: contract),
+            "status" : AgencyViewModel.getStatus(contract: contract).rawValue,
             "name" : contract.name,
             "rate" : unwrappedRate,
             "paymentStatus" : contract.paymentStatus.rawValue,
