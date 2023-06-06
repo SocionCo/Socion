@@ -14,8 +14,8 @@
             filePath = "PrivateSocionTinker/ViewModel/AgencyViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "781"
-            endingLineNumber = "781"
+            startingLineNumber = "788"
+            endingLineNumber = "788"
             landmarkName = "getInfluencersForManager(talentManager:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -30,8 +30,8 @@
             filePath = "PrivateSocionTinker/ViewModel/AgencyViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "482"
-            endingLineNumber = "482"
+            startingLineNumber = "489"
+            endingLineNumber = "489"
             landmarkName = "updateOnlyAgencyInfo(data:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -78,8 +78,8 @@
             filePath = "PrivateSocionTinker/View/TabGroups/AgencySpecificViews/OwnerSpecificViews/ManagerContractListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "457"
-            endingLineNumber = "457"
+            startingLineNumber = "176"
+            endingLineNumber = "176"
             landmarkName = "addNew()"
             landmarkType = "7">
          </BreakpointContent>
@@ -94,8 +94,8 @@
             filePath = "PrivateSocionTinker/View/TabGroups/AgencySpecificViews/OwnerSpecificViews/ManagerContractListView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "484"
-            endingLineNumber = "484"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
             landmarkName = "addNew()"
             landmarkType = "7">
          </BreakpointContent>
@@ -110,8 +110,8 @@
             filePath = "PrivateSocionTinker/ViewModel/AgencyViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "694"
-            endingLineNumber = "694"
+            startingLineNumber = "701"
+            endingLineNumber = "701"
             landmarkName = "addContractToInfluencer(contract:influencerID:)"
             landmarkType = "7">
          </BreakpointContent>

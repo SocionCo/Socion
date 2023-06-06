@@ -425,5 +425,8 @@ struct DetailViewConstants {
     static let lightGrey : Color = Color(red: 172/255, green: 173/255, blue: 172/255)
     
     static let lightGreenBackground : Color = Color(red: 236/255, green: 247/255, blue: 242/255)
+    
+    static let lightRed : Color = Color(red: 229/255, green: 74/255, blue: 77/255)
+    
 }
 
