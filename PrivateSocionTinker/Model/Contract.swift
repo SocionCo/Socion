@@ -197,7 +197,6 @@ struct Contract: Hashable, Identifiable {
     static func stringToDateForStorage(stringDate : String?) -> Date? {
         let df = DateFormatter()
         df.dateFormat = "yyy-MM-dd hh:mm:ss"
-        print("Input Date : \(stringDate!)")
         if stringDate == nil {
             print("Output Date: nil")
             return nil

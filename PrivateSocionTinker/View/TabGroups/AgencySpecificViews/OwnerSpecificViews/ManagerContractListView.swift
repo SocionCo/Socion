@@ -30,10 +30,14 @@ struct ManagerContractListView: View {
     @State var includeDate : Bool = false
     @State var refresh: Bool = false
     @State var greenColor = Color(red: 183/255, green: 215/255, blue: 181/255)
+    let lightGreen = Color(red: 190/255, green: 225/255, blue: 190/255)
+    let primaryColor = Color(.sRGB, red: 0.08, green: 0.39, blue: 0.22, opacity: 1.0)
+    @State var isDeleteAlertPresented = false
     
     var submitFormDisabeled : Bool {
         tempCompanyName == "" || tempName == ""
     }
+    
     
     
     var body: some View {
@@ -45,176 +49,62 @@ struct ManagerContractListView: View {
                     .fontWeight(.bold)
                     .minimumScaleFactor(0.5)
                     .background(greenColor)
-                    .onTapGesture {
-                        for influencer in agencyViewModel.getInfluencers() {
-                            print("Influencer Local PPID: \(userViewModel.getLocalProfilePicID(userID: influencer.id))")
-                        }
-                    }
                 
                 SearchBar(searchText: $searchText)
                 getAgencyList(agencyViewModel.getContracts(getCompletedContracts: false))
             }
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
+                    Menu("Edit") {
+                        ForEach(agencyViewModel.getContracts(getCompletedContracts: false), id: \.self) { contract in
+                            Button(contract.name) {
+                                tempStatus = contract.getStatus()
+                                tempName = contract.name
+                                tempCompanyName = contract.company
+                                tempTasks = contract.tasks
+                                tempCompleted = contract.isCompletedArray
+                                currentlyEditing = contract
+                                tempPaymentStatus = contract.paymentStatus
+                                tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
+                                if contract.rate != nil {
+                                    tempRate = contract.rate!
+                                }
+                                if contract.dueDate != nil {
+                                    tempDueDate = contract.dueDate!
+                                }
+                                tempNotes = contract.notes
+                                tempAttachments = contract.attachments
+                                tempApprovals = contract.approvals
+                                tempDrafts = contract.drafts
+                                tempApprovalNotes = contract.approvalNotes
+                                editSheet = true
+                            }
+                        }
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        withAnimation {
-                            authentication.updateValidation(success: false)
-                            userViewModel.logOut()
-                        }
+                        addSheet = true
                     } label: {
-                        Image(systemName: "rectangle.portrait.and.arrow.right")
+                        Image(systemName: "plus")
                     }
+                    
                 }
-                ToolbarItem {
-                    Menu("Manage") {
-                        Menu("New Contract") {
-                            ForEach(agencyViewModel.getInfluencers(), id: \.self) { influencer in
-                                Button(influencer.getFullName()) {
-                                    tempInfluencer = influencer
-                                    addSheet = true
-                                    formSubmittable = true
-                                }
-                            }
-                        }
-                        Menu("Delete Contract") {
-                            ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
-                                Button(contract.company) {
-                                    agencyViewModel.deleteContractForAgency(contract: contract)
-                                }
-                            }
-                        }
-                        Menu("Edit") {
-                            ForEach(agencyViewModel.getContracts(), id: \.self) { contract in
-                                Button(contract.company) {
-                                    tempStatus = contract.getStatus()
-                                    tempName = contract.name
-                                    tempCompanyName = contract.company
-                                    tempTasks = contract.tasks
-                                    tempCompleted = contract.isCompletedArray
-                                    tempInfluencerAssigned = contract.influencerAssignedToContract ?? ""
-                                    currentlyEditing = contract
-                                    tempPaymentStatus = contract.paymentStatus
-                                    tempAttachments = contract.attachments
-                                    tempNotes = contract.notes
-                                    if contract.rate != nil {
-                                        tempRate = contract.rate!
-                                    }
-                                    if contract.dueDate != nil {
-                                        tempDueDate = contract.dueDate!
-                                    }
-                                    tempDrafts = contract.drafts
-                                    tempApprovals = contract.approvals
-                                    tempApprovalNotes = contract.approvalNotes
-                                    editSheet.toggle()
-                                }
-                            }
-                        }
-                    }
-                }
-            }.foregroundColor(.white)
+                
+            }
+            .foregroundColor(.white)
         }
         .refreshable {
             refresh.toggle()
         }
-        
+        .background(greenColor)
         .sheet(isPresented: $editSheet, onDismiss: setValues) {
-            VStack {
-                Form {
-                    Section(header: Text("Campaign Information")) {
-                        TextField("Company Name", text: $tempCompanyName)
-                        TextField("Campaign Name", text: $tempName)
-                        Picker("Status", selection: $tempStatus) {
-                            ForEach(Contract.Progress.allCases, id: \.self) {value in
-                                Text(value.rawValue)
-                            }
-                        }
-                        TextField("Notes:", text: $tempNotes, axis: .vertical)
-                            .lineLimit(2...5)
-                        TextField("Post Link (optional)", text: $tempPostLink)
-                        Toggle(isOn: $includeDate) {
-                            Text("Campaign has due date")
-                        }
-                        if (includeDate) {
-                            DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
-                                Text("Select a date")
-                            }
-                        }
-                        TextField("Rate (optional)", value: $tempRate, format: .number)
-                        Picker("Payment Status", selection: $tempPaymentStatus) {
-                            ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
-                                Text(value.rawValue)
-                            }
-                        }
-                    }
-                }
-                HStack(spacing: 20) {
-                    Spacer()
-                    Button {
-                        formSubmittable = true
-                        editSheet = false
-                    } label : {
-                        Text("Done")
-                    } .disabled(submitFormDisabeled)
-                    Spacer()
-                    Button {
-                        resetValues()
-                        editSheet = false
-                    } label: {
-                        Text("Cancel")
-                    }
-                    Spacer()
-                }
-            }
-        }.interactiveDismissDisabled(true)
-            .sheet(isPresented: $addSheet, onDismiss: addNew) {
-                HStack{
-                    VStack {
-                        Form {
-                            Section(header: Text("Campaign Information for \(tempInfluencer.getFullName())")) {
-                                TextField("Company Name", text: $tempCompanyName)
-                                TextField("Campaign Name", text: $tempName)
-                                Picker("Status", selection: $tempStatus) {
-                                    ForEach(Contract.Progress.allCases, id: \.self) {value in
-                                        Text(value.rawValue)
-                                    }
-                                }
-                                TextField("Post Link (optional)", text: $tempPostLink)
-                                Toggle(isOn: $includeDate) {
-                                    Text("Campaign has due date")
-                                }
-                                if (includeDate) {
-                                    DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
-                                        Text("Select a date")
-                                    }
-                                }
-                                TextField("Rate (optional)", value: $tempRate, format: .number)
-                                Picker("Payment Status", selection: $tempPaymentStatus) {
-                                    ForEach(Contract.PaymentProgress.allCases, id: \.self) {value in
-                                        Text(value.rawValue)
-                                    }
-                                }
-                            }
-                        }
-                        HStack(spacing: 20) {
-                            Spacer()
-                            Button {
-                                addSheet = false
-                                resetValues()
-                            } label : {
-                                Text("Cancel")
-                            }
-                            Spacer()
-                            Button {
-                                formSubmittable = true
-                                addSheet = false
-                            } label : {
-                                Text("Done")
-                            } .disabled(submitFormDisabeled)
-                            Spacer()
-                        }
-                    }.interactiveDismissDisabled(true)
-                }
-            }
+            editSheetView
+        }
+        .interactiveDismissDisabled(true)
+        .sheet(isPresented: $addSheet, onDismiss: addNew) {
+            addSheetView
+        }
     }
     
     func sorterForDates(this: Contract, that: Contract) -> Bool {
@@ -287,6 +177,7 @@ struct ManagerContractListView: View {
         if formSubmittable == false {
             return
         }
+        print("Submitting")
         var useRate : Double?
         var useDate : String?
         var usePostLink : String?
@@ -350,6 +241,395 @@ struct ManagerContractListView: View {
         }
     }
     
+    var addSheetView : some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button {
+                    if addSheet {addSheet.toggle()}
+                    if editSheet {editSheet.toggle()}
+                    resetValues()
+                } label: {
+                    Image(systemName: "xmark")
+                        .padding(.trailing, 20)
+                        .foregroundColor(primaryColor)
+                }
+            }
+            VStack(alignment: .leading, spacing: 20) {
+                
+                HStack {
+                    Spacer()
+                    Text("Add Campaign")
+                        .font(.largeTitle)
+                        .foregroundColor(primaryColor)
+                    Spacer()
+                }
+                Divider()
+                    .foregroundColor(primaryColor)
+                HStack {
+                    Text("Campaign Title")
+                        .foregroundColor(DetailViewConstants.lightGrey)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                    + Text("*")
+                        .foregroundColor(primaryColor)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                    Spacer()
+                }
+                TextField("", text: $tempName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(primaryColor, lineWidth: 3)
+                    )
+                    .padding(.horizontal)
+                VStack {
+                    HStack {
+                        Text("Payment")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        TextField("$", value: $tempRate, formatter: NumberFormatter())
+                            .keyboardType(UIKeyboardType.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(primaryColor, lineWidth: 3)
+                            )
+                            .frame(width: 110)
+                    }
+                    HStack {
+                        Text("Deadline")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                            
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                            
+                        DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
+                            Text("")
+                        }
+                        .background(Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(primaryColor, lineWidth: 3)
+                        )
+                        .frame(width: 110)
+                    }
+                    HStack {
+                        Text("Company")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        TextField("", text: $tempCompanyName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(primaryColor, lineWidth: 3)
+                            )
+                            .frame(width: 110)
+                    }
+                }
+                    HStack {
+                        Menu {
+                                Picker(selection: $tempInfluencer, label: EmptyView()) {
+                                    ForEach(agencyViewModel.getInfluencers()) {influencer in
+                                        Text(influencer.getFullName()).tag(influencer)
+                                    }
+                                    Text("None").tag(User())
+                                }
+                            } label: {
+                            if tempInfluencer == User() {
+                                Text("Assign a creator")
+                                    .foregroundColor(DetailViewConstants.lightGrey)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 10, height: 10)
+                                    .padding(20)
+                                    .foregroundColor(.green)
+                                    .background(DetailViewConstants.lightGreenBackground)
+                                    .cornerRadius(50)
+                            } else {
+                                Text("Assign a creator")
+                                    .foregroundColor(DetailViewConstants.lightGrey)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                Image(uiImage: tempInfluencer.profilePicture)
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .scaledToFill()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 4)
+                            }
+                        }
+                    }
+                Text("Notes")
+                    .foregroundColor(DetailViewConstants.lightGrey)
+                    .fontWeight(.bold)
+                    .font(.title2)
+                TextField("", text: $tempNotes, axis: .vertical)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(6)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(primaryColor, lineWidth: 3)
+                    )
+                
+                
+            }
+            HStack {
+                Spacer()
+                VStack(spacing: 20) {
+                    HStack {
+                        Button {
+                            formSubmittable = true
+                            addSheet = false
+                            
+                        } label: {
+                            Text("Submit")
+                                .foregroundColor(primaryColor)
+                                .font(.largeTitle)
+                                .frame(width: 300)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(DetailViewConstants.lightGreenBackground)
+                                )
+                            
+                        }.disabled(submitFormDisabeled)
+                    }
+                    Text("*Required to create a campaign")
+                        .foregroundColor(primaryColor)
+                        .bold()
+                }
+                .padding(.top,40)
+                Spacer()
+            }
+        }
+        .padding()
+    }
+    
+    var editSheetView : some View {
+        VStack {
+            HStack {
+                Spacer()
+                Button {
+                    editSheet.toggle()
+                    resetValues()
+                } label: {
+                    Image(systemName: "xmark")
+                        .padding(.trailing, 20)
+                        .foregroundColor(primaryColor)
+                }
+            }
+            VStack(alignment: .leading, spacing: 20) {
+                
+                HStack {
+                    Spacer()
+                    Text("Edit Campaign")
+                        .font(.largeTitle)
+                        .foregroundColor(primaryColor)
+                    Spacer()
+                }
+                Divider()
+                    .foregroundColor(primaryColor)
+                HStack {
+                    Text("Campaign Title")
+                        .foregroundColor(DetailViewConstants.lightGrey)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                    + Text("*")
+                        .foregroundColor(primaryColor)
+                        .fontWeight(.bold)
+                        .font(.title2)
+                    Spacer()
+                }
+                TextField("", text: $tempName)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(primaryColor, lineWidth: 3)
+                    )
+                    .padding(.horizontal)
+                VStack {
+                    HStack {
+                        Text("Payment")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        TextField("$", value: $tempRate, formatter: NumberFormatter())
+                            .keyboardType(UIKeyboardType.decimalPad)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(primaryColor, lineWidth: 3)
+                            )
+                            .frame(width: 110)
+                    }
+                    HStack {
+                        Text("Deadline")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                            
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                            
+                        DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
+                            Text("")
+                        }
+                        .background(Color.white)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(primaryColor, lineWidth: 3)
+                        )
+                        .frame(width: 110)
+                    }
+                    HStack {
+                        Text("Company")
+                            .foregroundColor(DetailViewConstants.lightGrey)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        + Text("*")
+                            .foregroundColor(primaryColor)
+                            .fontWeight(.bold)
+                            .font(.title2)
+                        TextField("", text: $tempCompanyName)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 20)
+                                    .stroke(primaryColor, lineWidth: 3)
+                            )
+                            .frame(width: 110)
+                    }
+                }
+                    HStack {
+                        Menu {
+                                Picker(selection: $tempInfluencer, label: EmptyView()) {
+                                    ForEach(agencyViewModel.getInfluencers()) {influencer in
+                                        Text(influencer.getFullName()).tag(influencer)
+                                    }
+                                    Text("None").tag(User())
+                                }
+                            } label: {
+                            if tempInfluencer == User() {
+                                Text("Assign a creator")
+                                    .foregroundColor(DetailViewConstants.lightGrey)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                Image(systemName: "plus")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 10, height: 10)
+                                    .padding(20)
+                                    .foregroundColor(.green)
+                                    .background(DetailViewConstants.lightGreenBackground)
+                                    .cornerRadius(50)
+                            } else {
+                                Text("Assign a creator")
+                                    .foregroundColor(DetailViewConstants.lightGrey)
+                                    .fontWeight(.bold)
+                                    .font(.title2)
+                                Image(uiImage: tempInfluencer.profilePicture)
+                                    .resizable()
+                                    .frame(width: 50, height: 50)
+                                    .scaledToFill()
+                                    .aspectRatio(contentMode: .fit)
+                                    .clipShape(Circle())
+                                    .shadow(radius: 4)
+                            }
+                        }
+                    }
+                Text("Notes")
+                    .foregroundColor(DetailViewConstants.lightGrey)
+                    .fontWeight(.bold)
+                    .font(.title2)
+                TextField("", text: $tempNotes, axis: .vertical)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(6)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(primaryColor, lineWidth: 3)
+                    )
+                
+                
+            }
+            HStack {
+                Spacer()
+                VStack(spacing: 20) {
+                    HStack {
+                        Button {
+                            formSubmittable = true
+                            editSheet = false
+                            
+                        } label: {
+                            Text("Submit")
+                                .foregroundColor(primaryColor)
+                                .font(.largeTitle)
+                                .frame(width: 150)
+                                .background(
+                                    RoundedRectangle(cornerRadius: 10)
+                                        .fill(DetailViewConstants.lightGreenBackground)
+                                )
+                            
+                        }.disabled(submitFormDisabeled)
+                            Button {
+                                if currentlyEditing != nil {
+                                    isDeleteAlertPresented = true
+                                    
+                                }
+                            } label: {
+                                Text("Delete")
+                                    .foregroundColor(primaryColor)
+                                    .font(.largeTitle)
+                                    .frame(width: 150)
+                                    .background(
+                                        RoundedRectangle(cornerRadius: 10)
+                                            .fill(DetailViewConstants.lightRed)
+                                    )
+                                
+                            }
+                    }
+                    Text("*Required to create a campaign")
+                        .foregroundColor(primaryColor)
+                        .bold()
+                }
+                .padding(.top,40)
+                Spacer()
+            }
+        }
+        .padding()
+        .alert(title: "Are you sure you want to delete this campaign?", message: "This action is permanent. You will not be able to recover campaigns that are deleted.",
+                primaryButton: CustomAlertButton(title: "Yes", action: {
+            userViewModel.agencyViewModel.deleteContractForAgency(contract: currentlyEditing!)
+            editSheet = false
+            
+        }),
+                secondaryButton: CustomAlertButton(title: "No", action: {  }),
+                isPresented: $isDeleteAlertPresented)
+    }
+    
     func getAgencyList (_ contracts : [Contract]) -> some View {
         ZStack {
             Color(hex: 0xeceef5)
@@ -374,36 +654,34 @@ struct ManagerContractListView: View {
                                         .clipShape(Circle())
                                         .shadow(radius: 4)
                                     
-                                } else {
-                                    Text("Error")
-                                }
-                                
-                                VStack(alignment: .leading, spacing: 2) {
-                                    Text(contract.name)
-                                        .font(.title3)
-                                        .bold()
-                                        .padding(1)
-                                        .lineLimit(1)
-                                        .minimumScaleFactor(0.5)
-                                    if let owner = userViewModel.agencyViewModel.getOwnerOfContract(contract: contract) {
-                                        Text(owner.getFullName())
+                                    
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(contract.name)
+                                            .font(.title3)
+                                            .bold()
                                             .padding(1)
-                                            .font(.body)
-                                    } else {
-                                        Text("Error")
-                                            .padding(1)
-                                            .font(.body)
+                                            .lineLimit(1)
+                                            .minimumScaleFactor(0.5)
+                                        if let owner = userViewModel.agencyViewModel.getOwnerOfContract(contract: contract) {
+                                            Text(owner.getFullName())
+                                                .padding(1)
+                                                .font(.body)
+                                        } else {
+                                            Text("Error")
+                                                .padding(1)
+                                                .font(.body)
+                                        }
+                                        Text(contract.getStatus().rawValue)
+                                            .foregroundColor(.white)
+                                            .fontWeight(.bold)
+                                            .padding(3)
+                                            .background(Contract.statusColor(contract: contract))
+                                            .cornerRadius(20)
                                     }
-                                    Text(contract.getStatus().rawValue)
-                                        .foregroundColor(.white)
-                                        .fontWeight(.bold)
-                                        .padding(3)
-                                        .background(Contract.statusColor(contract: contract))
-                                        .cornerRadius(20)
+                                    .padding(.leading, 5)
+                                    .foregroundColor(.black)
+                                    Spacer()
                                 }
-                                .padding(.leading, 5)
-                                .foregroundColor(.black)
-                                Spacer()
                             }
                             .padding(10)
                             .background(Color.white)
@@ -415,6 +693,7 @@ struct ManagerContractListView: View {
                 }.padding(.top, 10)
             }
         }
+        
     }
 }
 

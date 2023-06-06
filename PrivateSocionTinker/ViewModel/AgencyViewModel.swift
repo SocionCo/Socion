@@ -396,10 +396,17 @@ class AgencyViewModel : ObservableObject {
 
 
     
-    func checkIfVideosExistLocallyAndDownload (contract : Contract) {
-        for draft in contract.drafts {
-            if !DocumentServices.videoExistsLocally(name: draft, contractID: contract.id) {
-                FireBaseStorageServices.shared.getVideo(contractID: contract.id, videoName: draft, completion: {_ in})
+    func checkIfVideosExistLocallyAndDownload (contract : Contract, loaded : @escaping (Bool) -> ()) {
+        var completionArray : [Bool] = [Bool](repeating: false, count: contract.drafts.count)
+        for index in contract.drafts.indices {
+            if !DocumentServices.videoExistsLocally(name:contract.drafts[index], contractID: contract.id) {
+                FireBaseStorageServices.shared.getVideo(contractID: contract.id, videoName: contract.drafts[index], completion: {video in
+                    completionArray[index] = true})
+            } else {
+                completionArray[index] = true
+            }
+            if (completionArray.allSatisfy({$0})) {
+                loaded(true)
             }
         }
     }

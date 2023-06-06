@@ -2,6 +2,7 @@ import SwiftUI
 
 struct AgencyView: View {
     @EnvironmentObject var userViewModel : UserViewModel
+    @EnvironmentObject var authentication : Authentication
     var body: some View {
             ZStack {
                 LinearGradient(gradient: Gradient(colors: [Color.white, Color.green.opacity(0.6)]), startPoint: .topLeading, endPoint: .bottomTrailing)
@@ -39,6 +40,13 @@ struct AgencyView: View {
                         }.tint(.white)
                     }
                     
+                    Button {
+                        authentication.updateValidation(success: false)
+                        userViewModel.logOut()
+                    } label: {
+                        navigationLinkView(destination: "Log Out", isRed: true)
+                    }
+                    
                     Spacer()
                 }
                 .padding(.top, 80)
@@ -52,11 +60,13 @@ struct AgencyView: View {
 
 struct navigationLinkView : View {
     @State var destination : String
+    @State var isRed = false
     var body : some View {
         Text(destination)
             .foregroundColor(.white)
             .frame(maxWidth: .infinity, minHeight: 50)
-            .background(Color.green)
+            .background(isRed ? Color(red: 1.0, green: 0.4, blue: 0.4)
+ : Color.green)
             .cornerRadius(10)
             .padding(.horizontal)
     }
