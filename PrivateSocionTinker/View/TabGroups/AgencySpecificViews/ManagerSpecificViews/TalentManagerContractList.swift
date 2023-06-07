@@ -281,8 +281,8 @@ struct TalentManagerContractListView: View {
                 TextField("", text: $tempName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(primaryColor, lineWidth: 3)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                     )
                     .padding(.horizontal)
                 VStack {
@@ -299,8 +299,8 @@ struct TalentManagerContractListView: View {
                             .keyboardType(UIKeyboardType.decimalPad)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(primaryColor, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                             )
                             .frame(width: 110)
                     }
@@ -318,11 +318,7 @@ struct TalentManagerContractListView: View {
                         DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
                             Text("")
                         }
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(primaryColor, lineWidth: 3)
-                        )
+                        .tint(primaryColor)
                         .frame(width: 110)
                     }
                     HStack {
@@ -337,8 +333,8 @@ struct TalentManagerContractListView: View {
                         TextField("", text: $tempCompanyName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(primaryColor, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                             )
                             .frame(width: 110)
                     }
@@ -388,8 +384,8 @@ struct TalentManagerContractListView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .lineLimit(6)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(primaryColor, lineWidth: 3)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                     )
                 
                 
@@ -463,8 +459,8 @@ struct TalentManagerContractListView: View {
                 TextField("", text: $tempName)
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(primaryColor, lineWidth: 3)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                     )
                     .padding(.horizontal)
                 VStack {
@@ -481,8 +477,8 @@ struct TalentManagerContractListView: View {
                             .keyboardType(UIKeyboardType.decimalPad)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(primaryColor, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                             )
                             .frame(width: 110)
                     }
@@ -500,11 +496,7 @@ struct TalentManagerContractListView: View {
                         DatePicker(selection: $tempDueDate, in: Date.now..., displayedComponents: .date) {
                             Text("")
                         }
-                        .background(Color.white)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(primaryColor, lineWidth: 3)
-                        )
+                        .tint(primaryColor)
                         .frame(width: 110)
                     }
                     HStack {
@@ -519,8 +511,8 @@ struct TalentManagerContractListView: View {
                         TextField("", text: $tempCompanyName)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .overlay(
-                                RoundedRectangle(cornerRadius: 20)
-                                    .stroke(primaryColor, lineWidth: 3)
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                             )
                             .frame(width: 110)
                     }
@@ -570,8 +562,8 @@ struct TalentManagerContractListView: View {
                     .textFieldStyle(RoundedBorderTextFieldStyle())
                     .lineLimit(6)
                     .overlay(
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(primaryColor, lineWidth: 3)
+                        RoundedRectangle(cornerRadius: 10)
+                            .stroke(primaryColor.opacity(0.5), lineWidth: 2)
                     )
                 
                 
