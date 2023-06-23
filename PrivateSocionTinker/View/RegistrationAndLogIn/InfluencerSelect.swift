@@ -45,7 +45,7 @@ struct InfluencerSelect: View {
                     }
                     
                     NavigationLink {
-                        LogInView()
+                        RegisterView()
                     } label:
                     {
                         Text("Register Influencer Account")

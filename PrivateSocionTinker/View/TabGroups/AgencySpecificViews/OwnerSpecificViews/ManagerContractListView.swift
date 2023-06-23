@@ -27,7 +27,7 @@ struct ManagerContractListView: View {
     @EnvironmentObject var authentication : Authentication
     @State var currentlyEditing : Contract?
     @State var formSubmittable : Bool = false
-    @State var includeDate : Bool = false
+    @State var includeDate : Bool = true
     @State var refresh: Bool = false
     @State var greenColor = Color(red: 183/255, green: 215/255, blue: 181/255)
     let lightGreen = Color(red: 190/255, green: 225/255, blue: 190/255)

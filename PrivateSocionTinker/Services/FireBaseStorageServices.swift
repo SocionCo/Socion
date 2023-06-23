@@ -143,8 +143,6 @@ class FireBaseStorageServices {
                 completion(newURL)
                 
             }
-            
-             
         }
     }
 }
